@@ -9,8 +9,8 @@ success_count: 2
 failure_count: 0
 source_tasks: [T-2026-02-14-bootstrap, _framework/03-MEMORY-MODEL §4.3]
 first_seen: 2026-02-14
-last_used: 2026-02-14
-last_reviewed: 2026-02-14
+last_used: 2026-09-23
+last_reviewed: 2026-09-23
 salience: high
 decay_rate: 0.05
 promoted_from: innate

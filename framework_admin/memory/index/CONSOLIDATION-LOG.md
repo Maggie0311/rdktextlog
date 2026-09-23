@@ -14,10 +14,14 @@
 | 2026-02-14 | new-stm | STM-001 | 本次 bootstrap 任务的观察，尚未跨任务验证 | T-2026-02-14-bootstrap | framework_admin |
 | 2026-02-14 | new-stm | STM-002 | 本次 bootstrap 任务的观察，尚需真实越界压力验证 | T-2026-02-14-bootstrap | framework_admin |
 | 2026-02-14 | new-stm | STM-003 | 本次 bootstrap 任务的观察，需真实邮件流验证 | T-2026-02-14-bootstrap | framework_admin |
+| 2026-09-23 | review | LTM-001~006 | 新角色创建后的**首次再巩固复核**：更新 `last_used/last_reviewed`；LTM-004 本轮属预防性应用，**不计证据**，维持 0.85 | T-2026-09-23-create-management-role | framework_admin |
+| 2026-09-23 | reinforce | STM-001 | 在创建 R-002 时**主动应用并成功**（第 2 次证据）：31 文件骨架连同逐目录写入规则一次性交付 | T-2026-09-23-create-management-role | framework_admin |
+| 2026-09-23 | reject-promotion | STM-001 | 晋升判定：`evidence_count=2 < 3` 且无独立确认，不满足 §4.3 条件 2 与条件 4 | T-2026-09-23-create-management-role | framework_admin |
+| 2026-09-23 | new-stm | STM-004 | 本轮新观察：相邻角色的边界必须按"层"切分而非"级别"切分（6 项冲突面靠层切分全部裁定） | T-2026-09-23-create-management-role | framework_admin |
 
 ## 待处理晋升候选
 
-无。当前 3 条短时记忆置信度均 < 0.75，不满足晋升条件。
+无。当前 4 条短时记忆置信度均 < 0.75（最高为 STM-001 的 0.45），不满足晋升条件；STM-001 已具备跨任务证据但缺 1 次独立确认。
 
 ## 说明
 

@@ -3,14 +3,14 @@ id: STM-001
 title: 七目录骨架必须连同"逐目录写入规则"一起交付，否则角色不知道怎么填
 layer: short-term
 status: candidate
-confidence: 0.35
-evidence_count: 1
-success_count: 0
+confidence: 0.45
+evidence_count: 2
+success_count: 1
 failure_count: 0
-source_tasks: [T-2026-02-14-bootstrap]
+source_tasks: [T-2026-02-14-bootstrap, T-2026-09-23-create-management-role]
 first_seen: 2026-02-14
-last_used: 2026-02-14
-last_reviewed: 2026-02-14
+last_used: 2026-09-23
+last_reviewed: 2026-09-23
 salience: medium
 decay_rate: 0.05
 promoted_to: none
@@ -27,9 +27,13 @@ tags: [structure, dx]
 | 日期 | 任务 | 结果 | 备注 |
 |---|---|---|---|
 | 2026-02-14 | T-2026-02-14-bootstrap | 待验证 | 本次共写 13 份 README + 5 份模板 |
+| 2026-09-23 | T-2026-09-23-create-management-role | **成立** | 主动应用：创建 R-002 时交付 31 文件，每个目录均附写入规则 README；R-002 契约因此无歧义可开工 |
 
 ## 待验证 (To Verify)
-需在创建**下一个真实角色**时验证：若只给目录不给 README，是否真的会出现填错/空转。若新角色在 README 齐备下仍填错 -> 本经验不成立，改判"README 不足够"。
+**2026-09-23 判定：不晋升，保留 candidate。** 晋升还差：① `evidence_count` 需 ≥3（现 2）；② 需 ≥1 次**独立确认**（另一方角色或审计），当前全部证据同源（均为 framework_admin 自产）。
+
+待观察的反例条件：若未来某角色在 README 齐备的情况下仍然填错或空转 -> 本经验不成立，改判"README 不足够，需连带样例与首任务示范"。
+值得注意的次生观察：本轮 31 个手工创建的文件逐项核对耗时明显，说明"规则齐备"解决了"填错"，但没解决"填漏"——那是 G2（骨架生成脚本）要解决的问题，不要混为一谈。
 
 ## 应用方式 (How to apply)
 创建新角色时，把"七目录 + 各自 README + 模板链接"作为一次性交付单元，不拆开。
