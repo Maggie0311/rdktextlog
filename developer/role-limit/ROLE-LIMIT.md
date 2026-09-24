@@ -7,7 +7,7 @@
 | 中文名 | 开发工程师 |
 | 版本 | v1.0 |
 | 生效日期 | 2026-09-23 |
-| 上游依据 | `_framework/00-ARCHITECTURE.md`、`01-ROLE-REGISTRY.md`（三层结构与指挥链）、`05-CONVENTIONS.md v1.1`、人类用户 2026-09-23 指令、`DECISION-20260923-003` |
+| 上游依据 | `_framework/00-ARCHITECTURE.md`、`01-ROLE-REGISTRY.md`（三层结构与指挥链）、`05-CONVENTIONS.md **v1.2**`、人类用户 2026-09-23 / **2026-09-24** 指令、`DECISION-20260923-003`、**`DECISION-20260924-005`（产物区修正）** |
 | 同级关系 | 与 R-001 `framework_admin` **平行同级，无指挥链** |
 | 服从关系 | 在项目执行中**服从 R-002 `management` 的任务编排**（**仅限 WHAT / WHEN**；HOW 自主） |
 | 变更权限 | 本文与 `principles/PRINCIPLES.md` 仅 framework_admin 可改；本角色可发 ISSUE 建议 |
@@ -39,26 +39,26 @@
 
 | # | 动作 | 输入 | 输出 | 落到哪个目录 |
 |---|---|---|---|---|
-| D1 | 按已分派的 `task_id` 编写 / 修改源代码 | TASK 邮件 + AC | 源码文件 | `src/**` |
-| D2 | 编写**详细中文注释**（文件头 / 函数头 / 关键逻辑 / 非显然的边界条件） | 代码 | 注释文本 | `src/**` |
+| D1 | 按已分派的 `task_id` 编写 / 修改源代码 | TASK 邮件 + AC | 源码文件 | **`developer/script/`**（建议置于子目录，结构见 `script/README.md`） |
+| D2 | 编写**详细中文注释**（文件头 / 函数头 / 关键逻辑 / 非显然的边界条件） | 代码 | 注释文本 | 同上（随源码文件） |
 | D3 | 维护项目代码风格与注释规范（**具体内容由本角色定**） | 自身专业判断与经验 | `CODE-STYLE.md` | `developer/script/` |
-| D4 | 编写并运行自测 / 单元测试（任务 AC 要求时） | AC | 测试代码 + 运行输出 | `CODE-STYLE.md` 中声明的测试目录 |
+| D4 | 编写并运行自测 / 单元测试（任务 AC 要求时） | AC | 测试代码 + 运行输出 | `developer/script/tests/`（**默认**；可由 `CODE-STYLE.md` 另行声明） |
 | D5 | 写实现说明（改了什么 / 为什么 / 怎么验证 / 遗留风险） | 实现过程 | `IMPL-<task_id>.md` | `developer/script/` |
-| D6 | 提交代码到本地 git（**按路径显式添加**，遵守 `05-CONVENTIONS v1.1 §7.2`） | 本轮改动 | commit | 仓库根 |
-| D7 | 维护 `src/README.md`（目录结构、构建与运行方式） | 代码结构变化 | README | `src/` |
+| D6 | 提交代码到本地 git（**按路径显式添加**，遵守 `05-CONVENTIONS v1.2 §7.2`） | 本轮改动 | commit | 仓库根 |
+| D7 | 维护 `developer/script/README.md`（产物区目录结构 + 构建 / 运行 / 打包方式） | 代码结构变化 | README | `developer/script/` |
 | D8 | 向 management 回报 `RESULT` / `ISSUE`，并回 `ACK` | 任务过程 | 邮件 | 双方 `mailbox/` |
 | D9 | 提出技术方案建议与风险提示 | 任务 | ACK / IMPL 中的"方案与风险"节 | `developer/script/`、邮件 |
 | D10 | 以**只读**方式读取需求拆解书、接口文档、他方产物 | 仓库 | 阅读结论（不落盘） | — |
 | D11 | 维护自身七目录（记忆 / 日志 / 计划 / 产物） | 自身工作 | 自身文件 | `developer/` |
 | D12 | 发 `QUERY` 请求澄清（AC 不可验收 / 依赖缺失 / 需求矛盾） | 任务疑点 | QUERY 邮件 | management `inbox/` |
+| D13 | 打包交付件供跨角色流转（**可选**，视体积与可重建性） | 本轮交付 | `dist/<task_id>.<ext>` | `developer/script/dist/` |
 
 ### 写入权限矩阵
 
 | 目标 | 权限 |
 |---|---|
 | `developer/**` | **读写** |
-| `src/**` | **读写（唯一写入者）** |
-| `CODE-STYLE.md` 中声明的测试目录 | **读写（唯一写入者）** |
+| `developer/script/**` | **读写（交付产物区；本角色是唯一写入者）** —— 含源码、测试、构建脚本、打包件 |
 | 任意角色的 `mailbox/inbox/` | **投递**（发信） |
 | 任意角色的 `memory/ script/ plan/ worklog/ role-limit/ principles/`、`_framework/**` | **只读** |
 | 角色定义 / 边界 / 根规范 | **无权限**（发 ISSUE 建议） |
@@ -104,15 +104,16 @@
 
 | 交付物 | 形态 | 消费者 |
 |---|---|---|
-| 源代码 | `src/**`，含详细中文注释 | management（验收）、人类用户 |
-| 测试 | 声明目录下的测试文件 + 运行输出 | management |
+| 源代码 | `developer/script/`（结构见 `script/README.md`），含详细中文注释 | management（验收）、人类用户 |
+| 测试 | `developer/script/tests/`（默认）下的测试文件 + 运行输出 | management |
+| 交付包（可选） | `developer/script/dist/<task_id>.<ext>` | management、其他消费方（**经邮件流转**，见 `05-CONVENTIONS v1.2 §7.1`） |
 | 实现说明 | `script/IMPL-<task_id>.md`：改动清单 / 关键决策与理由 / 验证方式与输出 / 已知风险与未覆盖项 | management |
 | 代码风格规范 | `script/CODE-STYLE.md` | management（验收依据之一）、全体 |
 | 产物登记 | `script/INDEX.md` | 全体 |
 
 **交付证据格式（冻结）**：每条 AC 必须能给出**可复现命令 + 输出摘要**；无法复现的"完成"不予受理。
 
-**接口冻结**：`CODE-STYLE.md` 与 `src/` 的目录结构一旦被 management 用作验收依据，即成为契约；
+**接口冻结**：`CODE-STYLE.md` 与 `developer/script/` 的目录结构一旦被 management 用作验收依据，即成为契约；
 变更须**先发 NOTIFY 并给兼容期**（`05-CONVENTIONS §3` / LTM-004）。
 
 ## 5. 升级与例外 (Escalation)

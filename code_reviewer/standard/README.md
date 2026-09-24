@@ -20,7 +20,7 @@
 | 优先级 | 来源 | 说明 |
 |---|---|---|
 | **1（最高）** | `standard/user/USER-*.md` | **人类用户直接写入的检查要求**。code_reviewer **不得删改**，只能发 ISSUE 建议 |
-| 2 | 项目契约：`src/` 相关 AC、`developer/script/CODE-STYLE.md` | 由 management / developer 制定 |
+| 2 | 项目契约：`developer/script/` 相关 AC、`developer/script/CODE-STYLE.md` | 由 management / developer 制定 |
 | 3 | 本目录的 `CHECKLIST-*.md` 与 `SEVERITY.md` | code_reviewer 专业判断 |
 | 4 | `_framework/` 根规范中的强制约定 | 例如提交隔离、注释语言 |
 

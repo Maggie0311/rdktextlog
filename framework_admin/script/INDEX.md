@@ -24,6 +24,8 @@
 | 18 | R-004 角色契约与实例（46 文件，含 `standard/` 10 文件） | `code_reviewer/role-limit/ROLE-LIMIT.md`、`code_reviewer/principles/PRINCIPLES.md`、`code_reviewer/standard/` 等 | 契约 + 实例 + 标准 | v1.0 | 2026-09-23 | 自审通过（**标准质量待真实审查验证**） | code_reviewer、developer、全体 |
 | 19 | 审查标准区与用户自定义标准接口 | `code_reviewer/standard/`（GEN / C / PY 清单、SEVERITY、REPORT-TEMPLATE、`user/`） | 标准 | v1.0 | 2026-09-23 | 自审通过（清单条目尚未被真实代码检验） | developer、人类用户 |
 | 20 | 裁定记录：R-004 采纳 + 审查门 + 权力轴 + G6 | `_framework/decisions/DECISION-20260923-004-code-reviewer-role-adopted.md` | 裁决 | v1.0 | 2026-09-23 | — | 全体角色、人类用户 |
+| 21 | **根规范 v1.2：废止 `src/`，交付产物回归各角色 `script/`** | `_framework/05-CONVENTIONS.md` | 规范 | **v1.2** | 2026-09-24 | 自审通过（全仓复扫无残留规定） | 全体角色 |
+| 22 | 裁定记录：产物区修正 + 交付流转方式 + 残留风险 | `_framework/decisions/DECISION-20260924-005-artifact-area-fix.md` | 裁决 | v1.0 | 2026-09-24 | — | 全体角色、人类用户 |
 
 > **诚实声明（2026-09-23 二次修订）**：第 1–8 项仍为"未验证"（设计期产出，依据 LTM-006 封顶 0.85）；
 > 第 9 项已获 2 次真实创建验证（R-002、R-003，均逐项核对无缺项）；第 10–16 项为本轮及上轮新增，尚待真实项目闭环验证。

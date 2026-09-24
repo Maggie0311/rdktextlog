@@ -36,6 +36,6 @@
 
 ## 待办（记忆层面）
 
-- [ ] 上岗后：完成 WELCOME 首个任务（读规范 + 建 `CODE-STYLE.md` 初版 + `src/` 说明），并写 STM-001
+- [ ] 上岗后：完成 WELCOME 首个任务（读规范 + 建 `CODE-STYLE.md` 初版 + `script/README.md` 产物区说明），并写 STM-001
 - [ ] 第一个编码任务完成后：复核 LTM-005（风格一致性）与 LTM-007（提交隔离）是否获真实支持证据
 - [ ] 每次用到某条 LTM 时更新其 `last_used`（再巩固）

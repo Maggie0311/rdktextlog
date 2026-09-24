@@ -9,6 +9,10 @@
 | 依据条款 | `_framework/00-ARCHITECTURE.md §6`、`01-ROLE-REGISTRY.md`（正交性自检）、`04-ROLE-CONTRACT-TEMPLATE.md`、`framework_admin/principles/PRINCIPLES.md` P1–P5 / P7 / P10 |
 | 争议双方 | 无（新增角色 + 主动发现的跨角色隐患，属架构决定与预防性仲裁） |
 
+> ⚠️ **状态指引（2026-09-24 追加，非改写原结论）**：本文 **§2.4「确立 `src/` 为项目源码产物区」已被
+> `DECISION-20260924-005` 废止**——交付产物回归各角色自己的 `script/`。
+> 本文其余裁定（指挥链范围、裁定表、缺口登记、只读声明范围）**仍然有效**。
+
 ## 1. 事实 (Facts)
 1. 现有角色：R-001 `framework_admin`（治理层）、R-002 `management`（执行层·调度）。**无任何执行层·生产者角色**（缺口 G4）。
 2. 用户要求新增 R-003 `developer`：与 R-001 平行同级，**服从 R-002 统领**，职责为编写软件代码；

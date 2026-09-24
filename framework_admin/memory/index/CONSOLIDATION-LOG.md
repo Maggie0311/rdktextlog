@@ -27,6 +27,8 @@
 | 2026-09-23 | reinforce | STM-005 | **第 2 次证据（跨任务复现）**，同时暴露需扩展：面对判断型角色时轴应换成 PROCESS vs VERDICT。0.35 -> 0.45 | T-2026-09-23-create-code-reviewer-role | framework_admin |
 | 2026-09-23 | new-stm | STM-006 | 本轮新观察：判断型角色的独立性必须落在结论生成环节，且改变结论的唯一合法输入是证据 | T-2026-09-23-create-code-reviewer-role | framework_admin |
 | 2026-09-23 | reject-promotion | STM-001 | 第 3 次晋升判定：证据充分（4 条 / 3 任务），但置信度 0.65 < 0.75 且**仍缺独立确认**。维持 candidate，缺口已收窄为两项 | T-2026-09-23-create-code-reviewer-role | framework_admin |
+| 2026-09-24 | new-stm | STM-007 | **踩坑并复盘**（记忆模型 §4.1 第 2 条，confidence 0.40 / salience high）：我在角色目录之外自设 `src/` 产物区，与 `00-ARCHITECTURE §2` 对 `script/` 的定义相矛盾，由委托层指出并废止 | T-2026-09-24-fix-artifact-area | framework_admin |
+| 2026-09-24 | invalidate | （设计结论） | 受 `DECISION-20260924-005` 影响：本角色名下**不再存在**任何以 `src/` 为前提的设计结论；相关表述已在规范与角色文本中清除，历史件保留但交叉引用替代件 | T-2026-09-24-fix-artifact-area | framework_admin |
 
 ## 待处理晋升候选
 
