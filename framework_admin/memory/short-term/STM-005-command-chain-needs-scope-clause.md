@@ -3,11 +3,11 @@ id: STM-005
 title: 引入指挥链时，必须把"服从范围"写成可判定的边界（WHAT/WHEN 服从 vs HOW 自主），否则专家角色不是退化为传声筒，就是以"同级"为由拒活
 layer: short-term
 status: candidate
-confidence: 0.35
-evidence_count: 1
-success_count: 0
+confidence: 0.45
+evidence_count: 2
+success_count: 1
 failure_count: 0
-source_tasks: [T-2026-09-23-create-developer-role]
+source_tasks: [T-2026-09-23-create-developer-role, T-2026-09-23-create-code-reviewer-role]
 first_seen: 2026-09-23
 last_used: 2026-09-23
 last_reviewed: 2026-09-23
@@ -34,11 +34,21 @@ tags: [boundary, authority, design-method]
 ## 证据 (Evidence)
 | 日期 | 任务 | 结果 | 备注 |
 |---|---|---|---|
-| 2026-09-23 | T-2026-09-23-create-developer-role | 待验证 | 裁定见 `DECISION-20260923-003 §2.3`，已作为**约束性结论**向 management 发 NOTIFY |
+| 2026-09-23 | T-2026-09-23-create-developer-role | 成立 | 裁定见 `DECISION-20260923-003 §2.3`，已作为**约束性结论**向 management 发 NOTIFY |
+| 2026-09-23 | T-2026-09-23-create-code-reviewer-role | **成立（跨任务复现）** | 第二种含服从关系的角色：服从"审什么、何时审"，不服从"审出什么结论"。**本法需要一次扩展**：面对校验型角色时，仅分 WHAT/WHEN 与 HOW 不够，还须分离 **PROCESS（服从）与 VERDICT（不服从）** |
 
 ## 待验证 (To Verify)
-需在出现**第二次含服从关系的角色创建**时验证（例如未来的"测试者听 developer 的技术安排但听 management 的分派"这类混合关系）。
-若"WHAT/WHEN vs HOW"这一对轴仍能消解冲突 -> 可考虑晋升；若出现第三条轴（例如"何时升级给用户"也产生服从争议）-> 需扩展为三轴模型。
+**2026-09-23（第 2 次）：跨任务复现成立，置信度 0.35 -> 0.45。** 第二次场景是**校验型角色**（`code_reviewer`），
+其服从关系比 `developer` 更微妙：服从"审什么、何时审"，但**不服从"审出什么结论"**。
+"WHAT/WHEN vs HOW"这一对轴无法直接覆盖它——本轮实际使用的是**扩展形式**：
+**PROCESS（流程：审什么/何时审 —— 服从） vs VERDICT（结论：审出什么 —— 不服从）**。
+
+因此本经验的表述应修正为：**服从范围必须按"角色产出物的性质"来切**——
+产出"交付物"的角色，切在 WHAT/WHEN 与 HOW 之间；产出"判断"的角色，切在 PROCESS 与 VERDICT 之间。
+（见新增的 `STM-006`。）
+
+仍需验证：① 出现**第三种**产出性质（例如"裁定/仲裁"型）时，是否还能找到对应的切分轴；
+② 反面——服从范围写得太细是否导致协作僵化。晋升还差：`evidence_count` 需 ≥3（现 2）+ ≥1 次独立确认。
 
 反面待验证：是否存在"服从范围写得过细"导致协作僵化（每次都要引条款）的情况。
 

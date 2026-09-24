@@ -3,11 +3,11 @@ id: STM-001
 title: 七目录骨架必须连同"逐目录写入规则"一起交付，否则角色不知道怎么填
 layer: short-term
 status: candidate
-confidence: 0.55
-evidence_count: 3
-success_count: 2
+confidence: 0.65
+evidence_count: 4
+success_count: 3
 failure_count: 0
-source_tasks: [T-2026-02-14-bootstrap, T-2026-09-23-create-management-role, T-2026-09-23-create-developer-role]
+source_tasks: [T-2026-02-14-bootstrap, T-2026-09-23-create-management-role, T-2026-09-23-create-developer-role, T-2026-09-23-create-code-reviewer-role]
 first_seen: 2026-02-14
 last_used: 2026-09-23
 last_reviewed: 2026-09-23
@@ -29,9 +29,11 @@ tags: [structure, dx]
 | 2026-02-14 | T-2026-02-14-bootstrap | 待验证 | 本次共写 13 份 README + 5 份模板 |
 | 2026-09-23 | T-2026-09-23-create-management-role | **成立** | 主动应用：创建 R-002 时交付 31 文件，每个目录均附写入规则 README；R-002 契约因此无歧义可开工 |
 | 2026-09-23 | T-2026-09-23-create-developer-role | **成立** | 主动应用：创建 R-003 时交付 34 文件；跨任务复现，规格逐项核对无缺项 |
+| 2026-09-23 | T-2026-09-23-create-code-reviewer-role | **成立** | 主动应用：创建 R-004 时交付 46 文件（含 10 份标准）；本案为**最严苛的一次**——标准区若无写入规则，使用者（developer）会照着空目录猜 |
 
 ## 待验证 (To Verify)
-**2026-09-23（第 2 次判定）：仍不晋升。** `evidence_count` 已达 3 且跨 2 个任务（条件 1、2、3 满足），
+**2026-09-23（第 3 次判定）：仍不晋升。** `evidence_count` 已达 4、跨 3 个任务、3 次主动应用成功（条件 1、2、3 充分满足），
+置信度 0.65（仍低于晋升所需的 0.75 门槛），
 **唯一缺口是条件 4：需 ≥1 次被另一方角色或审计的独立确认**——当前全部证据同源（均为 framework_admin 自产），
 按 P12"防单源偏差"，自产证据再多也不能替代一次外部确认。
 

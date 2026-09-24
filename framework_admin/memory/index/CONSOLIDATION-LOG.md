@@ -22,10 +22,15 @@
 | 2026-09-23 | reinforce | STM-004 | **跨任务复现成立**：7 项冲突面（含新增的"决定怎么写"）靠分层消解。0.35 -> 0.45。同时暴露适用前提：存在指挥关系时须再分 WHAT/WHEN 与 HOW | T-2026-09-23-create-developer-role | framework_admin |
 | 2026-09-23 | new-stm | STM-005 | 本轮新观察：引入指挥链时必须写明可判定的服从范围，否则专家角色会退化为传声筒或以"同级"为由拒活 | T-2026-09-23-create-developer-role | framework_admin |
 | 2026-09-23 | reject-promotion | STM-001 / STM-004 | 晋升判定：证据数与跨任务数已达标，但**均缺 §4.3 条件 4 的独立确认**（全部证据同源，本角色自产）。维持 candidate | T-2026-09-23-create-developer-role | framework_admin |
+| 2026-09-23 | reinforce | STM-001 | 创建 R-004 时**第 4 次应用成功**（3 任务 / 4 证据）：46 文件骨架 + 10 份标准连同写入规则交付。0.55 -> 0.65 | T-2026-09-23-create-code-reviewer-role | framework_admin |
+| 2026-09-23 | reinforce | STM-004 | **第 3 次跨任务复现**：审查权与验收权按"回答什么问题"分层切开。0.45 -> 0.55 | T-2026-09-23-create-code-reviewer-role | framework_admin |
+| 2026-09-23 | reinforce | STM-005 | **第 2 次证据（跨任务复现）**，同时暴露需扩展：面对判断型角色时轴应换成 PROCESS vs VERDICT。0.35 -> 0.45 | T-2026-09-23-create-code-reviewer-role | framework_admin |
+| 2026-09-23 | new-stm | STM-006 | 本轮新观察：判断型角色的独立性必须落在结论生成环节，且改变结论的唯一合法输入是证据 | T-2026-09-23-create-code-reviewer-role | framework_admin |
+| 2026-09-23 | reject-promotion | STM-001 | 第 3 次晋升判定：证据充分（4 条 / 3 任务），但置信度 0.65 < 0.75 且**仍缺独立确认**。维持 candidate，缺口已收窄为两项 | T-2026-09-23-create-code-reviewer-role | framework_admin |
 
 ## 待处理晋升候选
 
-无。当前 5 条短时记忆置信度均 < 0.75（最高为 STM-001 的 0.55）。**STM-001 已满足条件 1、2、3**（证据 3 条 / 跨 2 任务 / 含主动应用成功），**唯一缺口是条件 4 的独立确认**；STM-004 同样缺独立确认。按 P12，自产证据不可替代外部确认，故不晋升。
+无。当前 6 条短时记忆置信度均 < 0.75（最高为 STM-001 的 0.65）。**STM-001 已充分满足条件 1、2、3**（证据 4 条 / 跨 3 任务 / 3 次主动应用成功），**缺口已收窄为两项**：置信度仍差 0.10，以及条件 4 的独立确认。按 P12，自产证据不可替代外部确认，故不晋升。
 
 ## 说明
 
