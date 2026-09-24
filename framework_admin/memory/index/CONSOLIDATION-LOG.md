@@ -18,10 +18,14 @@
 | 2026-09-23 | reinforce | STM-001 | 在创建 R-002 时**主动应用并成功**（第 2 次证据）：31 文件骨架连同逐目录写入规则一次性交付 | T-2026-09-23-create-management-role | framework_admin |
 | 2026-09-23 | reject-promotion | STM-001 | 晋升判定：`evidence_count=2 < 3` 且无独立确认，不满足 §4.3 条件 2 与条件 4 | T-2026-09-23-create-management-role | framework_admin |
 | 2026-09-23 | new-stm | STM-004 | 本轮新观察：相邻角色的边界必须按"层"切分而非"级别"切分（6 项冲突面靠层切分全部裁定） | T-2026-09-23-create-management-role | framework_admin |
+| 2026-09-23 | reinforce | STM-001 | 创建 R-003 时**第 3 次应用成功**（跨 2 个任务）：34 文件骨架连同写入规则交付，规格逐项核对无缺项。0.45 -> 0.55 | T-2026-09-23-create-developer-role | framework_admin |
+| 2026-09-23 | reinforce | STM-004 | **跨任务复现成立**：7 项冲突面（含新增的"决定怎么写"）靠分层消解。0.35 -> 0.45。同时暴露适用前提：存在指挥关系时须再分 WHAT/WHEN 与 HOW | T-2026-09-23-create-developer-role | framework_admin |
+| 2026-09-23 | new-stm | STM-005 | 本轮新观察：引入指挥链时必须写明可判定的服从范围，否则专家角色会退化为传声筒或以"同级"为由拒活 | T-2026-09-23-create-developer-role | framework_admin |
+| 2026-09-23 | reject-promotion | STM-001 / STM-004 | 晋升判定：证据数与跨任务数已达标，但**均缺 §4.3 条件 4 的独立确认**（全部证据同源，本角色自产）。维持 candidate | T-2026-09-23-create-developer-role | framework_admin |
 
 ## 待处理晋升候选
 
-无。当前 4 条短时记忆置信度均 < 0.75（最高为 STM-001 的 0.45），不满足晋升条件；STM-001 已具备跨任务证据但缺 1 次独立确认。
+无。当前 5 条短时记忆置信度均 < 0.75（最高为 STM-001 的 0.55）。**STM-001 已满足条件 1、2、3**（证据 3 条 / 跨 2 任务 / 含主动应用成功），**唯一缺口是条件 4 的独立确认**；STM-004 同样缺独立确认。按 P12，自产证据不可替代外部确认，故不晋升。
 
 ## 说明
 
