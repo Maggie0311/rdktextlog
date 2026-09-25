@@ -26,7 +26,10 @@
 | 20 | 裁定记录：R-004 采纳 + 审查门 + 权力轴 + G6 | `_framework/decisions/DECISION-20260923-004-code-reviewer-role-adopted.md` | 裁决 | v1.0 | 2026-09-23 | — | 全体角色、人类用户 |
 | 21 | **根规范 v1.2：废止 `src/`，交付产物回归各角色 `script/`** | `_framework/05-CONVENTIONS.md` | 规范 | **v1.2** | 2026-09-24 | 自审通过（全仓复扫无残留规定） | 全体角色 |
 | 22 | 裁定记录：产物区修正 + 交付流转方式 + 残留风险 | `_framework/decisions/DECISION-20260924-005-artifact-area-fix.md` | 裁决 | v1.0 | 2026-09-24 | — | 全体角色、人类用户 |
-| 23 | **根规范 v1.2：§2.1 角色自足原则（无公共工作空间）** | `_framework/00-ARCHITECTURE.md` | 规范 | **v1.2** | 2026-09-25 | 自审通过（全仓自足性核查：0 个多主区） | 全体角色 |
+| 23 | 根规范 v1.2：§2.1 角色自足原则（无公共工作空间） | `_framework/00-ARCHITECTURE.md` | 规范 | v1.2 | 2026-09-25 | 自审通过（全仓自足性核查：0 个多主区） | 全体角色 |
+| 24 | **根规范 v1.3：§7 新增违规码 V8 伪造证据** | `_framework/00-ARCHITECTURE.md` | 规范 | **v1.3** | 2026-09-25 | 自审通过（尚无适用对象） | 全体角色 |
+| 25 | R-005 角色契约与实例（37 文件） | `software_tester/role-limit/ROLE-LIMIT.md`、`principles/`、`script/ENVIRONMENTS.md` 等 | 契约 + 实例 | v1.0 | 2026-09-25 | 自审通过（**能力待实测**，见 G7） | software_tester、全体 |
+| 26 | 裁定记录：R-005 采纳 + 两通道分离 + 适配判定表 + G7 | `_framework/decisions/DECISION-20260925-006-software-tester-role-adopted.md` | 裁决 | v1.0 | 2026-09-25 | — | 全体角色、人类用户 |
 
 > **诚实声明（2026-09-23 二次修订）**：第 1–8 项仍为"未验证"（设计期产出，依据 LTM-006 封顶 0.85）；
 > 第 9 项已获 2 次真实创建验证（R-002、R-003，均逐项核对无缺项）；第 10–16 项为本轮及上轮新增，尚待真实项目闭环验证。
