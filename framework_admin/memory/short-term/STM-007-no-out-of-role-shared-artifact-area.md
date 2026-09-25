@@ -3,14 +3,14 @@ id: STM-007
 title: 在角色目录之外新设"共享产物区"之前，先检查框架自身的目录定义是否已经覆盖它
 layer: short-term
 status: candidate
-confidence: 0.40
-evidence_count: 1
-success_count: 0
+confidence: 0.55
+evidence_count: 2
+success_count: 1
 failure_count: 1
-source_tasks: [T-2026-09-24-fix-artifact-area]
+source_tasks: [T-2026-09-24-fix-artifact-area, T-2026-09-25-elevate-self-sufficiency]
 first_seen: 2026-09-24
-last_used: 2026-09-24
-last_reviewed: 2026-09-24
+last_used: 2026-09-25
+last_reviewed: 2026-09-25
 salience: high
 decay_rate: 0.025
 promoted_to: none
@@ -38,6 +38,13 @@ tags: [architecture, self-correction, design-method]
 | 日期 | 任务 | 结果 | 备注 |
 |---|---|---|---|
 | 2026-09-24 | T-2026-09-24-fix-artifact-area | 成立（教训） | `src/` 从未创建；40 处引用；委托层指出；废止依据 `DECISION-20260924-005` |
+| 2026-09-25 | T-2026-09-25-elevate-self-sufficiency | **成立（委托层确认为一般原则）** | 委托层明确：角色没有公共工作空间，产物各自存储、经邮件流转。已写入根规范 `00-ARCHITECTURE v1.2 §2.1`，并由该强制约束生成 `LTM-007`（innate）。**+0.15 独立确认** |
+
+## 状态说明（2026-09-25）
+本条所提炼的经验已被**委托层确立为一般原则**并写入根规范（`00-ARCHITECTURE v1.2 §2.1`），
+并由该强制约束生成了 `LTM-007`（innate，confidence 1.00）。
+**本条作为该原则的"来源"保留**（可追溯"原则从哪次事故来"），不按记忆模型 §4.3 的晋升条件处理——
+它现在是**规则**，不再是候选经验。其表述也已从"**先检查是否已被覆盖**"强化为"**一律不得设立**"。
 
 ## 待验证 (To Verify)
 下次（包括我自己）提出"新增一个顶层共享目录 / 区域"时，验证这套三问是否真的阻止了重复建设。

@@ -13,8 +13,9 @@
 | LTM-004 | 接口即契约，变更须先 NOTIFY 并给兼容期 | active | 0.85 | 2 | medium | 2026-02-14 | `long-term/LTM-004-interface-freeze.md` |
 | LTM-005 | 记忆分层是状态而非等级，未验证经验不得入长期 | active | 1.00 | 3 | high | 2026-02-14 | `long-term/LTM-005-memory-is-state-not-rank.md` |
 | LTM-006 | 框架初始发布只算 1 个证据源，置信度封顶 0.85 | active | 0.80 | 2 | high | 2026-02-14 | `long-term/LTM-006-bootstrap-confidence.md` |
+| **LTM-007** | **角色没有公共工作空间：每块区域有且仅有一个写入者，跨角色流转只经邮箱** | active | 1.00 | 3 | high | 2026-09-25 | `long-term/LTM-007-no-shared-workspace.md` |
 
-**统计**：active 6 条；candidate 0；dormant 0；deprecated 0。
+**统计**：active 7 条；candidate 0；dormant 0；deprecated 0。（LTM-007 为委托层确立的原则，依据根规范 `00-ARCHITECTURE v1.2 §2.1`，以 innate 注入）
 
 ## 短期记忆 (short-term) — 容量上限 12
 
@@ -26,13 +27,13 @@
 | STM-004 | 相邻角色的边界必须按"层"切分，不能按"级别"切分 | candidate | 0.55 | 3 | 2026-09-23 | 3 次跨任务复现；审查权与验收权的分层再次生效；仍差独立确认 |
 | STM-005 | 指挥链必须写明可判定的服从范围（WHAT/WHEN 服从 vs HOW 自主） | candidate | 0.45 | 2 | 2026-09-23 | **跨任务复现并暴露需扩展**：面对判断型角色时，轴应换成 PROCESS vs VERDICT（见 STM-006）；仍需 1 次证据 + 独立确认 |
 | STM-006 | 判断型角色的服从边界须切在 PROCESS（服从）与 VERDICT（不服从）之间 | candidate | 0.35 | 1 | 2026-09-23 | 需出现第二个产出判断的角色时验证；反面待验证：独立性过强导致拒绝范围与时效约束 |
-| STM-007 | 角色目录之外不得新设共享产物区；先查框架自身的目录定义是否已覆盖 | candidate | 0.40 | 1 | 2026-09-24 | **踩坑并复盘**（委托层指出）；待下次出现"新增共享目录"提案时验证三问法 |
+| STM-007 | 角色目录之外不得新设共享产物区（**已上升为原则，见 LTM-007**） | candidate | 0.55 | 2 | 2026-09-25 | 已由委托层确认为一般原则并写入根规范，**不再按 §4.3 晋升**；本条作为该原则的来源保留 |
 
 **统计**：7 / 12 条，剩余容量 5。
 
 ## 读取建议
 
-1. 默认依据：`status: active` 且 `confidence >= 0.60`（当前为 LTM-001~006 全部）。
+1. 默认依据：`status: active` 且 `confidence >= 0.60`（当前为 LTM-001~007 全部）。**其中 LTM-007 是设计任何新角色、新目录前必查的一条。**
 2. 仅作提示、需重新验证：所有 STM 条目与 `candidate` 状态条目。
 3. LTM-004 虽为 active，但证据仅来自设计期，**应用于真实接口变更后必须复核**。
 
