@@ -22,7 +22,7 @@
 | **1（最高）** | `standard/user/USER-*.md` | **人类用户直接写入的检查要求**。code_reviewer **不得删改**，只能发 ISSUE 建议 |
 | 2 | 项目契约：`developer/script/` 相关 AC、`developer/script/CODE-STYLE.md` | 由 management / developer 制定 |
 | 3 | 本目录的 `CHECKLIST-*.md` 与 `SEVERITY.md` | code_reviewer 专业判断 |
-| 4 | `_framework/` 根规范中的强制约定 | 例如提交隔离、注释语言 |
+| 4 | 框架级强制约定（**已内联于本角色契约**） | 例如提交隔离、注释语言 |
 
 > 用户标准若与项目契约冲突，**以用户标准为准**，同时由 code_reviewer 发 ISSUE 给 framework_admin 记入 DECISION。
 
@@ -36,5 +36,5 @@
 ## 4. 变更规则
 
 - 任何清单条目的增删改：记入 `VERSION-LOG.md`（只追加）+ 更新本目录文件版本 + 发 `NOTIFY` 给 `developer` 与 `management`。
-- `standard/` 一经被 `developer` 用作自查依据即成为**契约**，变更须给兼容期（`05-CONVENTIONS §3`）。
+- `standard/` 一经被 `developer` 用作自查依据即成为**契约**，变更须**先发 NOTIFY、给出兼容期、并升版本号**。
 - `user/` **不受本规则约束**：用户可随时增删自己的标准，立即生效，无需通知（这是接口的设计目的）。

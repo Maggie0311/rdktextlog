@@ -11,7 +11,7 @@
 | 2026-09-23 | innate | LTM-004 | 来自用户"详细中文注释"的硬需求与 DN8 | 用户指令 + 规范条款 | framework_admin |
 | 2026-09-23 | innate | LTM-005 | 来自用户"代码风格规范"的硬需求与 D3 | 用户指令 + 规范条款 | framework_admin |
 | 2026-09-23 | innate | LTM-006 | 来自 DN5 与 DP2 | 规范条款 | framework_admin |
-| 2026-09-23 | innate | LTM-007 | 来自 `05-CONVENTIONS.md v1.1 §7.2` | 根规范条款 | framework_admin |
+| 2026-09-23 | innate | LTM-007 | 来自本角色契约的强制约束（framework_admin 签发） | 契约条款 | framework_admin |
 | 2026-09-23 | innate | LTM-008 | 来自用户"精通 C / Python 及其他语言"的能力声明要求 | 用户指令 | framework_admin |
 
 ## 待处理晋升候选

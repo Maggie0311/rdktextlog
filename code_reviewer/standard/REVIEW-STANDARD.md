@@ -1,6 +1,6 @@
 # REVIEW-STANDARD — 审查总纲（v1.0）
 
-> 所有者: `code_reviewer` (R-004) · 依据: `_framework/00-ARCHITECTURE.md v1.1 §4.1`、`code_reviewer/role-limit/ROLE-LIMIT.md`
+> 所有者: `code_reviewer` (R-004) · 依据: 本角色 `role-limit/ROLE-LIMIT.md`（§0 权力轴、§2.1 审查门）· 溯源: framework_admin 的 `DECISION-20260923-004`
 
 ## 1. 审查流程（7 步，不得跳步）
 
@@ -44,7 +44,7 @@
 | 角色 | 依赖内容 |
 |---|---|
 | `developer` | 清单条目编号（用作自查与整改依据）、`SEVERITY.md` 门槛 |
-| `management` | 审查结论（作为验收前置，见架构 §4.1） |
+| `management` | 审查结论（作为其验收前置；其自身一侧的规则写在其契约内） |
 | 人类用户 | `user/` 接口（写入即生效） |
 | `framework_admin` | 标准变更须发 NOTIFY；标准缺陷可发 ISSUE 修订 |
 

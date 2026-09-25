@@ -18,7 +18,7 @@ tags: [repository, innate, collaboration]
 ---
 
 ## 断言 (Claim)
-仓库由多个角色共用，因此禁止 `git add -A` / `git add .`；必须按路径显式添加自己本轮改动的文件。提交前必须先 `git status`；发现他方未提交改动时**不得提交、不得回滚、不得修改**，发 NOTIFY 请其自行提交。
+仓库由多个角色共用，因此禁止 `git add -A` / `git add .`；必须按路径显式添加自己本轮改动的文件。提交前必须先 `git status`；发现他方未提交改动时**不得提交、不得回滚、不得修改**，发 NOTIFY 请其自行提交。（完整规则见本角色契约 §2.1.2。）
 
 ## 适用条件 (When it holds)
 所有 git 操作。例外：无——该条对 framework_admin 自身同样有效（立规依据正是其连续三次盲加提交）。
@@ -26,7 +26,7 @@ tags: [repository, innate, collaboration]
 ## 证据 (Evidence)
 | 日期 | 任务 | 结果 | 备注 |
 |---|---|---|---|
-| 2026-09-23 | 05-CONVENTIONS v1.1 §7.2 | 成立 | 根规范硬性条款 |
+| 2026-09-23 | 本角色契约 §2.1.2 | 成立 | 框架级强制约定 |
 | 2026-09-23 | ROLE-LIMIT DN7 | 成立 | 盲加会把他方未完成的工作卷入提交或直接丢失 |
 | 2026-09-23 | 真实事件（framework_admin WORKLOG #15/#20/#22） | 成立 | 连续三次 `git add -A`，当时仅因恰无他方未提交改动而未造成损失 |
 

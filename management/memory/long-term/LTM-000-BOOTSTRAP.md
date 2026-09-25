@@ -6,7 +6,7 @@
 
 | 来源 | 机制 | 初始置信度 | 说明 |
 |---|---|---|---|
-| **本能 (innate)** | 来自 `_framework/` 根规范或 `role-limit/ROLE-LIMIT.md` 的强制约束 | 1.00 | 非经验，是规则。依据记忆模型 §4.1 第 3 条 |
+| **本能 (innate)** | 来自本角色 `role-limit/ROLE-LIMIT.md` 的强制约束（原始出处见该文件「上游依据」行，**仅供溯源，不必阅读**) | 1.00 | 非经验，是规则。依据见 `memory/README.md` 的置信度初始值条款 |
 | **经验 (empirical)** | 由 `short-term/` 经 §4.3 五条件晋升 | 0.00 起算 | 必须有多任务、多源证据 |
 
 **禁止**：把经验伪装成本能（即给未经检验的个人判断标 `promoted_from: innate`）。这是 V5 记忆污染。
@@ -16,9 +16,9 @@
 
 | ID | 断言 | 来源条款 |
 |---|---|---|
-| LTM-001 | 编排权不含角色定义权：不能决定"谁能做什么" | 人类用户 2026-09-23 指令、`ROLE-LIMIT.md` MN1、`01-ROLE-REGISTRY.md` 层级声明 |
-| LTM-002 | 每个任务有且仅有一个主责角色，禁止双主责 | `ROLE-LIMIT.md` MN5、`00-ARCHITECTURE.md`（正交性要求） |
-| LTM-003 | 派活与协作必须落邮箱，未落邮箱即不存在 | `02-MAILBOX-PROTOCOL.md §5`、`ROLE-LIMIT.md` MN6 |
+| LTM-001 | 编排权不含角色定义权：不能决定"谁能做什么" | 人类用户 2026-09-23 指令、本角色 `ROLE-LIMIT.md` MN1 与 §0 权力轴 |
+| LTM-002 | 每个任务有且仅有一个主责角色，禁止双主责 | 本角色 `ROLE-LIMIT.md` MN5、§6 DoD（唯一主责） |
+| LTM-003 | 派活与协作必须落邮箱，未落邮箱即不存在 | 本角色 `ROLE-LIMIT.md` MN6 与 `mailbox/README.md` |
 | LTM-004 | 进度唯一真相源是 PROJECT-BOARD，口头进度不算数 | `ROLE-LIMIT.md` M4/§4、`PRINCIPLES.md` P5 |
 | LTM-005 | 需求不可静默缩减；不可逆决策必须请示人类用户 | `ROLE-LIMIT.md` MN10/MN11、`PRINCIPLES.md` P13 |
 | LTM-006 | 能力缺口只上报不自查自办；指挥不下场 | `ROLE-LIMIT.md` MN2/M12/MN13、`PRINCIPLES.md` P8/P14 |

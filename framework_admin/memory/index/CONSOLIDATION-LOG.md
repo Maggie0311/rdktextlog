@@ -35,6 +35,8 @@
 | 2026-09-25 | reject-promotion | STM-001 | **第 4 次晋升判定：仍不晋升，但已满足 4/5 条件**（置信度 0.75 达标、5 证据、跨 4 任务、4 次主动应用）。唯一缺口是条件 4 的**独立确认**——本条自 2026-02-14 起全部由本角色自产自证 | T-2026-09-25-create-software-tester-role | framework_admin |
 | 2026-09-25 | reinforce | STM-004 | **第 4 次跨任务复现**：与 R-004 邻接的新角色靠"产出物性质"（静态判断 vs 动态事实）切开。0.55 -> 0.65 | T-2026-09-25-create-software-tester-role | framework_admin |
 | 2026-09-25 | new-stm | STM-008 | 本轮新观察：**能力型角色**（能力取决于外部条件而非自身判断）必须随角色交付"能力清单骨架 + 实测首任务"，否则"未标状态"会被读成"已具备"，最终以伪造结果（V8）形式爆掉 | T-2026-09-25-create-software-tester-role | framework_admin |
+| 2026-09-26 | new-stm | STM-009 | **踩坑并复盘**（委托层指出）：我把"通用规则"以引用方式留在自己档案里，导致四角色契约不自足（151 处引用 / 义务型 32 处，审查门三方义务均未签发）。已改为逐条签发内联 | T-2026-09-26-obligation-closure | framework_admin |
+| 2026-09-26 | reject-promotion | STM-001 | 本轮为规范重构而非建角色，**不构成一次新的"骨架交付"应用**，故不为 STM-001 记证据（不硬凑，记忆模型 §5 第 5 条） | T-2026-09-26-obligation-closure | framework_admin |
 
 ## 待处理晋升候选
 

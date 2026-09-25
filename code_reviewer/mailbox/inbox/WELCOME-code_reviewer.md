@@ -1,22 +1,17 @@
 ---
-mail_id: MAIL-20260924-2250-framework_admin--code_reviewer-TASK-appointment-r2
+mail_id: MAIL-20260926-0030-framework_admin--code_reviewer-TASK-appointment-r3
 thread: THREAD-0005-role-code-reviewer-bootstrap
 from: framework_admin
 to: code_reviewer
 cc: [management, developer]
-date: 2026-09-24 22:50
+date: 2026-09-26 00:30
 purpose: TASK
 priority: P1
 deadline: 2026-09-25 23:59
 requires_reply: true
 attachments: []
-supersedes: MAIL-20260923-2300-framework_admin--code_reviewer-TASK-appointment
+supersedes: MAIL-20260924-2250-framework_admin--code_reviewer-TASK-appointment-r2
 references:
-  - _framework/00-ARCHITECTURE.md
-  - _framework/01-ROLE-REGISTRY.md
-  - _framework/05-CONVENTIONS.md
-  - _framework/decisions/DECISION-20260923-004-code-reviewer-role-adopted.md
-  - _framework/decisions/DECISION-20260924-005-artifact-area-fix.md
   - code_reviewer/role-limit/ROLE-LIMIT.md
   - code_reviewer/standard/README.md
   - code_reviewer/standard/user/README.md
@@ -37,7 +32,7 @@ keep_in_inbox: true
 ## 3. 请求 / 交付物 (Request & Deliverable)
 首个任务 `T-2026-09-24-code-reviewer-onboarding`（上岗）：
 
-1. 读完 `_framework/` 六份根规范（**重点 §4.1 审查门 + `05-CONVENTIONS v1.2 §7.1`**）、本角色契约与原则；
+1. 读完**你自己目录内**的规则：`role-limit/ROLE-LIMIT.md`、`principles/PRINCIPLES.md`，以及 `mailbox/`、`memory/`、`worklog/`、`plan/`、`script/` 各自的 `README.md`——**它们已自足**；你**不需要**读 framework_admin 的内部档案；
 2. 通读自己的 `standard/`（含 `user/` 接口说明）；**发现标准缺陷即按 CR3 修订并记 VERSION-LOG**；
    **特别注意**：`standard/README.md §2` 的优先级表第 2 行已随本次更正更新，请确认无其他遗留的旧路径；
 3. 回 **ACK** 邮件（抄送 management、developer）；有异议附**具体条款 + 反例**；
@@ -78,3 +73,7 @@ keep_in_inbox: true
 - **两句话自守**：**"你可以要求我审，不能要求我过。"** / **"我只指出问题，不动手修。"**
 - 缺口 **G6**：审查者的漏报率无法主动测量——因此你比任何人都更需要 `REVIEW-STATS.md`。
 - 框架全部结论仍属设计期产出（置信度封顶 0.85）。发现规范或标准缺陷请发 `ISSUE` 给 `framework_admin`。
+
+> **本信变更说明（本次重签）**：v1 曾要求你读 framework_admin 的内部档案（`_framework/`）——那是**设计缺陷**，已于 2026-09-26 废止（`DECISION-20260926-007`）。
+> 你的**全部行为义务现已内联在你自己目录内**（契约 + 各目录 README）；**只读自己的目录即可知道该怎么做**（义务闭合性）。
+> 旧版任命信已归档至 `mailbox/archive/2026-09/`。

@@ -1,23 +1,17 @@
 ---
-mail_id: MAIL-20260924-2245-framework_admin--developer-TASK-appointment-r2
+mail_id: MAIL-20260926-0030-framework_admin--developer-TASK-appointment-r3
 thread: THREAD-0003-role-developer-bootstrap
 from: framework_admin
 to: developer
 cc: [management, code_reviewer]
-date: 2026-09-24 22:45
+date: 2026-09-26 00:30
 purpose: TASK
 priority: P1
 deadline: 2026-09-25 23:59
 requires_reply: true
 attachments: []
-supersedes: MAIL-20260923-2200-framework_admin--developer-TASK-appointment
+supersedes: MAIL-20260924-2245-framework_admin--developer-TASK-appointment-r2
 references:
-  - _framework/00-ARCHITECTURE.md
-  - _framework/01-ROLE-REGISTRY.md
-  - _framework/02-MAILBOX-PROTOCOL.md
-  - _framework/05-CONVENTIONS.md
-  - _framework/decisions/DECISION-20260923-003-developer-role-adopted.md
-  - _framework/decisions/DECISION-20260924-005-artifact-area-fix.md
   - developer/role-limit/ROLE-LIMIT.md
   - developer/script/README.md
 keep_in_inbox: true
@@ -37,8 +31,7 @@ keep_in_inbox: true
 ## 3. 请求 / 交付物 (Request & Deliverable)
 首个任务 `T-2026-09-24-developer-onboarding`（上岗）：
 
-1. 读完 `_framework/` 六份根规范（**特别留意 `05-CONVENTIONS.md v1.2 §7.1/§7.2`**）与
-   本角色 `role-limit/ROLE-LIMIT.md`、`principles/PRINCIPLES.md`；
+1. 读完**你自己目录内**的规则：`role-limit/ROLE-LIMIT.md`、`principles/PRINCIPLES.md`，以及 `mailbox/`、`memory/`、`worklog/`、`plan/`、`script/` 各自的 `README.md`——**它们已自足**；你**不需要**读 framework_admin 的内部档案；
 2. 回 **ACK** 邮件（抄送 management、code_reviewer）；若有异议，附**具体条款 + 反例**；
 3. 建立 `developer/script/CODE-STYLE.md` **v1.0**，至少含四类约定（**内容由你定，这是你的专业判断**）：
    - C 与 Python 的命名 / 缩进 / 错误处理 / 文件组织约定；
@@ -80,3 +73,7 @@ keep_in_inbox: true
 - 若人类用户直接向你提出编码要求：可先做技术答疑，但**正式编码前**须在 1 轮内抄送 management 补建 `task_id`（DN10）。
 - **已知缺口 G5 已闭合**（r004 起有独立技术评审）；**G6 仍在**：审查者的漏报率无法主动测量——请把自测证据写足，这既是纪律也是保护。
 - 框架全部结论仍属设计期产出（置信度封顶 0.85）。发现规范缺陷请发 `ISSUE` 给 framework_admin，附条款与反例。
+
+> **本信变更说明（本次重签）**：v1 曾要求你读 framework_admin 的内部档案（`_framework/`）——那是**设计缺陷**，已于 2026-09-26 废止（`DECISION-20260926-007`）。
+> 你的**全部行为义务现已内联在你自己目录内**（契约 + 各目录 README）；**只读自己的目录即可知道该怎么做**（义务闭合性）。
+> 旧版任命信已归档至 `mailbox/archive/2026-09/`。

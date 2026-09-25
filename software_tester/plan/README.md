@@ -1,6 +1,8 @@
 # plan/ — 任务规划（PRR）
 
-每次测试开工前写一份 `PLAN-YYYYMMDD-<slug>.md`（骨架见 `_framework/templates/PLAN-TEMPLATE.md`）。
+每次测试开工前写一份 `PLAN-YYYYMMDD-<slug>.md`
+
+**计划骨架（本节即全部要求）**：表头（计划 ID / 角色 / 关联邮件 / 创建时间 / 状态）+ 九节：1 目标 / 2 约束 / 3 记忆依据 / 4 专业方法 / 5 步骤 / 6 接口与依赖 / 7 风险与回滚 / 8 验收 / 9 收工检查。。
 
 **无计划不动手**（违规 V2）。计划在 `status: done` 之前可持续更新，但要保留变更理由。
 

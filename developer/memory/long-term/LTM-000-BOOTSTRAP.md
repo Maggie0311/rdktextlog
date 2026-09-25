@@ -6,7 +6,7 @@
 
 | 来源 | 机制 | 初始置信度 | 说明 |
 |---|---|---|---|
-| **本能 (innate)** | 来自 `_framework/` 根规范或 `role-limit/ROLE-LIMIT.md` 的强制约束 | 1.00 | 非经验，是规则。依据记忆模型 §4.1 第 3 条 |
+| **本能 (innate)** | 来自本角色 `role-limit/ROLE-LIMIT.md` 的强制约束（原始出处见该文件「上游依据」行，**仅供溯源，不必阅读**） | 1.00 | 非经验，是规则。依据见 `memory/README.md` 的置信度初始值条款 |
 | **经验 (empirical)** | 由 `short-term/` 经 §4.3 五条件晋升 | 0.00 起算 | 必须有多任务、多源证据 |
 
 **禁止**：把经验伪装成本能（给未经检验的个人判断标 `promoted_from: innate`）。这是 V5 记忆污染。
@@ -22,7 +22,7 @@
 | LTM-004 | 注释必须解释"为什么"；无信息量注释视为不合格 | 用户 2026-09-23 指令（详细中文注释）、`ROLE-LIMIT.md` DN8、`PRINCIPLES.md` DP7 |
 | LTM-005 | 风格必须一致且可被检查，以 `CODE-STYLE.md` 为准 | 用户 2026-09-23 指令（代码风格规范）、`ROLE-LIMIT.md` D3、`PRINCIPLES.md` DP8 |
 | LTM-006 | 改动范围 = 任务范围，禁止静默扩张 | `ROLE-LIMIT.md` DN5、`PRINCIPLES.md` DP2 |
-| LTM-007 | 共享仓库提交隔离：按路径显式添加，禁止盲加与覆盖他方改动 | `05-CONVENTIONS.md v1.1 §7.2`、`ROLE-LIMIT.md` DN7 |
+| LTM-007 | 共享仓库提交隔离：按路径显式添加，禁止盲加与覆盖他方改动 `ROLE-LIMIT.md` DN7 与 §2.1.2 |
 | LTM-008 | 技术栈基线：C 与 Python 为主要交付语言；其他语言按任务要求；不得声称掌握而未验证 | 用户 2026-09-23 指令（精通 C / Python 及其他语言） |
 
 ## 3. 建库时间与初始状态

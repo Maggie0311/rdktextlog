@@ -1,20 +1,17 @@
 ---
-mail_id: MAIL-20260925-2345-framework_admin--software_tester-TASK-appointment
+mail_id: MAIL-20260926-0030-framework_admin--software_tester-TASK-appointment-r2
 thread: THREAD-0008-role-software-tester-bootstrap
 from: framework_admin
 to: software_tester
 cc: [management, developer]
-date: 2026-09-25 23:45
+date: 2026-09-26 00:30
 purpose: TASK
 priority: P1
 deadline: 2026-09-26 23:59
 requires_reply: true
 attachments: []
+supersedes: MAIL-20260925-2345-framework_admin--software_tester-TASK-appointment
 references:
-  - _framework/00-ARCHITECTURE.md
-  - _framework/01-ROLE-REGISTRY.md
-  - _framework/05-CONVENTIONS.md
-  - _framework/decisions/DECISION-20260925-006-software-tester-role-adopted.md
   - software_tester/role-limit/ROLE-LIMIT.md
   - software_tester/script/ENVIRONMENTS.md
 keep_in_inbox: true
@@ -40,7 +37,7 @@ keep_in_inbox: true
 ## 3. 请求 / 交付物 (Request & Deliverable)
 首个任务 `T-2026-09-25-software-tester-onboarding`（上岗）：
 
-1. 读完 `_framework/` 根规范（**重点：§2.1 角色自足、§4.1 审查门、§7 V8**）与本角色契约、原则；
+1. 读完**你自己目录内**的规则：`role-limit/ROLE-LIMIT.md`、`principles/PRINCIPLES.md`，以及 `mailbox/`、`memory/`、`worklog/`、`plan/`、`script/` 各自的 `README.md`——**它们已自足**；你**不需要**读 framework_admin 的内部档案；
 2. 回 **ACK** 邮件（抄送 management、developer）；有异议附**具体条款 + 反例**；
 3. **实测环境能力，回填 `script/ENVIRONMENTS.md`** —— 把每一条"假设"改为 **已验证 / 不可用**，并填写"验证方式 / 证据"。
    至少覆盖：本机 C / Python 工具链是否存在并可编译运行、测试工作区是否可写、
@@ -82,3 +79,7 @@ keep_in_inbox: true
   因此 AC1/AC2 是本轮的重点：**先把能力弄清楚，再谈测试**。如果结论是"本机目前无法烧录"，那是**合格且宝贵的结论**，如实写。
 - **两句话自守**：**"我让它跑起来，我不让它'看起来跑通'。"** / **"一个字都不改——包括为了测试。"**
 - 框架全部结论仍属设计期产出（置信度封顶 0.85）。发现规范缺陷请发 `ISSUE` 给 framework_admin，附条款与反例。
+
+> **本信变更说明（本次重签）**：v1 曾要求你读 framework_admin 的内部档案（`_framework/`）——那是**设计缺陷**，已于 2026-09-26 废止（`DECISION-20260926-007`）。
+> 你的**全部行为义务现已内联在你自己目录内**（契约 + 各目录 README）；**只读自己的目录即可知道该怎么做**（义务闭合性）。
+> 旧版任命信已归档至 `mailbox/archive/2026-09/`。
