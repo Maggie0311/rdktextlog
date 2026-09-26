@@ -1,0 +1,3 @@
+SINGLE : total=46 halves=0 seqRange=[155..200] (written=200)
+MULTI  : total=66 halves=0 worker_rc=0/0 (written=200)
+VERDICT: single=46 multi=66 -> multi lost -20 lines vs baseline

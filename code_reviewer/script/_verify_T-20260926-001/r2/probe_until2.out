@@ -1,0 +1,7 @@
+[until=12:01 minute-prefix] got 1 lines:
+    2026-09-26T12:00:00.100 [INFO] E-SYS-005 m: in minute 12:00
+   stderr: rmlog_read: 命中 1 条
+[until=full-ts] got 3 lines (expect 3):
+[since=12:01 minute-prefix] got 2 lines (expect 2):
+    2026-09-26T12:01:00.500 [INFO] E-SYS-005 m: first of minute 12:01
+    2026-09-26T12:01:59.900 [ERROR] E-SYS-002 m: last of minute 12:01

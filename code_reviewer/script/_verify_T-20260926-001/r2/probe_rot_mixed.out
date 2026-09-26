@@ -1,0 +1,3 @@
+fragments after phase A-D:
+  rmlog.log      total=80   p1=60   p2=20  
+p1 written=60 present=60 | p2 written=20 present=20

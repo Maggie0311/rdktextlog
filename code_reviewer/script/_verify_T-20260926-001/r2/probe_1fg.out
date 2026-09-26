@@ -1,0 +1,11 @@
+NO-ROTATION: rc=0/0 total=600/600 halves=0
+[norot] fragments: {'rmlog.log': 600}
+[norot] halves=0
+[norot] pid=8612 surviving=300 range=[0..299] holes=0 []
+[norot] pid=8536 surviving=300 range=[0..299] holes=0 []
+[norot] pids-with-survivors: [8536, 8612]
+ROTATION-RERUN: rc=0/0 total=63 halves=0
+[rot2] fragments: {'rmlog.log': 3, 'rmlog.log.1': 12, 'rmlog.log.2': 12, 'rmlog.log.3': 12, 'rmlog.log.4': 12, 'rmlog.log.5': 12}
+[rot2] halves=0
+[rot2] pid=39396 surviving=63 range=[237..299] holes=0 []
+[rot2] pids-with-survivors: [39396]

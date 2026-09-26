@@ -1,0 +1,4 @@
+SINGLE-WRITER: halves=0
+  tag=solo surviving=48 range=[252..299] holes=0 []
+MULTI-WRITER: halves=0 rc=0/0
+  pid=14540 surviving=71 range=[229..299] holes=0 []
