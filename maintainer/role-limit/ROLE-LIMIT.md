@@ -186,6 +186,10 @@ maintainer/code_archive/
 maintainer/script/GLOSSARY.md   项目级术语表（跨版本累积）
 ```
 
+**归档件不是审查/测试对象（冻结，2026-09-26 新增）**：`code/` 内是**带注版本**，其内容与来源 commit **不完全一致**。
+`code_reviewer` 的审查与 `software_tester` 的测试**一律以来源 commit 为准**，**不得**以归档件为对象；
+说明书中引用代码位置时，必须**同时给出**来源 commit 与归档版本号，避免人类误以为二者等同。
+
 **与 `mailbox/archive/` 的区别（必须区分）**：后者归档**邮件**（通信记录，按 `YYYY-MM` 分）；
 前者归档**代码产物**（按 `task_id` + 版本号分）。**两者不得互相存放。**
 
