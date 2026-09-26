@@ -11,6 +11,7 @@
 | 2026-09-23 | innate | LTM-004 | 来自本角色 M4/§4 台账定义与 `PRINCIPLES.md` P5 | 规范条款 | framework_admin |
 | 2026-09-23 | innate | LTM-005 | 来自本角色 MN10/MN11 与 `PRINCIPLES.md` P13 | 规范条款 | framework_admin |
 | 2026-09-23 | innate | LTM-006 | 来自本角色 MN2/M12/MN13 与 `PRINCIPLES.md` P8/P14 | 规范条款 | framework_admin |
+| 2026-09-26 | innate | LTM-007 | 人类用户要求增设文件入口（`from_human/`）；该约束由 framework_admin 在签发契约（MN14 + §3.1 开工前置）时一并注入，属强制约束（本能），非经验 | 用户指令 + 契约条款 | framework_admin |
 
 ## 待处理晋升候选
 
