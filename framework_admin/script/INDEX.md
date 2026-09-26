@@ -32,6 +32,8 @@
 | 26 | 裁定记录：R-005 采纳 + 两通道分离 + 适配判定表 + G7 | `_framework/decisions/DECISION-20260925-006-software-tester-role-adopted.md` | 裁决 | v1.0 | 2026-09-25 | — | 全体角色、人类用户 |
 | 27 | **根规范 v1.4：§2.1.1 义务闭合性 + §2.1.2 `_framework` 定位** | `_framework/00-ARCHITECTURE.md` | 规范 | **v1.4** | 2026-09-26 | **已验证**（全仓复扫：非我目录内可执行引用清零） | 全体角色 |
 | 28 | 裁定记录：`_framework` 私有化 + 义务内联化（方案丁）+ G8 闭合 | `_framework/decisions/DECISION-20260926-007-obligation-closure.md` | 裁决 | v1.0 | 2026-09-26 | 已验证 | 全体角色、人类用户 |
+| 29 | R-006 角色契约与实例（39 文件，含 `code_archive` 空系统） | `maintainer/role-limit/ROLE-LIMIT.md`、`principles/`、`code_archive/README.md` 等 | 契约 + 实例 | v1.0 | 2026-09-26 | 自审通过（**归档与说明书有效性待真实验证**，见 G10/G11） | maintainer、人类用户、全体 |
+| 30 | 裁定记录：R-006 采纳 + 归档触发 + 六项待确认 + 三处新增义务 | `_framework/decisions/DECISION-20260926-008-maintainer-role-adopted.md` | 裁决 | v1.0 | 2026-09-26 | — | 全体角色、人类用户 |
 
 > **诚实声明（2026-09-23 二次修订）**：第 1–8 项仍为"未验证"（设计期产出，依据 LTM-006 封顶 0.85）；
 > 第 9 项已获 2 次真实创建验证（R-002、R-003，均逐项核对无缺项）；第 10–16 项为本轮及上轮新增，尚待真实项目闭环验证。

@@ -36,7 +36,11 @@
 | 2026-09-25 | reinforce | STM-004 | **第 4 次跨任务复现**：与 R-004 邻接的新角色靠"产出物性质"（静态判断 vs 动态事实）切开。0.55 -> 0.65 | T-2026-09-25-create-software-tester-role | framework_admin |
 | 2026-09-25 | new-stm | STM-008 | 本轮新观察：**能力型角色**（能力取决于外部条件而非自身判断）必须随角色交付"能力清单骨架 + 实测首任务"，否则"未标状态"会被读成"已具备"，最终以伪造结果（V8）形式爆掉 | T-2026-09-25-create-software-tester-role | framework_admin |
 | 2026-09-26 | new-stm | STM-009 | **踩坑并复盘**（委托层指出）：我把"通用规则"以引用方式留在自己档案里，导致四角色契约不自足（151 处引用 / 义务型 32 处，审查门三方义务均未签发）。已改为逐条签发内联 | T-2026-09-26-obligation-closure | framework_admin |
-| 2026-09-26 | reject-promotion | STM-001 | 本轮为规范重构而非建角色，**不构成一次新的"骨架交付"应用**，故不为 STM-001 记证据（不硬凑，记忆模型 §5 第 5 条） | T-2026-09-26-obligation-closure | framework_admin |
+| 2026-09-26 | reject-promotion | STM-001 | 上一轮为规范重构而非建角色，**不构成一次新的"骨架交付"应用**，故未为 STM-001 记证据（不硬凑） | T-2026-09-26-obligation-closure | framework_admin |
+| 2026-09-26 | reinforce | STM-001 | 创建 R-006 时**第 6 次应用成功**（5 任务 / 6 证据），且首次包含**第 8 个目录**（`code_archive/`）。0.75 -> 0.85 | T-2026-09-26-create-maintainer-role | framework_admin |
+| 2026-09-26 | reinforce | STM-004 | **第 5 次跨任务复现**：三角色同读一份代码，靠"读码目的"切开。0.65 -> 0.75 | T-2026-09-26-create-maintainer-role | framework_admin |
+| 2026-09-26 | new-stm | STM-010 | 新观察：**产出"认知"的角色**（说明书/解释/答疑）的失效模式是"给出错误但可信的解释"，且**现有机制拦不住**；必须用"强制列出未解疑问 + 事实/推断分离"来兜 | T-2026-09-26-create-maintainer-role | framework_admin |
+| 2026-09-26 | reject-promotion | STM-001 / STM-004 | 置信度已分别达 0.85 / 0.75，证据 6 / 5 条、跨 5 个任务，条件 1/2/3 充足；**仍因缺条件 4（独立确认）不晋升**——至今全部证据由本角色自产自证 | T-2026-09-26-create-maintainer-role | framework_admin |
 
 ## 待处理晋升候选
 

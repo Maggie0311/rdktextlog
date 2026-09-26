@@ -3,11 +3,11 @@ id: STM-004
 title: 调度型角色与治理型角色的边界必须按"层"切分（谁能做什么 vs 这次谁做什么），不能按"谁更高级"切分
 layer: short-term
 status: candidate
-confidence: 0.65
-evidence_count: 4
-success_count: 3
+confidence: 0.75
+evidence_count: 5
+success_count: 4
 failure_count: 0
-source_tasks: [T-2026-09-23-create-management-role, T-2026-09-23-create-developer-role, T-2026-09-23-create-code-reviewer-role, T-2026-09-25-create-software-tester-role]
+source_tasks: [T-2026-09-23-create-management-role, T-2026-09-23-create-developer-role, T-2026-09-23-create-code-reviewer-role, T-2026-09-25-create-software-tester-role, T-2026-09-26-create-maintainer-role]
 first_seen: 2026-09-23
 last_used: 2026-09-23
 last_reviewed: 2026-09-23
@@ -33,6 +33,7 @@ tags: [boundary, design-method]
 | 日期 | 任务 | 结果 | 备注 |
 |---|---|---|---|
 | 2026-09-23 | T-2026-09-23-create-management-role | 成立 | 6 项冲突面在 `DECISION-20260923-002 §3` 全部裁定为唯一主责，无一留存"双方都能做" |
+| 2026-09-26 | T-2026-09-26-create-maintainer-role | **成立（第 5 次）** | 本轮是**最严苛的一次**：三个角色（R-004/R-005/R-006）**都在读同一份代码**，靠"**读码目的**"切开——审查为**判断**、测试为**运行**、维护为**解释**；六角色两两交集为空 |
 | 2026-09-25 | T-2026-09-25-create-software-tester-role | **成立（第 4 次）** | 第 4 个角色与 R-004 邻接（都碰 developer 的代码），靠"**产出物的性质**"切开：静态**判断** vs 动态**事实**；五角色两两交集仍为空 |
 | 2026-09-23 | T-2026-09-23-create-code-reviewer-role | **成立（第 3 次）** | 审查权与验收权靠"审查者回答『代码有没有问题』/ 管理者回答『这次收不收』"分层切开；四角色两两交集为空 |
 | 2026-09-23 | T-2026-09-23-create-developer-role | **成立（跨任务复现）** | 7 项冲突面（含新增的"决定怎么写"）同样靠分层解决；且本轮进一步暴露了分层法的**适用前提**：当两角色间存在**指挥关系**时，"层"必须再细分为 WHAT / WHEN 与 HOW，仅分治理层 / 执行层还不够 |

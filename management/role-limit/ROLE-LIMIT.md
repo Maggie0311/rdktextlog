@@ -110,6 +110,14 @@
 本角色全部产物（需求拆解书、进度台账、验收报告、打包件）落在 `management/script/` 内；
 **本框架不存在公共工作空间**，任何角色不得在他方目录内写入或构建；跨角色流转一律经邮箱。
 
+### 2.1.4 归档回填义务（框架级强制，新增）
+
+`maintainer` 会在 `developer` 与 `software_tester` 的合格确认通知齐备后归档，**不等你的验收结论**。
+因此你的**验收结论（`accepted` / `rejected` 及理由）须在 1 轮内发给 `maintainer`**，
+由其回填到 `code_archive/<task_id>/VERSION-<NNN>.md` 与 `code_archive/INDEX.md` 的状态字段。
+
+> 理由：归档**早于**验收，是为了让人能拿着 `maintainer` 的说明书做最终裁决；验收结论回填则让归档记录完整闭环。
+
 ---
 
 ## 3. 输入契约 (Inputs)

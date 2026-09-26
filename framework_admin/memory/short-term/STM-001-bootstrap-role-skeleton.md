@@ -3,11 +3,11 @@ id: STM-001
 title: 七目录骨架必须连同"逐目录写入规则"一起交付，否则角色不知道怎么填
 layer: short-term
 status: candidate
-confidence: 0.75
-evidence_count: 5
-success_count: 4
+confidence: 0.85
+evidence_count: 6
+success_count: 5
 failure_count: 0
-source_tasks: [T-2026-02-14-bootstrap, T-2026-09-23-create-management-role, T-2026-09-23-create-developer-role, T-2026-09-23-create-code-reviewer-role, T-2026-09-25-create-software-tester-role]
+source_tasks: [T-2026-02-14-bootstrap, T-2026-09-23-create-management-role, T-2026-09-23-create-developer-role, T-2026-09-23-create-code-reviewer-role, T-2026-09-25-create-software-tester-role, T-2026-09-26-create-maintainer-role]
 first_seen: 2026-02-14
 last_used: 2026-09-23
 last_reviewed: 2026-09-23
@@ -29,11 +29,14 @@ tags: [structure, dx]
 | 2026-02-14 | T-2026-02-14-bootstrap | 待验证 | 本次共写 13 份 README + 5 份模板 |
 | 2026-09-23 | T-2026-09-23-create-management-role | **成立** | 主动应用：创建 R-002 时交付 31 文件，每个目录均附写入规则 README；R-002 契约因此无歧义可开工 |
 | 2026-09-23 | T-2026-09-23-create-developer-role | **成立** | 主动应用：创建 R-003 时交付 34 文件；跨任务复现，规格逐项核对无缺项 |
+| 2026-09-26 | T-2026-09-26-create-maintainer-role | **成立** | 第 6 次应用：39 文件，且**首次包含第 8 个目录**（`code_archive/` 版本化归档系统）——骨架规格的"七目录为最小集"在真实场景中被验证可用 |
 | 2026-09-25 | T-2026-09-25-create-software-tester-role | **成立** | 第 5 次应用：37 文件骨架连同逐目录写入规则交付；本案新增一笔——**能力清单骨架也随角色一并交付**（`ENVIRONMENTS.md` 全部标"假设"），使"未验证"成为可见状态而非隐含假设 |
 | 2026-09-23 | T-2026-09-23-create-code-reviewer-role | **成立** | 主动应用：创建 R-004 时交付 46 文件（含 10 份标准）；本案为**最严苛的一次**——标准区若无写入规则，使用者（developer）会照着空目录猜 |
 
 ## 待验证 (To Verify)
-**2026-09-25（第 4 次判定）：仍不晋升，但已满足 4/5 条件。** 证据 5 条、跨 4 个任务、4 次主动应用成功、
+**2026-09-26（第 5 次判定）：仍不晋升。** 置信度已达 0.85、证据 6 条、跨 5 个任务、5 次主动应用成功——**条件 1/2/3 远超要求，唯一缺口仍是条件 4 的独立确认**。
+
+（前次判定：2026-09-25，已满足 4/5 条件。 证据 5 条、跨 4 个任务、4 次主动应用成功、
 置信度 0.75（达标）——**条件 1、2、3 全部满足，唯一缺口是条件 4 的"独立确认"**。
 本条自 2026-02-14 起由我自产自证，至今没有任何外部角色或审计确认过它——
 这恰恰印证了 P12（防单源偏差）为什么必须存在：**自证再多次，也不能替代一次外部确认**。
