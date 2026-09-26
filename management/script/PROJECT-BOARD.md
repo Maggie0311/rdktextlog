@@ -5,7 +5,7 @@
 
 | task_id | thread | 主责角色 | 状态 | 依赖 | 路由理由 | 计划完成 | 最近更新 | 证据/交付物路径 | 验收结论 |
 |---|---|---|---|---|---|---|---|---|---|
-| T-20260926-001-logging-platform-p0 | THREAD-LOG-P0 | developer | assigned | 无（前置已由人类完成：镜像/WiFi/rt_patch） | 唯一主责=developer：产出是源码+实现说明，命中 D1–D5/D7（其 ROLE-LIMIT §1）；management 不写码（MN2）；审查由 code_reviewer 在交付门必经（R-004 CR1）；实机测试是否进行待 Q1 裁决后定（R-005 T1） | 2026-09-27 | 2026-09-26 16:20 | 需求依据：`management/script/REQ-20260926-001-logging.md`；任务书：`developer/mailbox/inbox/MAIL-20260926-1620-management--developer-TASK-T-20260926-001-logging-platform-p0.md` | — |
+| T-20260926-001-logging-platform-p0 | THREAD-LOG-P0 | developer | assigned | 无（前置已由人类完成：镜像/WiFi/rt_patch） | 唯一主责=developer：产出是源码+实现说明，命中 D1–D5/D7（其 ROLE-LIMIT §1）；management 不写码（MN2）；审查由 code_reviewer 在交付门必经（R-004 CR1）；板端证据形态经 Q1 裁决=用户板端自测输出（Q2=/userdata/rmlog 可配置） | 2026-09-27 | 2026-09-26 16:45 | 需求依据：`management/script/REQ-20260926-001-logging.md`（§7.1 裁决记录）；任务书：`developer/mailbox/inbox/MAIL-20260926-1620-management--developer-TASK-T-20260926-001-logging-platform-p0.md` + 增补 `MAIL-20260926-1640-management--developer-TASK-req001-q1q2-decision.md` | — |
 
 ## 里程碑（对应 `from_human/开发节奏规划.docx` 阶段）
 
