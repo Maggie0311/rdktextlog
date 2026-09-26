@@ -7,14 +7,14 @@
 
 | ID | 标题 | 状态 | 置信度 | 证据数 | 显著性 | 最近使用 | 文件 |
 |---|---|---|---|---|---|---|---|
-| LTM-001 | 无 task_id 不动手 | active | 1.00 | 3 | high | 2026-09-23 | `long-term/LTM-001-no-task-id-no-work.md` |
-| LTM-002 | WHAT/WHEN 服从 management，HOW 自主 | active | 1.00 | 3 | high | 2026-09-23 | `long-term/LTM-002-obey-what-autonomy-how.md` |
-| LTM-003 | 交付必须附可复现证据；作者不得自证验收 | active | 1.00 | 3 | high | 2026-09-23 | `long-term/LTM-003-evidence-not-assertion.md` |
-| LTM-004 | 注释解释"为什么"，无信息量注释不合格 | active | 1.00 | 3 | high | 2026-09-23 | `long-term/LTM-004-comments-explain-why.md` |
-| LTM-005 | 风格一致且可检查，以 CODE-STYLE.md 为准 | active | 1.00 | 3 | high | 2026-09-23 | `long-term/LTM-005-style-consistency.md` |
-| LTM-006 | 改动范围 = 任务范围 | active | 1.00 | 3 | high | 2026-09-23 | `long-term/LTM-006-scope-equals-task.md` |
-| LTM-007 | 共享仓库提交隔离：按路径显式添加 | active | 1.00 | 3 | high | 2026-09-23 | `long-term/LTM-007-commit-isolation.md` |
-| LTM-008 | 技术栈基线 C / Python；不得声称掌握而未验证 | active | 1.00 | 3 | medium | 2026-09-23 | `long-term/LTM-008-tech-baseline.md` |
+| LTM-001 | 无 task_id 不动手 | active | 1.00 | 3 | high | 2026-09-26 | `long-term/LTM-001-no-task-id-no-work.md` |
+| LTM-002 | WHAT/WHEN 服从 management，HOW 自主 | active | 1.00 | 3 | high | 2026-09-26 | `long-term/LTM-002-obey-what-autonomy-how.md` |
+| LTM-003 | 交付必须附可复现证据；作者不得自证验收 | active | 1.00 | 3 | high | 2026-09-26 | `long-term/LTM-003-evidence-not-assertion.md` |
+| LTM-004 | 注释解释"为什么"，无信息量注释不合格 | active | 1.00 | 3 | high | 2026-09-26 | `long-term/LTM-004-comments-explain-why.md` |
+| LTM-005 | 风格一致且可检查，以 CODE-STYLE.md 为准 | active | 1.00 | 3 | high | 2026-09-26 | `long-term/LTM-005-style-consistency.md` |
+| LTM-006 | 改动范围 = 任务范围 | active | 1.00 | 3 | high | 2026-09-26 | `long-term/LTM-006-scope-equals-task.md` |
+| LTM-007 | 共享仓库提交隔离：按路径显式添加 | active | 1.00 | 3 | high | 2026-09-26 | `long-term/LTM-007-commit-isolation.md` |
+| LTM-008 | 技术栈基线 C / Python；不得声称掌握而未验证 | active | 1.00 | 3 | medium | 2026-09-26 | `long-term/LTM-008-tech-baseline.md` |
 
 **统计**：active 8 条；candidate 0；dormant 0；deprecated 0。
 **经验型条目：0 条**（本角色尚未执行真实编码任务；这是诚实状态）。
@@ -23,9 +23,9 @@
 
 | ID | 标题 | 状态 | 置信度 | 证据数 | 最近使用 | 晋升还差什么 |
 |---|---|---|---|---|---|---|
-| — | （空） | — | — | — | — | 需先有真实任务，禁止硬凑 |
+| STM-001 | 平台 O_APPEND 语义差异必须在编码期显式分流：Linux 内核原子 / Windows CRT 写前 seek 非原子（需字节锁） | active | 0.85 | 1（T-20260926-001：并发自测丢 89 行→修复→10/10 PASS） | 2026-09-26 | 再经历 1 个不同任务仍复现（如跨平台写入类任务）即晋升 LTM |
 
-**统计**：0 / 12 条，剩余容量 12。
+**统计**：1 / 12 条，剩余容量 11。
 
 ## 读取建议
 

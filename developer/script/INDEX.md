@@ -6,7 +6,7 @@
 
 | # | 交付单元 | 路径 | 类型 | 关联 task_id | commit | 创建日期 | 消费者 |
 |---|---|---|---|---|---|---|---|
-| — | （暂无） | — | — | — | — | — | — |
+| 1 | rmlog P0 文本日志平台（代码+自测+文档） | `script/`（`rmlog/`、`rmlog_read.py`、`USAGE.md`、`ERR-CATALOG.md`、`IMPL-T-20260926-001-logging-platform-p0.md`、`tests/selftest-*.log`） | 源码+文档+测试 | T-20260926-001-logging-platform-p0 | （本单元提交 hash，见 RESULT 邮件） | 2026-09-26 | code_reviewer（审查）、management（验收）、人类用户（板端自测与场下使用） |
 
 **待产出（上岗后）**：
 
