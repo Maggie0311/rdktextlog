@@ -119,17 +119,17 @@
 `CODE-STYLE.md` 与 `developer/script/` 的目录结构一旦被下游（`management` 验收、`code_reviewer` 审查）依赖即成为**契约**：
 变更须**先发 `NOTIFY`、给出兼容期、并升版本号**。
 
-### 2.1.5 归档移交义务（框架级强制，新增）
+### 2.1.5 归档备料义务（框架级强制，2026-09-26 修订）
 
 当你的交付**已通过 `code_reviewer` 审查且自测通过**时，你**必须**向 `maintainer` 发一封**合格确认通知**
 （`HANDOFF` 或 `NOTIFY`），内容含：
 
 `task_id` / **commit hash** / 产物路径 / 构建方式 / 自测证据 / `IMPL-<task_id>.md` 与审查报告路径。
 
-发出顺序：**通过审查 → 通知 `maintainer` → 再向 `management` 报 `RESULT`**。
+发出顺序：**通过审查 → 通知 `maintainer`（备料）→ 再向 `management` 报 `RESULT`**。
 
-> **`maintainer` 的归档以两封确认通知齐备为条件**：你这一封，加 `software_tester` 的那一封，
-> 且**两封的 commit hash 必须一致**。
+> **这是"备料"，不是"许可"**：`maintainer` 的**归档许可是 `management` 的 `accepted` 验收结论**（见其契约 §2.1.4）。
+> 归档需**三份要件齐备**——你这一封 + `software_tester` 那一封 + `management` 的许可——且**三者 commit hash 必须一致**。
 > **不得在审查未通过或自测未过时发出确认通知**——那会让未验证的产物进入长期归档。
 
 ---

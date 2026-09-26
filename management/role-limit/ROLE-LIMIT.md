@@ -110,13 +110,19 @@
 本角色全部产物（需求拆解书、进度台账、验收报告、打包件）落在 `management/script/` 内；
 **本框架不存在公共工作空间**，任何角色不得在他方目录内写入或构建；跨角色流转一律经邮箱。
 
-### 2.1.4 归档回填义务（框架级强制，新增）
+### 2.1.4 归档许可义务（框架级强制，2026-09-26 修订）
 
-`maintainer` 会在 `developer` 与 `software_tester` 的合格确认通知齐备后归档，**不等你的验收结论**。
-因此你的**验收结论（`accepted` / `rejected` 及理由）须在 1 轮内发给 `maintainer`**，
-由其回填到 `code_archive/<task_id>/VERSION-<NNN>.md` 与 `code_archive/INDEX.md` 的状态字段。
+`maintainer` 的归档**以你的验收通过为许可**——没有你的 `accepted` 结论，它**不得归档**任何版本。
 
-> 理由：归档**早于**验收，是为了让人能拿着 `maintainer` 的说明书做最终裁决；验收结论回填则让归档记录完整闭环。
+因此你的**验收结论（`accepted` / `rejected` 及理由）须在 1 轮内发给 `maintainer`**，并抄送 `developer` 与 `software_tester`：
+
+- **`accepted`** → `maintainer` 据此归档该版本（它会核对**你的结论 + 两封确认通知**三者的 **commit hash 是否一致**）；
+- **`rejected`** → `maintainer` **不归档**；该版本进入 `code_archive/_tombstones/`，墓碑中写明驳回理由。
+
+> **归档顺序（委托层 2026-09-26 确认）**：
+> ① `developer` 与 `software_tester` 各发**合格确认通知**（备料）→
+> ② **你的 `accepted` 结论（许可）** → ③ `maintainer` 三份齐备后**归档**并产出说明书与配套文档。
+> 也就是说：**说明书要等你验收通过之后才会产生**；在验收前，人类手上只有审查与测试报告。
 
 ---
 

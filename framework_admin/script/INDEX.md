@@ -34,6 +34,7 @@
 | 28 | 裁定记录：`_framework` 私有化 + 义务内联化（方案丁）+ G8 闭合 | `_framework/decisions/DECISION-20260926-007-obligation-closure.md` | 裁决 | v1.0 | 2026-09-26 | 已验证 | 全体角色、人类用户 |
 | 29 | R-006 角色契约与实例（39 文件，含 `code_archive` 空系统） | `maintainer/role-limit/ROLE-LIMIT.md`、`principles/`、`code_archive/README.md` 等 | 契约 + 实例 | v1.0 | 2026-09-26 | 自审通过（**归档与说明书有效性待真实验证**，见 G10/G11） | maintainer、人类用户、全体 |
 | 30 | 裁定记录：R-006 采纳 + 归档触发 + 六项待确认 + 三处新增义务 | `_framework/decisions/DECISION-20260926-008-maintainer-role-adopted.md` | 裁决 | v1.0 | 2026-09-26 | — | 全体角色、人类用户 |
+| 31 | **裁定记录：maintainer 六项取舍的委托层确认与执行** | `_framework/decisions/DECISION-20260926-009-maintainer-design-confirmed.md` | 裁决 | v1.0 | 2026-09-26 | 待首次真实归档验证 | 全体角色、人类用户 |
 
 > **诚实声明（2026-09-23 二次修订）**：第 1–8 项仍为"未验证"（设计期产出，依据 LTM-006 封顶 0.85）；
 > 第 9 项已获 2 次真实创建验证（R-002、R-003，均逐项核对无缺项）；第 10–16 项为本轮及上轮新增，尚待真实项目闭环验证。

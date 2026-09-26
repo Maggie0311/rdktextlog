@@ -3,11 +3,13 @@
 > 规则：每归档一个版本，在此追加一行。**只追加**。
 > 状态取值：`已归档` / `验收通过` / `验收驳回` / `已废弃（见墓碑）`
 
-| # | task_id | 版本 | 被测 commit | 归档日期 | 来源通知（两封 mail_id） | 状态 | 说明书 | 备注 |
-|---|---|---|---|---|---|---|---|---|
-| — | （暂无） | — | — | — | — | — | — | — |
+| # | task_id | 版本 | 被测 commit | 归档日期 | **验收许可 mail_id** | **developer 通知 mail_id** | **tester 通知 mail_id** | 配套文档 | 备注 |
+|---|---|---|---|---|---|---|---|---|---|
+| — | （暂无） | — | — | — | — | — | — | — | — |
 
 **说明**：
-- "来源通知"必须是 `developer` 与 `software_tester` **各一封**的 `mail_id`；缺一即不得归档；
-- 状态中的"验收通过 / 驳回"由 `management` 结论**事后回填**；
-- 每一行都应有对应的 `<task_id>/VERSION-<NNN>.md`。
+- **三份要件缺一不得归档**：`management` 的 `accepted` 结论（归档许可）+ `developer` 与 `software_tester` 的合格确认通知；
+- 三者的 **commit hash 必须一致**；
+- "配套文档"列填 `SPEC/WALKTHROUGH/QUESTIONS/DIFF/GLOSSARY` 的齐备情况（✅/缺项）；
+- 每一行都应有对应的 `<task_id>/VERSION-<NNN>.md`；
+- 被 `management` 驳回或被否决的版本**不进本表**，进 `_tombstones/`。

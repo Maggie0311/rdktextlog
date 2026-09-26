@@ -1,14 +1,14 @@
 # MEMORY-INDEX — maintainer (R-006) 记忆总表
 
-> 生成时间: 2026-09-26
+> 生成时间: 2026-09-26 · **2026-09-26 修订**：委托层确认六项设计取舍后，LTM-001/002/003/009 的结论已更新（各条附修订记录），见 `DECISION-20260926-009`
 
 ## 长期记忆 (long-term)
 
 | ID | 标题 | 状态 | 置信度 | 证据数 | 显著性 | 最近使用 | 文件 |
 |---|---|---|---|---|---|---|---|
-| LTM-001 | 归档即冻结：归档件字节永不可变 | active | 1.00 | 3 | high | 2026-09-26 | `long-term/LTM-001-archive-means-frozen.md` |
-| LTM-002 | 先齐备再归档：两封合格确认通知缺一不可 | active | 1.00 | 3 | high | 2026-09-26 | `long-term/LTM-002-both-notices-before-archiving.md` |
-| LTM-003 | 补注只加注释行，绝不改代码 | active | 1.00 | 3 | high | 2026-09-26 | `long-term/LTM-003-annotate-comments-only.md` |
+| LTM-001 | 归档即冻结：就地补注完成后字节永不可变 | active | 1.00 | 3 | high | 2026-09-26 | `long-term/LTM-001-archive-means-frozen.md` |
+| LTM-002 | 先齐备再归档：验收许可 + 两封确认通知，三份缺一不可 | active | 1.00 | 3 | high | 2026-09-26 | `long-term/LTM-002-both-notices-before-archiving.md` |
+| LTM-003 | 就地补注：只加注释行，绝不改代码，记双指纹 | active | 1.00 | 3 | high | 2026-09-26 | `long-term/LTM-003-annotate-comments-only.md` |
 | **LTM-004** | **错误的解释比没有解释更危险：说不准就标 unverified** | active | 1.00 | 3 | high | 2026-09-26 | `long-term/LTM-004-wrong-explanation-worse-than-none.md` |
 | LTM-005 | 事实与推断必须分开写 | active | 1.00 | 3 | high | 2026-09-26 | `long-term/LTM-005-facts-separated-from-inference.md` |
 | LTM-006 | 解释必须可定位（file:line） | active | 1.00 | 3 | high | 2026-09-26 | `long-term/LTM-006-explanations-must-be-locatable.md` |

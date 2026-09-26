@@ -12,4 +12,5 @@
 | 产物 | 用途 | 触发条件 |
 |---|---|---|
 | `QA-LOG.md` | 答疑记录（含依据与被纠正情况） | 上岗首个交付物之一，见 `mailbox/inbox/WELCOME-maintainer.md` |
-| 首份归档（`../code_archive/<task_id>/`） | 冻结原件 + 版本卡 + 说明书 | 两封合格确认通知齐备时 |
+| `GLOSSARY.md` | 项目级术语表 | 首次归档时建立，此后随版本增补 |
+| 首份归档（`../code_archive/<task_id>/`） | `code/`（带注代码）+ 版本卡（双指纹）+ `SPEC` + `WALKTHROUGH` + `QUESTIONS` + `DIFF` | **三份要件齐备**时（`management` `accepted` 许可 + 两封合格确认通知） |
