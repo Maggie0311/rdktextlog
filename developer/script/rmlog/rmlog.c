@@ -10,6 +10,11 @@
  *       跨进程轮转互斥 + 锁内 stat 确认;
  *   F-5 轮转 reopen 失败改"计数 + 逐条重试", 不再永久静默停记;
  *   F-9 容量边界如实表述（转义膨胀可致整条丢弃计数, 见 RMLOG_LINE_MAX 注释）。
+ * R2 微整改: 复审报告 RF-1/RF-5 ——
+ *   RF-1 rmlog__open_locked 复用既有 g_path（close 后按需重开不再重做缺省
+ *       目录裁决, 显式目录形态下事件继续落原目录, 与 rmlog.h 注释一致）;
+ *   RF-5 轮转锁获取失败计入 g_lock_degradations（对齐 Python 端可观测口径,
+ *       全程持写锁, 计数线程安全）。
  *
  * 设计决策（与 Python 端 writer.py/format.py 对齐，理由见对应文件头）:
  * - O_APPEND + 一次 write() 写一条完整行（含换行）—— 多进程行完整性根基（AC5）;
@@ -112,6 +117,7 @@ static long long    g_own_bytes;          /* 本进程写入计数（轮转触�
                                            * （见 rmlog__rotate_locked）—— 失真方向安全 */
 static int          g_open_failed;        /* 打开失败标志: emit 路径逐条重试的依据 */
 static int          g_write_failures;     /* 静默降级计数（对齐 Python write_failures） */
+static int          g_lock_degradations;  /* 轮转锁获取失败计数（RF-5, 对齐 Python lock_degradations） */
 static int          g_ever_opened;        /* seq 只在首次打开时清零 —— 轮转/重开不重置,
                                            * 保证进程内事件全序（与 Python 端一致） */
 
@@ -142,22 +148,29 @@ static int rmlog__dir_usable(const char *dir)
 }
 
 /* ---- 打开日志文件（持锁调用; 语义与 Python os.open(O_APPEND|O_CREAT|O_WRONLY) 一致） ----
- * 仅用于"进程首次打开"（裁决目录）; 轮转后的重开走 rmlog__reopen_current_locked
- * （直接用既有 g_path, 不重新裁决目录 —— 目录裁决一次就固定, 与 Python 端
- * Writer 构造期裁决一次的行为一致）。 */
+ * 目录裁决**只发生一次**（RF-1, 复审报告 F-8 残留面处置）: g_path 已有值
+ * （本进程此前以 rmlog_open(dir) 显式指定目录, 或已完成过缺省裁决）时直接
+ * 按既有路径重开, 不再重新裁决 —— 否则 close 后再 emit 的"按需重开"会把
+ * 事件静默落到缺省目录, rmlog.h 承诺的"重开继续记录"对显式目录形态失实
+ * （reviewer probe_c2 实证）。g_path 为空才做缺省裁决, 与 Python 端 Writer
+ * 构造期裁决一次的行为对齐。轮转/emit 期的按路径重开走
+ * rmlog__reopen_current_locked（同样只复用 g_path, 从不重新裁决）。 */
 static int rmlog__open_locked(void)
 {
-    const char *dir;
     int fd;
 
-    if (rmlog__dir_usable(RMLOG_DEFAULT_DIR)) {
-        dir = RMLOG_DEFAULT_DIR;
+    if (g_path[0] != '\0') {
+        /* 落点已裁决（显式目录或此前缺省裁决）: 直接按既有路径重开 */
+        fd = open(g_path, RMLOG_OPEN_FLAGS, RMLOG_OPEN_MODE);
+    } else if (rmlog__dir_usable(RMLOG_DEFAULT_DIR)) {
+        snprintf(g_path, sizeof(g_path), "%s/rmlog.log", RMLOG_DEFAULT_DIR);
+        fd = open(g_path, RMLOG_OPEN_FLAGS, RMLOG_OPEN_MODE);
     } else if (rmlog__dir_usable(RMLOG_FALLBACK_DIR)) {
-        dir = RMLOG_FALLBACK_DIR;
+        snprintf(g_path, sizeof(g_path), "%s/rmlog.log", RMLOG_FALLBACK_DIR);
+        fd = open(g_path, RMLOG_OPEN_FLAGS, RMLOG_OPEN_MODE);
     } else {
-        return -1;
+        return -1;   /* 两级缺省目录都不可建: g_path 保持为空, 下次 emit 再重试裁决 */
     }
-    snprintf(g_path, sizeof(g_path), "%s/rmlog.log", dir);
     /* O_APPEND 是多进程行完整性的根基: 内核保证每次 write 追加到当前末尾 */
     fd = open(g_path, RMLOG_OPEN_FLAGS, RMLOG_OPEN_MODE);
     if (fd < 0) {
@@ -377,7 +390,9 @@ static void rmlog__rotlock_release(int lfd)
 /* Windows（开发机 MinGW）: 无 flock —— C 端在 Windows 上退化为"进程内轮转"
  * （线程锁仍保证本进程安全）。理由: 双进程×轮转组合的演示用例跑在 Python 端
  * （selftest 可跨平台覆盖该组合）; C 端板端目标 Linux 有原生 flock, 协议完整。
- * 该取舍与两侧行字节流一致性（AC4）无关, 属部署行为差异, IMPL §4 已声明。 */
+ * 该取舍与两侧行字节流一致性（AC4）无关, 属部署行为差异, IMPL §4 已声明。
+ * 返回 -2（约定值"无跨进程锁可用", 非 -1）: 调用方只对 -1 计
+ * g_lock_degradations —— 平台本就无跨进程锁, 不算降级事件（RF-5 口径）。 */
 static int rmlog__rotlock_acquire(void)
 {
     return -2;                   /* 约定值: "无跨进程锁可用"（非错误） */
@@ -415,7 +430,10 @@ static void rmlog__rotate_chain_locked(void)
 
 /* 轮转决策入口（持写锁调用; 写入成功且 g_own_bytes 超限后执行）:
  * 取跨进程轮转锁 → 锁内 stat 确认 → 链操作 → 释放锁。
- * 拿锁失败: 放弃本轮轮转（数据留在原文件不丢, 下次写入再触发）。 */
+ * 拿锁失败: 放弃本轮轮转（数据留在原文件不丢, 下次写入再触发）;
+ * 计入 g_lock_degradations 可观测（RF-5, 与 Python 端 lock_degradations
+ * 同口径）—— 否则"容量治理暂停"没有任何外部信号。
+ * 线程安全: 本函数只在持写锁的 emit 路径被调, 计数自增无竞争（RF-5）。 */
 static void rmlog__rotate_locked(void)
 {
     struct stat st;
@@ -423,7 +441,9 @@ static void rmlog__rotate_locked(void)
 
     lfd = rmlog__rotlock_acquire();
     if (lfd == -1) {
-        return;                  /* 锁不可得: 放弃本轮, 保守不冒险 */
+        /* 锁不可得（锁文件 open 失败 / flock 失败）: 放弃本轮, 保守不冒险 */
+        g_lock_degradations++;
+        return;
     }
     /* 锁内 stat 确认（F-1 推理链 2）: 本进程 g_own_bytes 不含他进程写入,
      * 必然偏小 → 只会偏早触发; 用真实文件大小做最终裁决, 他进程刚轮转过
@@ -614,8 +634,10 @@ void rmlog_close(void)
         RMLOG_FDATASYNC(g_fd);           /* 退出前把缓冲的 INFO/WARN 也落盘 */
         close(g_fd);
         g_fd = -1;
-        /* 注意: close 后 g_open_failed 不置位 —— 与 rmlog.h 的 close 语义
-         * 注释一致, 后续 emit 会按需重新打开继续记录（见 rmlog.h）。 */
+        /* 注意: close 后 g_open_failed 不置位、g_path 保留 —— 与 rmlog.h 的
+         * close 语义注释一致, 后续 emit 会按需重新打开**同一落点**继续记录
+         * （重开复用 g_path, 显式目录形态同样成立 —— 见 rmlog__open_locked
+         * 的 RF-1 注释）。 */
     }
     RMLOG_UNLOCK(g_lock);
 }

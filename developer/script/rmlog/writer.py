@@ -165,10 +165,13 @@ class Writer:
         except OSError:
             self._bytes = 0
         # 健康计数器（可观测出口, selftest 与健康检查用）:
-        self.write_failures = 0      # 写入/打开失败次数（静默降级, 每条事件重试）
-        # 锁降级计数（F-7 修复）: 跨进程锁取锁失败而降级的次数。
-        # Linux = 轮转锁失败（本轮轮转放弃, 数据不丢）; Windows = 写锁失败
-        # （降级裸写, 可能丢行）。两者都曾被旧代码静默吞掉 —— 现在必须可见。
+        self.write_failures = 0      # 真实写失败次数（打开/写入; 静默降级, 每条事件重试）
+        # 锁降级计数（F-7 修复; RF-4 口径收紧）: 跨进程锁相关失败而降级的次数。
+        # Linux = 轮转锁 open/flock 失败（本轮轮转放弃, 数据不丢）; Windows =
+        # 写锁文件 open 失败 / locking 失败 / 解锁失败（降级裸写, 可能丢行）。
+        # 锁失败 ≠ 写失败: Windows 锁文件 open 失败时事件仍按裸写落盘（RF-4
+        # 之前误计 write_failures, "40 条全写成功却计 40 次失败", 健康计数失真）
+        # —— write_failures 只反映真实写失败, 健康检查方可据实报警。
         self.lock_degradations = 0
         self.last_error = None
 
@@ -318,7 +321,9 @@ class Writer:
         为什么写也要锁（与 Linux 不同）: CRT 的 append 是"写前 seek", 跨进程
         两个 seek+write 会互相覆盖; 锁住 ROTLOCK 字节 0 把各进程的整段写入
         串行化。轮转在同一把锁内做（写与轮转互斥, rename 链对并发写原子）。
-        取锁失败降级裸写（可能丢行但不阻塞业务）—— F-7: 计入 lock_degradations。
+        锁文件 open 失败 / 取锁失败均降级裸写（可能丢行但不阻塞业务）—— 两者都
+        计 lock_degradations（F-7; open 失败的口径为 RF-4 修正: 该状态下写入
+        本身会成功, 不得计入 write_failures 污染健康计数）。
         """
         lock_fd = -1
         locked = False
@@ -326,7 +331,11 @@ class Writer:
             lock_fd = os.open(self._rotlock_path,
                               os.O_CREAT | os.O_RDWR | _O_BINARY, 0o666)
         except OSError as exc:
-            self.write_failures += 1
+            # RF-4: 锁文件 open 失败（同路径被目录/文件占位、fd 耗尽等）时
+            # 写入本身不受影响 —— 降级裸写, 数据照常落盘, 属锁降级而非写失败。
+            # 旧代码误计 write_failures（reviewer 实测 40 条全成功却计 40 次
+            # 失败）, 改计 lock_degradations —— 与下方 locking 失败口径一致。
+            self.lock_degradations += 1
             self.last_error = repr(exc)
         if lock_fd >= 0:
             try:

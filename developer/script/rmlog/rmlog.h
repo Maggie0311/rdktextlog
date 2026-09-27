@@ -60,7 +60,10 @@ int rmlog_emit(int level, const char *mod, const char *code, const char *fmt, ..
  * rmlog_close: 进程退出前调用（把缓冲中的 INFO/WARN 落盘后关闭句柄）。
  * 注意: close 后再次调用 RMLOG_* 宏**并非无操作** —— emit 会按需重新打开
  * 日志文件继续记录（幂等重开的语义, 与 "打开失败重试" 共用同一路径）;
- * 若业务期望 "close 即停记", 请保证 close 后不再调用宏。 */
+ * 重开落点 = 本进程最近一次成功打开的目录（RF-1: 以 rmlog_open(dir) 显式
+ * 指定目录打开过的, close 后重开仍落该目录, 不改投缺省目录; 从未成功
+ * 打开过则按缺省裁决重试）。若业务期望 "close 即停记", 请保证 close 后
+ * 不再调用宏。 */
 int  rmlog_open(const char *dir);
 void rmlog_close(void);
 

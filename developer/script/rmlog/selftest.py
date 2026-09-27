@@ -331,8 +331,10 @@ def test_ac5_concurrent_rotation(work):
       3. 无半行（解析不出的行只允许 0 条 —— INFO 级无 flush 承诺, 但协议
          v2 每写一次 write 整行, 轮转链原子 rename, 磁盘上不应有半行）;
       4. 各 worker 的事件序号 i 在其 wid 名下无重复、无缺号（0..per-1 全齐）。
-    keep 传大值（10）: 保证压测期间写入的副本不被淘汰, 对账窗口完整
-    （淘汰属正常容量治理, 不在本用例的"不灭失"承诺内 —— 用大 keep 把它排除）。
+    keep 传大值（20, 见下方 worker 命令行 "8000", "20"）: 保证压测期间写入的
+    副本不被淘汰, 对账窗口完整（淘汰属正常容量治理, 不在本用例的"不灭失"
+    承诺内 —— 用大 keep 把它排除; RF-3 更正: 本行旧文残留 keep=10, 系 1010 轮
+    参数误校准修复后 docstring 未同步）。
     """
     log_dir = os.path.join(work, "ac5_conc_rot")
     workers, per = 3, 400
