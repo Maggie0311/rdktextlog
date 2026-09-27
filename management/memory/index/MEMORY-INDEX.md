@@ -8,10 +8,10 @@
 | ID | 标题 | 状态 | 置信度 | 证据数 | 显著性 | 最近使用 | 文件 |
 |---|---|---|---|---|---|---|---|
 | LTM-001 | 编排权不含角色定义权，建角色只能由 framework_admin 执行 | active | 1.00 | 3 | high | 2026-09-23 | `long-term/LTM-001-orchestrate-not-define.md` |
-| LTM-002 | 每个任务有且仅有一个主责角色，禁止双主责 | active | 1.00 | 3 | high | 2026-09-23 | `long-term/LTM-002-single-owner-per-task.md` |
-| LTM-003 | 派活与协作必须落邮箱，未落邮箱即不存在 | active | 1.00 | 3 | high | 2026-09-23 | `long-term/LTM-003-assignment-must-be-mailed.md` |
-| LTM-004 | 进度唯一真相源是 PROJECT-BOARD，口头进度不算数 | active | 1.00 | 3 | high | 2026-09-23 | `long-term/LTM-004-board-is-single-truth.md` |
-| LTM-005 | 需求不可静默缩减；不可逆决策与范围变更必须请示人类用户 | active | 1.00 | 3 | high | 2026-09-23 | `long-term/LTM-005-scope-belongs-to-user.md` |
+| LTM-002 | 每个任务有且仅有一个主责角色，禁止双主责 | active | 1.00 | 3 | high | 2026-09-26 | `long-term/LTM-002-single-owner-per-task.md` |
+| LTM-003 | 派活与协作必须落邮箱，未落邮箱即不存在 | active | 1.00 | 3 | high | 2026-09-26 | `long-term/LTM-003-assignment-must-be-mailed.md` |
+| LTM-004 | 进度唯一真相源是 PROJECT-BOARD，口头进度不算数 | active | 1.00 | 3 | high | 2026-09-26 | `long-term/LTM-004-board-is-single-truth.md` |
+| LTM-005 | 需求不可静默缩减；不可逆决策与范围变更必须请示人类用户 | active | 1.00 | 3 | high | 2026-09-26 | `long-term/LTM-005-scope-belongs-to-user.md` |
 | LTM-006 | 能力缺口只上报不自查自办；指挥不下场 | active | 1.00 | 3 | high | 2026-09-23 | `long-term/LTM-006-escalate-not-improvise.md` |
 | **LTM-007** | **人类投放的文件是一手依据：只读、登记、以路径引用，绝不改动** | active | 1.00 | 3 | high | 2026-09-26 | `long-term/LTM-007-human-files-are-input-evidence.md` |
 

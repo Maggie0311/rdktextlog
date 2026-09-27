@@ -5,7 +5,7 @@
 
 | task_id | thread | 主责角色 | 状态 | 依赖 | 路由理由 | 计划完成 | 最近更新 | 证据/交付物路径 | 验收结论 |
 |---|---|---|---|---|---|---|---|---|---|
-| T-20260926-001-logging-platform-p0 | THREAD-LOG-P0 | developer | assigned | 无（前置已由人类完成：镜像/WiFi/rt_patch） | 唯一主责=developer：产出是源码+实现说明，命中 D1–D5/D7（其 ROLE-LIMIT §1）；management 不写码（MN2）；审查由 code_reviewer 在交付门必经（R-004 CR1）；板端证据形态经 Q1 裁决=用户板端自测输出（Q2=/userdata/rmlog 可配置） | 2026-09-27 | 2026-09-26 16:45 | 需求依据：`management/script/REQ-20260926-001-logging.md`（§7.1 裁决记录）；任务书：`developer/mailbox/inbox/MAIL-20260926-1620-management--developer-TASK-T-20260926-001-logging-platform-p0.md` + 增补 `MAIL-20260926-1640-management--developer-TASK-req001-q1q2-decision.md` | — |
+| T-20260926-001-logging-platform-p0 | THREAD-LOG-P0 | developer | submitted | 无（前置已由人类完成：镜像/WiFi/rt_patch） | 唯一主责=developer；审查门必经；角色由 management 会话以 subagent 上岗，只采信落盘证据；全链：R0 f3331b0（首轮 CONDITIONAL，2 严重）→裁定 AC5 含多进程×轮转→FAIL→R1 45eeb04（复审 PASS）→R2 a675c8d（RF 复审 FAIL，拦截修复引入的 RF-6 句柄泄漏）→R3 **2d83644（终审 PASS，三重口径核销，零新发现）**；developer 备料 maintainer（HANDOFF 1505）+最终 RESULT（1505）；**management 验收 accepted（有条件）**：板端 AC1/AC8 待用户按 USAGE §3 实测回贴，回贴矛盾项将降级 rejected | 2026-09-27 15:10 | 2026-09-27 15:10 | 验收报告 `management/script/ACCEPT-20260927-logging-p0.md`；审查链：REVIEW-…-{f3331b0,45eeb04,rf-a675c8d,rf6-2d83644}.md；交付终版 2d83644（7d1adc2=收尾提交）；信件 HANDOFF/RESULT MAIL-20260927-1505 | **accepted（有条件）** |
 
 ## 里程碑（对应 `from_human/开发节奏规划.docx` 阶段）
 
