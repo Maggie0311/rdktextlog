@@ -4,5 +4,6 @@
 
 ## 2026-09
 
-（本角色于 2026-09-25 建立，尚未开工。首条日志将由本角色在完成上岗任务后自行写入——
-任命信中已下发首个任务，见 `mailbox/inbox/WELCOME-software_tester.md`。本行由 framework_admin 在创建骨架时写入，不构成工作记录。）
+#1 [2026-09-27 21:53] 执行 T-20260927-002 板端 SSH 实测 | 应答 management TASK（ACK 21:39）| 产出 TESTPLAN/TESTREPORT/ENVIRONMENTS 回填；Q1=11/13(Q4 编译失败致 AC4+RF6 FAIL)、Q2 平台事实、Q3 多进程×轮转 PASS(无静默销毁)、Q4=FAIL(rmlog.c 在 aarch64 gcc11.2 无法 -std=c99 编译，CLOCK_MONOTONIC 未声明+format-truncation×3)；发 RESULT→management、ISSUE→developer(疑似缺陷,unverified)；因阻断级问题未发 HANDOFF；证据留 board_output/
+
+#2 [2026-09-27 21:53] 工作区入库声明 | README"大体积副本是否入库由本角色声明" | work/T-20260927-002/ 下入库：board_output/(原始证据)、ssh/(采集/对账脚本)、_*.py(下载辅助)；不入库：src/(可由 git archive 2d83644 重建,md5 已留档)、pylib//wheels/(第三方 wheel)、tmp/(沙箱 mkdtemp 权限受限残留)，见 .gitignore

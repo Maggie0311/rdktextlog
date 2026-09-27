@@ -1,0 +1,27 @@
+rc=0
+EXIT=0
+stderr-bytes:
+1568
+stderr:
+rmlog/rmlog.c: In function ‘rmlog__rotate_chain_locked’:
+rmlog/rmlog.c:443:35: warning: ‘.1’ directive output may be truncated writing 2 bytes into a region of size between 1 and 512 [-Wformat-truncation=]
+  443 |     snprintf(dst, sizeof(dst), "%s.1", g_path);
+      |                                   ^~
+rmlog/rmlog.c:443:5: note: ‘snprintf’ output between 3 and 514 bytes into a destination of size 512
+  443 |     snprintf(dst, sizeof(dst), "%s.1", g_path);
+      |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+rmlog/rmlog.c:436:40: warning: ‘%d’ directive output may be truncated writing between 1 and 11 bytes into a region of size between 0 and 511 [-Wformat-truncation=]
+  436 |         snprintf(src, sizeof(src), "%s.%d", g_path, i);
+      |                                        ^~
+rmlog/rmlog.c:436:9: note: ‘snprintf’ output between 3 and 524 bytes into a destination of size 512
+  436 |         snprintf(src, sizeof(src), "%s.%d", g_path, i);
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+rmlog/rmlog.c:437:40: warning: ‘%d’ directive output may be truncated writing between 1 and 11 bytes into a region of size between 0 and 511 [-Wformat-truncation=]
+  437 |         snprintf(dst, sizeof(dst), "%s.%d", g_path, i + 1);
+      |                                        ^~
+rmlog/rmlog.c:437:9: note: ‘snprintf’ output between 3 and 524 bytes into a destination of size 512
+  437 |         snprintf(dst, sizeof(dst), "%s.%d", g_path, i + 1);
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+[stderr]
+

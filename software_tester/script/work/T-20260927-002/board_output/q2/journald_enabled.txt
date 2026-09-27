@@ -1,0 +1,9 @@
+=== CMD ===
+systemctl is-enabled systemd-journald 2>&1; systemctl is-active systemd-journald 2>&1
+=== EXIT 0 ===
+=== STDOUT ===
+static
+active
+
+=== STDERR ===
+

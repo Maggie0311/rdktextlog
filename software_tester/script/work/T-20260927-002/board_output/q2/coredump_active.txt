@@ -1,0 +1,9 @@
+=== CMD ===
+systemctl is-active systemd-coredump 2>&1; systemctl is-enabled systemd-coredump 2>&1
+=== EXIT 1 ===
+=== STDOUT ===
+inactive
+Failed to get unit file state for systemd-coredump.service: No such file or directory
+
+=== STDERR ===
+

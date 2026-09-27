@@ -1,0 +1,99 @@
+rmlog.selftest — 工作区: /root/rmlog_test/work
+  PASS  AC2 roundtrip(转义/属性/双时间戳)
+  PASS  AC2 残行三道闸 + 随机字节 fuzz(300 次, 解析不抛异常)
+  PASS  AC3 五域 INIT/COMM/HW/FSM/SYS 共 24 码(字段完整/无重复)
+  FAIL  AC4 consistency: C 探针编译失败:
+
+/root/rmlog_test/src/rmlog/rmlog.c: In function ‘rmlog__wall_ts’:
+/root/rmlog_test/src/rmlog/rmlog.c:318:5: warning: implicit declaration of function ‘localtime_r’; did you mean ‘localtime’? [-Wimplicit-function-declaration]
+  318 |     localtime_r(&tv.tv_sec, &tmv);
+      |     ^~~~~~~~~~~
+      |     localtime
+/root/rmlog_test/src/rmlog/rmlog.c: In function ‘rmlog__mono_ms’:
+/root/rmlog_test/src/rmlog/rmlog.c:340:5: warning: implicit declaration of function ‘clock_gettime’ [-Wimplicit-function-declaration]
+  340 |     clock_gettime(CLOCK_MONOTONIC, &ts);
+      |     ^~~~~~~~~~~~~
+/root/rmlog_test/src/rmlog/rmlog.c:340:19: error: ‘CLOCK_MONOTONIC’ undeclared (first use in this function)
+  340 |     clock_gettime(CLOCK_MONOTONIC, &ts);
+      |                   ^~~~~~~~~~~~~~~
+/root/rmlog_test/src/rmlog/rmlog.c:340:19: note: each undeclared identifier is reported only once for each function it appears in
+/root/rmlog_test/src/rmlog/rmlog.c: In function ‘rmlog__emit_locked’:
+/root/rmlog_test/src/rmlog/rmlog.c:83:34: warning: implicit declaration of function ‘fdatasync’ [-Wimplicit-function-declaration]
+   83 | #    define RMLOG_FDATASYNC(fd)  fdatasync(fd)
+      |                                  ^~~~~~~~~
+/root/rmlog_test/src/rmlog/rmlog.c:576:9: note: in expansion of macro ‘RMLOG_FDATASYNC’
+  576 |         RMLOG_FDATASYNC(g_fd);           /* ERROR/FATAL 先落盘再返回（AC6） */
+      |         ^~~~~~~~~~~~~~~
+/root/rmlog_test/src/rmlog/rmlog.c: In function ‘rmlog__rotate_chain_locked’:
+/root/rmlog_test/src/rmlog/rmlog.c:443:35: warning: ‘.1’ directive output may be truncated writing 2 bytes into a region of size between 1 and 512 [-Wformat-truncation=]
+  443 |     snprintf(dst, sizeof(dst), "%s.1", g_path);
+      |                                   ^~
+/root/rmlog_test/src/rmlog/rmlog.c:443:5: note: ‘snprintf’ output between 3 and 514 bytes into a destination of size 512
+  443 |     snprintf(dst, sizeof(dst), "%s.1", g_path);
+      |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/root/rmlog_test/src/rmlog/rmlog.c:436:40: warning: ‘%d’ directive output may be truncated writing between 1 and 11 bytes into a region of size between 0 and 511 [-Wformat-truncation=]
+  436 |         snprintf(src, sizeof(src), "%s.%d", g_path, i);
+      |                                        ^~
+/root/rmlog_test/src/rmlog/rmlog.c:436:9: note: ‘snprintf’ output between 3 and 524 bytes into a destination of size 512
+  436 |         snprintf(src, sizeof(src), "%s.%d", g_path, i);
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/root/rmlog_test/src/rmlog/rmlog.c:437:40: warning: ‘%d’ directive output may be truncated writing between 1 and 11 bytes into a region of size between 0 and 511 [-Wformat-truncation=]
+  437 |         snprintf(dst, sizeof(dst), "%s.%d", g_path, i + 1);
+      |                                        ^~
+/root/rmlog_test/src/rmlog/rmlog.c:437:9: note: ‘snprintf’ output between 3 and 524 bytes into a destination of size 512
+  437 |         snprintf(dst, sizeof(dst), "%s.%d", g_path, i + 1);
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  PASS  AC5 多进程并发 4x250=1000 行无丢行/无交错
+  PASS  AC5 轮转触发, 副本数 3 (2<=n<=keep=3), 最老已淘汰
+  PASS  AC5×F-1 多进程×轮转 3x400 行逐 worker 对账: 写成功=1200 可见=1200, 副本文件 10 个, 无半行/无全灭/无缺号
+  PASS  AC5 读端一条命令 --level ERROR --code E-INIT-* 命中 2/5
+  PASS  AC6 硬崩溃(os._exit)后最后一条 ERROR/FATAL 事件可读
+  FAIL  C fdleak reopen (RF-6): RF6 探针编译失败:
+
+/root/rmlog_test/src/rmlog/rmlog.c: In function ‘rmlog__wall_ts’:
+/root/rmlog_test/src/rmlog/rmlog.c:318:5: warning: implicit declaration of function ‘localtime_r’; did you mean ‘localtime’? [-Wimplicit-function-declaration]
+  318 |     localtime_r(&tv.tv_sec, &tmv);
+      |     ^~~~~~~~~~~
+      |     localtime
+/root/rmlog_test/src/rmlog/rmlog.c: In function ‘rmlog__mono_ms’:
+/root/rmlog_test/src/rmlog/rmlog.c:340:5: warning: implicit declaration of function ‘clock_gettime’ [-Wimplicit-function-declaration]
+  340 |     clock_gettime(CLOCK_MONOTONIC, &ts);
+      |     ^~~~~~~~~~~~~
+/root/rmlog_test/src/rmlog/rmlog.c:340:19: error: ‘CLOCK_MONOTONIC’ undeclared (first use in this function)
+  340 |     clock_gettime(CLOCK_MONOTONIC, &ts);
+      |                   ^~~~~~~~~~~~~~~
+/root/rmlog_test/src/rmlog/rmlog.c:340:19: note: each undeclared identifier is reported only once for each function it appears in
+/root/rmlog_test/src/rmlog/rmlog.c: In function ‘rmlog__emit_locked’:
+/root/rmlog_test/src/rmlog/rmlog.c:83:34: warning: implicit declaration of function ‘fdatasync’ [-Wimplicit-function-declaration]
+   83 | #    define RMLOG_FDATASYNC(fd)  fdatasync(fd)
+      |                                  ^~~~~~~~~
+/root/rmlog_test/src/rmlog/rmlog.c:576:9: note: in expansion of macro ‘RMLOG_FDATASYNC’
+  576 |         RMLOG_FDATASYNC(g_fd);           /* ERROR/FATAL 先落盘再返回（AC6） */
+      |         ^~~~~~~~~~~~~~~
+/root/rmlog_test/src/rmlog/rmlog.c: In function ‘rmlog__rotate_chain_locked’:
+/root/rmlog_test/src/rmlog/rmlog.c:443:35: warning: ‘.1’ directive output may be truncated writing 2 bytes into a region of size between 1 and 512 [-Wformat-truncation=]
+  443 |     snprintf(dst, sizeof(dst), "%s.1", g_path);
+      |                                   ^~
+/root/rmlog_test/src/rmlog/rmlog.c:443:5: note: ‘snprintf’ output between 3 and 514 bytes into a destination of size 512
+  443 |     snprintf(dst, sizeof(dst), "%s.1", g_path);
+      |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/root/rmlog_test/src/rmlog/rmlog.c:436:40: warning: ‘%d’ directive output may be truncated writing between 1 and 11 bytes into a region of size between 0 and 511 [-Wformat-truncation=]
+  436 |         snprintf(src, sizeof(src), "%s.%d", g_path, i);
+      |                                        ^~
+/root/rmlog_test/src/rmlog/rmlog.c:436:9: note: ‘snprintf’ output between 3 and 524 bytes into a destination of size 512
+  436 |         snprintf(src, sizeof(src), "%s.%d", g_path, i);
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/root/rmlog_test/src/rmlog/rmlog.c:437:40: warning: ‘%d’ directive output may be truncated writing between 1 and 11 bytes into a region of size between 0 and 511 [-Wformat-truncation=]
+  437 |         snprintf(dst, sizeof(dst), "%s.%d", g_path, i + 1);
+      |                                        ^~
+/root/rmlog_test/src/rmlog/rmlog.c:437:9: note: ‘snprintf’ output between 3 and 524 bytes into a destination of size 512
+  437 |         snprintf(dst, sizeof(dst), "%s.%d", g_path, i + 1);
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  PASS  GEN 生成头/文档与 catalog 单一来源一致
+  PASS  F2 时间前缀归一: 前缀=日历段语义（until=段末/since=段始）, 窗口与全精度行为正确
+  PASS  READ parse/tail CLI 冒烟
+自测结束: 11/13 通过, 用时 3.4s
+SELFTEST FAIL
+__EXIT_CODE__=1

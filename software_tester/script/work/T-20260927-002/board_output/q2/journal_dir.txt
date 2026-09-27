@@ -1,0 +1,9 @@
+=== CMD ===
+ls -ld /var/log/journal 2>&1; ls /var/log/journal 2>&1
+=== EXIT 0 ===
+=== STDOUT ===
+drwxr-sr-x+ 3 root systemd-journal 4096 Jun  4  2025 /var/log/journal
+27b188d70ccc48d0a79c7117a8dd9aa3
+
+=== STDERR ===
+

@@ -1,0 +1,36 @@
+rc=0
+=== SOLO baseline: 1 writer x300 max_bytes=1200 keep=3 ===
+solo done
+=== MULTI: 2 workers x300 max_bytes=1200 (keep default 5) ===
+MULTI_EXIT=0/0
+=== COMBO: 3 workers x400 max_bytes=8000 keep=20 (AC5 组合参) ===
+COMBO_EXIT=0/0/0
+=== worker stderr (如有写失败) ===
+=== file listing ===
+/root/rmlog_test/q3/combo:
+total 124
+-rw-r--r-- 1 root root  1111 Sep 27 21:50 rmlog.log
+-rw-r--r-- 1 root root 24038 Sep 27 21:50 rmlog.log.1
+-rw-r--r-- 1 root root 24240 Sep 27 21:50 rmlog.log.2
+-rw-r--r-- 1 root root 24240 Sep 27 21:50 rmlog.log.3
+-rw-r--r-- 1 root root 24036 Sep 27 21:50 rmlog.log.4
+-rw-r--r-- 1 root root 22551 Sep 27 21:50 rmlog.log.5
+
+/root/rmlog_test/q3/multi:
+total 24
+-rw-r--r-- 1 root root  808 Sep 27 21:50 rmlog.log
+-rw-r--r-- 1 root root 2424 Sep 27 21:50 rmlog.log.1
+-rw-r--r-- 1 root root 2424 Sep 27 21:50 rmlog.log.2
+-rw-r--r-- 1 root root 2424 Sep 27 21:50 rmlog.log.3
+-rw-r--r-- 1 root root 2424 Sep 27 21:50 rmlog.log.4
+-rw-r--r-- 1 root root 2424 Sep 27 21:50 rmlog.log.5
+
+/root/rmlog_test/q3/solo:
+total 16
+-rw-r--r-- 1 root root  528 Sep 27 21:50 rmlog.log
+-rw-r--r-- 1 root root 1232 Sep 27 21:50 rmlog.log.1
+-rw-r--r-- 1 root root 1232 Sep 27 21:50 rmlog.log.2
+-rw-r--r-- 1 root root 1232 Sep 27 21:50 rmlog.log.3
+
+[stderr]
+

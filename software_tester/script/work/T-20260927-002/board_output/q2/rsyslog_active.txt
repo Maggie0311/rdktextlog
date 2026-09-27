@@ -1,0 +1,9 @@
+=== CMD ===
+systemctl is-active rsyslog 2>&1; systemctl is-enabled rsyslog 2>&1
+=== EXIT 0 ===
+=== STDOUT ===
+active
+enabled
+
+=== STDERR ===
+

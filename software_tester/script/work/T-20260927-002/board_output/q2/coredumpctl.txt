@@ -1,0 +1,8 @@
+=== CMD ===
+which coredumpctl 2>&1; coredumpctl --version 2>&1
+=== EXIT 127 ===
+=== STDOUT ===
+bash: line 1: coredumpctl: command not found
+
+=== STDERR ===
+

@@ -1,0 +1,10 @@
+=== CMD ===
+python3 --version; python3 -c 'import sys,platform; print(sys.version); print(platform.machine())'
+=== EXIT 0 ===
+=== STDOUT ===
+Python 3.10.12
+3.10.12 (main, May 27 2025, 17:12:29) [GCC 11.4.0]
+aarch64
+
+=== STDERR ===
+

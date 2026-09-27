@@ -1,0 +1,9 @@
+=== CMD ===
+uname -a; uname -m
+=== EXIT 0 ===
+=== STDOUT ===
+Linux ubuntu 6.1.83-rt28 #2 SMP PREEMPT_RT Wed Apr  8 21:26:24 CST 2026 aarch64 aarch64 aarch64 GNU/Linux
+aarch64
+
+=== STDERR ===
+

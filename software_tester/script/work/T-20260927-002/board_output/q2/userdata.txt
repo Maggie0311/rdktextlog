@@ -1,0 +1,10 @@
+=== CMD ===
+ls -ld /userdata 2>&1; df -h /userdata 2>&1
+=== EXIT 0 ===
+=== STDOUT ===
+drwxr-xr-x 2 root root 4096 Apr  9 11:55 /userdata
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/root        29G  7.1G   21G  26% /
+
+=== STDERR ===
+

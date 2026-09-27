@@ -1,0 +1,12 @@
+# T-20260927-002 工作区忽略项（本角色声明，见 worklog）
+# 第三方依赖（直下 wheel 解包，可重建）:
+pylib/
+wheels/
+# 失败 pip 残留 + 临时文件（含沙箱 mkdtemp 权限受限目录，不可读）:
+tmp/
+# 被测 commit 副本（可由 `git archive 2d83644 developer/script` 重建，md5 已留档 board_output/）:
+src/
+# 传输/构建中间物:
+_upload.tar
+*.pyc
+__pycache__/

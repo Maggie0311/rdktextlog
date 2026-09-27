@@ -1,0 +1,15 @@
+=== CMD ===
+dmesg --time-format iso 2>&1 | head -8
+=== EXIT 0 ===
+=== STDOUT ===
+2026-09-27T21:21:50,017503+08:00 in_atomic(): 1, irqs_disabled(): 128, non_block: 0, pid: 0, name: swapper/1
+2026-09-27T21:21:50,017508+08:00 preempt_count: 1, expected: 0
+2026-09-27T21:21:50,017510+08:00 RCU nest depth: 1, expected: 1
+2026-09-27T21:21:50,017516+08:00 CPU: 1 PID: 0 Comm: swapper/1 Not tainted 6.1.83-rt28 #2
+2026-09-27T21:21:50,017524+08:00 Hardware name: D-Robotics RDK X5 V1.0 (DT)
+2026-09-27T21:21:50,017527+08:00 Call trace:
+2026-09-27T21:21:50,017529+08:00  dump_backtrace+0xd8/0x130
+2026-09-27T21:21:50,017545+08:00  show_stack+0x18/0x30
+
+=== STDERR ===
+

@@ -1,0 +1,28 @@
+rc=0
+=== DIR /root/rmlog_test/q3/solo ===
+files=4 (['rmlog.log', 'rmlog.log.1', 'rmlog.log.2', 'rmlog.log.3'])
+expect_written=300  visible=48  halves=0  total_lines=48
+workers_with_survivors=1/1
+  wid=0 surviving=48 range=[252..299] missing=252 interior_holes=0 CONTIGUOUS-SUFFIX
+RESULT solo: expect=300 visible=48 halves=0 survivors=1/1 evicted=252 -> OK(无静默销毁: 无全灭且幸存为连续后缀, 缺失属正常轮转淘汰)
+
+=== DIR /root/rmlog_test/q3/multi ===
+files=6 (['rmlog.log', 'rmlog.log.1', 'rmlog.log.2', 'rmlog.log.3', 'rmlog.log.4', 'rmlog.log.5'])
+expect_written=600  visible=128  halves=0  total_lines=128
+workers_with_survivors=2/2
+  wid=3670 surviving=64 range=[236..299] missing=236 interior_holes=0 CONTIGUOUS-SUFFIX
+  wid=3671 surviving=64 range=[236..299] missing=236 interior_holes=0 CONTIGUOUS-SUFFIX
+RESULT multi: expect=600 visible=128 halves=0 survivors=2/2 evicted=472 -> OK(无静默销毁: 无全灭且幸存为连续后缀, 缺失属正常轮转淘汰)
+
+=== DIR /root/rmlog_test/q3/combo ===
+files=6 (['rmlog.log', 'rmlog.log.1', 'rmlog.log.2', 'rmlog.log.3', 'rmlog.log.4', 'rmlog.log.5'])
+expect_written=1200  visible=1200  halves=0  total_lines=1200
+workers_with_survivors=3/3
+  wid=3672 surviving=400 range=[0..399] missing=0 interior_holes=0 CONTIGUOUS-SUFFIX
+  wid=3673 surviving=400 range=[0..399] missing=0 interior_holes=0 CONTIGUOUS-SUFFIX
+  wid=3674 surviving=400 range=[0..399] missing=0 interior_holes=0 CONTIGUOUS-SUFFIX
+RESULT combo: expect=1200 visible=1200 halves=0 survivors=3/3 evicted=0 -> OK(无静默销毁, 无淘汰全量对账)
+
+
+[stderr]
+

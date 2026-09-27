@@ -5,7 +5,7 @@
 
 | # | 交付单元 | 路径 | 类型 | 关联 task_id | 被测 commit | 创建日期 | 消费者 |
 |---|---|---|---|---|---|---|---|
-| — | （暂无） | — | — | — | — | — | — |
+| 1 | 板端 SSH 实测（Q1–Q4） | `TESTPLAN-T-20260927-002.md` + `TESTREPORT-T-20260927-002-001.md` + `work/T-20260927-002/` | TEST | `T-20260927-002-logging-boardtest-ssh` | `2d83644` | 2026-09-27 | management / developer / code_reviewer |
 
 **待产出（上岗后）**：
 
