@@ -57,7 +57,10 @@ int rmlog_emit(int level, const char *mod, const char *code, const char *fmt, ..
  *   RMLOG_DEFAULT_DIR 存在 -> 用之; 否则 RMLOG_FALLBACK_DIR（与 Python 端一致）。
  * 返回 0 成功; 非 0 失败（业务可据此决定降级策略; 之后仍可调用 RMLOG_*,
  * 会重试初始化一次, 仍失败则静默丢弃 —— 日志故障不拖垮业务）。
- * rmlog_close: 进程退出前调用; 之后宏调用变为无操作。 */
+ * rmlog_close: 进程退出前调用（把缓冲中的 INFO/WARN 落盘后关闭句柄）。
+ * 注意: close 后再次调用 RMLOG_* 宏**并非无操作** —— emit 会按需重新打开
+ * 日志文件继续记录（幂等重开的语义, 与 "打开失败重试" 共用同一路径）;
+ * 若业务期望 "close 即停记", 请保证 close 后不再调用宏。 */
 int  rmlog_open(const char *dir);
 void rmlog_close(void);
 

@@ -25,13 +25,14 @@
 | `rmlog/rmlog.h / rmlog.c / rmlog_errors.h / example.c` | C 接口（给 X5 上的 C/C++ 电控程序链接） |
 | `rmlog_read.py` | 读端工具（parse / tail / filter） |
 | `ERR-CATALOG.md` | 错误码表（五域 24 码，由 catalog.py 自动生成） |
-| `tests/selftest-*.log` | 开发机自测原始输出（10/10 PASS） |
+| `tests/selftest-*.log` | 开发机自测原始输出（R1 末轮 12/12 PASS） |
 
 ## 2. 快速体验（Windows 开发机，3 分钟，可选）
 
 ```bat
 cd developer\script
 python -m rmlog.selftest                 :: 期望最后一行 SELFTEST PASS
+mkdir tests\_work                        :: 自测结束会清理 _work, 先建回目录再编译（R1 修正）
 gcc -std=c99 -Wall -Wextra -I rmlog -o tests\_work\example.exe rmlog\example.c rmlog\rmlog.c
 tests\_work\example.exe tests\_work\demo
 type tests\_work\demo\rmlog.log          :: 看到 4 行 LOGV1|... 即成功
@@ -69,8 +70,8 @@ python3 -m rmlog.selftest
 echo "EXIT=$?"
 ```
 
-**期望结果**: 10 行 `PASS`（AC2/AC3/AC4/AC5/AC6/GEN/READ），最后两行
-`自测结束: 10/10 通过` 与 `SELFTEST PASS`，`EXIT=0`。
+**期望结果**: 12 行 `PASS`（AC2/AC3/AC4/AC5×3/AC6/GEN/F2/READ），最后两行
+`自测结束: 12/12 通过` 与 `SELFTEST PASS`，`EXIT=0`。
 
 ### 3.4 需要回贴的内容
 
@@ -83,7 +84,7 @@ echo "EXIT=$?"
 | 现象 | 原因与处理 |
 |---|---|
 | `python3: command not found` | 板子烧的不是标准镜像或 PATH 异常；`which python3`、`ls /usr/bin/python*` 核实后反馈 |
-| 自测里 AC5 concurrent 失败 | 先重跑一次（并发压测对 IO 负载敏感）；仍失败把完整输出回贴，属需修复缺陷 |
+| 自测里 AC5 concurrent / AC5×F-1 失败 | 先重跑一次（并发压测对 IO 负载敏感）；仍失败把完整输出回贴，属需修复缺陷 |
 | `PermissionError` 写 `/userdata/rmlog` | 用户无该目录写权限；自测不受影响（selftest 用 `tests/_work`），部署时按 §6 用 root 或 `sudo chown` |
 | scp 传输后报解码错误 | 用二进制方式传（scp 默认即是）；不要经 Windows 记事本中转任何 `.py` 文件（会引入 CRLF/编码问题） |
 | 想指定自测工作区 | `python3 -m rmlog.selftest /tmp/rmlog_work`（参数 1 = 工作区路径） |
@@ -125,7 +126,8 @@ scp ubuntu@<板子IP>:/userdata/rmlog/rmlog.log* .
 # 第 2 分钟: 先看"所有错误及以上"，量最大
 python3 rmlog_read.py filter rmlog.log --level ERROR
 
-# 第 3 分钟: 用比赛时间窗收窄（--since/--until 传墙上时间前缀即可）
+# 第 3 分钟: 用比赛时间窗收窄（--since/--until 支持分钟级前缀; 前缀按日历语义
+#   解释: --until 14:38 = 含 14:38 这一整分钟, 即 [14:38:00.000, 14:38:59.999]）
 python3 rmlog_read.py filter rmlog.log --level ERROR --since 2026-09-26T14:32 --until 2026-09-26T14:38
 
 # 第 4 分钟: 锁定可疑域（云台失控 → 通信/状态机）
@@ -144,6 +146,10 @@ sudo dmesg --time-format iso | grep -iE "spi|error" | head -50
 
 - **日志目录**: 默认 `/userdata/rmlog/`（Q2 裁决值，root 运行）；该分区不存在时组件自动回退
   `/var/log/rmlog/`。代码路径也可显式指定（Python `Writer(log_dir=...)` / C `rmlog_open(dir)`）。
+- **部署约束（R1 增补）**: 同一日志目录的**所有写入方必须都经 rmlog 组件**（C/Python 双端
+  已约定同名轮转锁文件 `.rmlog.ROTLOCK`）—— 跨进程轮转互斥是 advisory 锁，若有第三方工具
+  直接写 `rmlog.log` 或自行 rename，互斥前提不成立。多进程部署时各进程应使用**相同的
+  max_bytes/keep 配置**。
 - **systemd 单元样例**（保存为 `/etc/systemd/system/rmlog-demo.service`；P0 未在板端实测安装）:
 
 ```ini
@@ -183,9 +189,12 @@ sudo systemctl daemon-reload && sudo systemctl enable --now rmlog-demo
 
 | 局限 | 影响 | P1 计划 |
 |---|---|---|
-| Windows 侧多进程写入用字节锁串行化 | 仅影响开发机自测；Linux 板端为内核级 O_APPEND 原子追加，零开销 | 板端实测复验（§3） |
+| Windows 侧多进程写入用写锁串行化 | 仅影响开发机自测；Linux 板端为内核级 O_APPEND 原子追加 + flock 轮转互斥，写路径零锁 | 板端实测复验（§3）；多进程×轮转组合建议增测（IMPL §2.1） |
+| Python 端每条事件 3 次系统调用（open/write/close） | 多进程×轮转数据不灭失的代价；1kHz 场景 µs 级可忽略 | 高频路径用 C 端（常驻 fd）；P2 批量化优化 |
+| 多进程×轮转的 Linux 行为是协议推演（unverified） | 板端实测前不作为已验证结论（IMPL §2.1 推演声明） | 用户板端自测增测该组合 |
 | INFO/WARN 依赖缓冲，硬断电窗口可能丢少量非关键行 | ERROR/FATAL 已强制 flush；预期损失边界=最近几条 INFO | 关键事件可开 `fsync=True`（接口已留） |
-| C 端暂不支持 k=v 属性参数 | C 宏消息里可自带 `k=v` 文本 | P1 扩展宏族 |
+| C 端暂不支持 k=v 属性参数 | C 宏消息里可自带 `k=v` 文本 | P1 扩展宏族（management 已裁定列入 P1） |
+| C 端 mkdir 仅单级创建 | 深层目录需部署方预建（§6） | P1 升级逐级创建（management 已裁定列入 P1） |
 | systemd/快照包/自启动未实测 | §6 为样例 | P1 交付实测版 + 一键快照脚本 |
 | 错误码表 24 码为初版 | 覆盖团队规划的高频场景 | 随业务接入扩充（改 catalog.py 重新生成，勿手改） |
 

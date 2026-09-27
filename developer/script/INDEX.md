@@ -6,7 +6,19 @@
 
 | # | 交付单元 | 路径 | 类型 | 关联 task_id | commit | 创建日期 | 消费者 |
 |---|---|---|---|---|---|---|---|
-| 1 | rmlog P0 文本日志平台（代码+自测+文档） | `script/`（`rmlog/`、`rmlog_read.py`、`USAGE.md`、`ERR-CATALOG.md`、`IMPL-T-20260926-001-logging-platform-p0.md`、`tests/selftest-*.log`） | 源码+文档+测试 | T-20260926-001-logging-platform-p0 | （本单元提交 hash，见 RESULT 邮件） | 2026-09-26 | code_reviewer（审查）、management（验收）、人类用户（板端自测与场下使用） |
+| 1 | rmlog P0 文本日志平台（代码+自测+文档） | `script/`（`rmlog/`、`rmlog_read.py`、`USAGE.md`、`ERR-CATALOG.md`、`IMPL-T-20260926-001-logging-platform-p0.md`、`tests/selftest-*.log`） | 源码+文档+测试 | T-20260926-001-logging-platform-p0 | f3331b0（R0）/ d7e06da（reviewer 勘误） | 2026-09-26 | code_reviewer（审查）、management（验收）、人类用户（板端自测与场下使用） |
+| 2 | rmlog P0 整改返工 R1（F-1~F-9 逐条处置：轮转协议 v2 / 时间前缀归一 / selftest 12 用例） | 同上（变更：`rmlog/writer.py` 全量重写、`rmlog/rmlog.c` `rmlog.h`、`rmlog/worker.py`、`rmlog/selftest.py`、`rmlog_read.py`、`USAGE.md`、`IMPL-…md`、`CODE-STYLE.md` v1.1、`tests/selftest-20260927-{1010-r1,1028-r1}.log`） | 源码+文档+测试 | T-20260926-001-logging-platform-p0 | （本轮 commit hash，见复审请求信 MAIL-20260927-1050） | 2026-09-27 | code_reviewer（复审）、management（验收） |
+
+**自测留档索引**：
+
+| 留档 | 轮次 | 结果 |
+|---|---|---|
+| `tests/selftest-20260926-{1958,2002}.log` | R0 迭代 | FAIL（修复过程） |
+| `tests/selftest-20260926-2020-final.log` | R0 第 3 轮 | PASS 10/10（R0 曾误标"最终"，见 F-3） |
+| `tests/selftest-20260926-{2035,2042}.log` | R0 迭代 | FAIL（AC5 并发丢行，commit 后发现） |
+| `tests/selftest-20260926-2055.log` | R0 末轮 | PASS 10/10 |
+| `tests/selftest-20260927-1010-r1.log` | R1 迭代 | FAIL 10/12（新用例参数误校准，定位后校准；过程见 IMPL §3） |
+| `tests/selftest-20260927-1028-r1.log` | **R1 末轮** | **PASS 12/12** |
 
 **待产出（上岗后）**：
 

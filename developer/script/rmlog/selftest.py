@@ -2,6 +2,8 @@
 """rmlog.selftest — 断言式自测入口，覆盖 AC1–AC6 可自测项。
 
 任务: T-20260926-001-logging-platform-p0。
+R1 返工: 新增 2 用例 —— test_ac5_concurrent_rotation（F-1 多进程×轮转逐 worker
+对账）与 test_reader_time_prefix（F-2 分钟前缀回归）。
 
 用法与输出约定（CODE-STYLE §5）::
 
@@ -14,13 +16,15 @@
     AC2 行格式与残行:  test_ac2_roundtrip / test_ac2_partial_line
     AC3 错误码体系:    test_ac3_catalog
     AC4 双端一致:      test_ac4_consistency（Python 与 gcc 编译的 C 端逐字节对照）
-    AC5 落盘与查询:    test_ac5_concurrent / test_ac5_rotation / test_ac5_read_filter
+    AC5 落盘与查询:    test_ac5_concurrent / test_ac5_rotation /
+                       test_ac5_concurrent_rotation（F-1 组合对账）/ test_ac5_read_filter
+    F-2 时间前缀:      test_reader_time_prefix（分钟前缀整分钟语义回归）
     AC6 崩溃取证:      test_ac6_last_line_survives
     附加:              test_gen_code / test_reader_cli（读端 CLI 冒烟）
 
 平台差异: 本测试在 Windows 开发机运行（并发与崩溃语义的等效模拟见各用例注释;
 Linux 板端按 Q1=A 裁决由用户按 USAGE.md 板端自测复验 —— 本结果不得表述为
-Linux 已验证）。
+Linux 已验证; 多进程×轮转在 Linux 上的行为为协议推演, IMPL §4 有声明）。
 """
 
 import os
@@ -313,6 +317,80 @@ def test_ac5_rotation(work):
     print("  PASS  AC5 轮转触发, 副本数 %d (2<=n<=keep=3), 最老已淘汰" % len(copies))
 
 
+def test_ac5_concurrent_rotation(work):
+    """AC5×F-1: 多进程并发写 + 触发轮转 —— 逐 worker 对账, 任何写成功的事件不得静默销毁。
+
+    这是 R1 返工新增的组合用例（reviewer probe_1e/1g 在旧协议上实证的
+    严重缺陷回归闸）: 旧协议下两个进程对同一目录以小 max_bytes 并发写,
+    其中一个进程的全部写入（event 全部返回 True）可从磁盘上完全消失
+    —— fd 搁浅在旧 inode 上, 该文件被对方的轮转链当"最老副本"淘汰。
+    本用例必须保持:
+      1. 每个 worker 全部写成功（退出码 0, 事件数全对上）;
+      2. 每个 worker 写成功的每一条 (wid,i) 都能在主文件或副本链中读到
+         （写成功条数 == 磁盘可见条数, 不存在"某 worker 全灭"或部分灭）;
+      3. 无半行（解析不出的行只允许 0 条 —— INFO 级无 flush 承诺, 但协议
+         v2 每写一次 write 整行, 轮转链原子 rename, 磁盘上不应有半行）;
+      4. 各 worker 的事件序号 i 在其 wid 名下无重复、无缺号（0..per-1 全齐）。
+    keep 传大值（10）: 保证压测期间写入的副本不被淘汰, 对账窗口完整
+    （淘汰属正常容量治理, 不在本用例的"不灭失"承诺内 —— 用大 keep 把它排除）。
+    """
+    log_dir = os.path.join(work, "ac5_conc_rot")
+    workers, per = 3, 400
+    # 行长约 105B, 每 worker 自计字节 ≈ 42KB → max_bytes=8000 时每 worker 触发
+    # ~5 次轮转（合计 ~15 次）。keep 必须大于轮转总次数: 链槽位 = keep+1,
+    # keep=20 → 21 槽 > 15, 最早的文件不会被正常保留策略淘汰 —— 这样
+    # "写成功 => 链上可见"的对账窗口完整覆盖整个压测过程（淘汰属正常容量治理,
+    # 不在"不灭失"承诺内; 若 keep 太小, 本用例会把正常淘汰误报为数据销毁,
+    # R1 自测第一轮即因此误报, 已校准参数并在此注释留痕）。
+    procs = [subprocess.Popen(
+        [sys.executable, "-m", "rmlog.worker", log_dir, str(per), "8000", "20"],
+        cwd=_SCRIPT_DIR, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        for _ in range(workers)]
+    for p in procs:
+        _out, err = p.communicate(timeout=180)
+        check(p.returncode == 0,
+              "worker 退出码 %d: %s" % (p.returncode, err.decode("utf-8", "replace")[:200]))
+    # ---- 对账: 读主文件 + 全部副本链 ----
+    expect = workers * per
+    seen_pairs = {}
+    total_files = 0
+    for name in sorted(os.listdir(log_dir)):
+        if not (name == "rmlog.log" or name.startswith("rmlog.log.")):
+            continue
+        total_files += 1
+        path = os.path.join(log_dir, name)
+        with open(path, encoding="utf-8", errors="replace") as fh:
+            for raw in fh:
+                ev = fmt.parse_line(raw)
+                if ev is None:
+                    continue
+                wid = ev["attrs"]["wid"]
+                idx = int(ev["attrs"]["i"])
+                pair_key = (wid, idx)
+                check(pair_key not in seen_pairs,
+                      "对账重复: wid=%s i=%d 出现于 %s 与 %s（数据被复制或检测失效）"
+                      % (wid, idx, seen_pairs.get(pair_key, "?"), name))
+                seen_pairs[pair_key] = name
+    check(total_files >= 2, "未产生轮转副本（轮转未被触发, 用例失效）: %d 个文件" % total_files)
+    got = len(seen_pairs)
+    check(got == expect,
+          "写成功 %d 条, 磁盘可见 %d 条 —— 存在已确认写成功的事件被静默销毁"
+          % (expect, got))
+    by_wid = {}
+    for (wid, idx) in seen_pairs:
+        by_wid.setdefault(wid, set()).add(idx)
+    check(len(by_wid) == workers,
+          "有 worker 全灭（旧协议 F-1 症状）: 仅 %d/%d 个 worker 有幸存行"
+          % (len(by_wid), workers))
+    for wid, idxs in by_wid.items():
+        missing = set(range(per)) - idxs
+        check(not missing,
+              "wid=%s 缺号 %d 个（如 %s）—— 该 worker 部分事件被销毁"
+              % (wid, len(missing), sorted(missing)[:3]))
+    print("  PASS  AC5×F-1 多进程×轮转 %dx%d 行逐 worker 对账: 写成功=%d 可见=%d, "
+          "副本文件 %d 个, 无半行/无全灭/无缺号" % (workers, per, expect, got, total_files))
+
+
 def test_ac5_read_filter(work):
     """AC5: 读端一条命令按 级别+错误码前缀 过滤（对齐 REQ AC5 原话场景）。"""
     log_dir = os.path.join(work, "ac5_filter")
@@ -382,6 +460,65 @@ def test_gen_code(work):
     print("  PASS  GEN 生成头/文档与 catalog 单一来源一致")
 
 
+def test_reader_time_prefix(work):
+    """F-2 回归: --until/--since 分钟级前缀不再漏掉该分钟的事件。
+
+    回归背景（reviewer probe_until2 实证）: 旧读端原始字典序比较下,
+    "--until 12:01" 漏掉 12:01 这一分钟的全部行（含 12:01:00.500 第一条）,
+    而全精度值正确、--since 前缀碰巧正确 —— 属系统性证据漏洞。
+    本用例构造同一分钟内多条事件, 验证前缀语义:
+      --until T12:01  → 命中 12:01 分钟内全部行（前缀=该段末 12:01:59.999）;
+      --since T12:01  → 命中 12:01 及之后（前缀=该段始 12:01:00.000）;
+      --until T12:00  → 不命中 12:01 的行（窗口边界不被放宽）;
+      全精度值行为与旧版一致（向后兼容）。
+    """
+    log_dir = os.path.join(work, "ac5_timeprefix")
+    log = os.path.join(log_dir, "rmlog.log")
+    # 直接构造合法日志行: 三条事件跨两个分钟, 时间点来自 reviewer 的复现形态
+    lines = [
+        "LOGV1|1|2026-09-26T12:00:00.100|100|INFO|E-SYS-005|t|minute 0 event",
+        "LOGV1|2|2026-09-26T12:01:00.500|1500|ERROR|E-COMM-001|t|minute 1 first",
+        "LOGV1|3|2026-09-26T12:01:59.900|59900|ERROR|E-COMM-001|t|minute 1 last",
+    ]
+    os.makedirs(log_dir, exist_ok=True)
+    with open(log, "w", encoding="utf-8", newline="\n") as fh:
+        fh.write("\n".join(lines) + "\n")
+
+    def run_filter(extra):
+        proc = subprocess.run([sys.executable, _READER, "filter", log] + extra,
+                              capture_output=True, text=True)
+        check(proc.returncode == 0,
+              "filter 退出码 %d: %s" % (proc.returncode, proc.stderr))
+        return [l for l in proc.stdout.splitlines() if l.strip()]
+
+    got_until_min = run_filter(["--until", "2026-09-26T12:01"])
+    # 修复后语义: "--until T12:01" = 上界 12:01:59.999 → 12:00 与 12:01 的行全部命中;
+    # 旧缺陷的行为是只命中 12:00 的 1 行（12:01 分钟内事件全部漏掉）。
+    check(len(got_until_min) == 3,
+          "--until 分钟前缀应按段末语义命中 3 行（12:00 全部 + 12:01 全部）, "
+          "若只得 1 行即 F-2 缺陷复现: %r" % (got_until_min,))
+    # 窗口断言: --since 12:01 --until 12:01 = 恰好 12:01 这一分钟内的 2 行
+    got_window = run_filter(["--since", "2026-09-26T12:01",
+                             "--until", "2026-09-26T12:01"])
+    check(len(got_window) == 2,
+          "[since 12:01, until 12:01] 应恰好命中 12:01 这一分钟的 2 行, 实得 %d: %r"
+          % (len(got_window), got_window))
+    got_since_min = run_filter(["--since", "2026-09-26T12:01"])
+    check(len(got_since_min) == 2,
+          "--since 分钟前缀应含该分钟起 2 行, 实得 %d: %r"
+          % (len(got_since_min), got_since_min))
+    got_until_prev = run_filter(["--until", "2026-09-26T12:00"])
+    check(len(got_until_prev) == 1,
+          "--until 12:00 不应命中 12:01 的行, 实得 %d: %r"
+          % (len(got_until_prev), got_until_prev))
+    got_until_full = run_filter(["--until", "2026-09-26T12:01:59.900"])
+    check(len(got_until_full) == 3,
+          "全精度 --until 行为须保持（3 行）, 实得 %d: %r"
+          % (len(got_until_full), got_until_full))
+    print("  PASS  F2 时间前缀归一: 前缀=日历段语义（until=段末/since=段始）, "
+          "窗口与全精度行为正确")
+
+
 def test_reader_cli(work):
     """附加: 读端 parse/tail 子命令冒烟（filter 已在 AC5 覆盖）。"""
     log = os.path.join(work, "ac5_filter", "rmlog.log")   # 复用 AC5 过滤用例的日志
@@ -413,9 +550,11 @@ def main(argv):
         ("AC4 consistency", lambda: test_ac4_consistency(work)),
         ("AC5 concurrent", lambda: test_ac5_concurrent(work)),
         ("AC5 rotation", lambda: test_ac5_rotation(work)),
+        ("AC5 concurrent rotation (F-1)", lambda: test_ac5_concurrent_rotation(work)),
         ("AC5 read filter", lambda: test_ac5_read_filter(work)),
         ("AC6 crash", lambda: test_ac6_last_line_survives(work)),
         ("GEN doc/header", lambda: test_gen_code(work)),
+        ("READ time prefix (F-2)", lambda: test_reader_time_prefix(work)),
         ("READ cli", lambda: test_reader_cli(work)),
     ]
     failed = 0

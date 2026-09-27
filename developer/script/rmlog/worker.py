@@ -7,9 +7,12 @@
 句柄 —— 进程内线程模拟不了多进程 fd 与内核追加语义。selftest 用
 subprocess 拉起 N 个本进程, 各写 M 条, 事后由 selftest 校验"无丢行、无交错半行"。
 
-用法: python3 -m rmlog.worker <log_dir> <count> [max_bytes]
+用法: python3 -m rmlog.worker <log_dir> <count> [max_bytes] [keep]
     每条事件 attrs 携带 wid(工作进程号=pid) 与 i(条目序号), 供事后按进程对账。
     正常退出码 0; 参数错误退出码 2。
+    keep（R1 增补, F-1 支撑）: 轮转保留份数, 缺省 5 —— 与组件默认一致;
+    selftest 的多进程×轮转对账用例传大 keep, 保证"写成功 => 链上可见"
+    的对账窗口覆盖整个压测过程（不被副本淘汰截断）。
 """
 
 import os
@@ -21,14 +24,17 @@ from .writer import Writer
 def main(argv):
     """工作进程入口: 建独立 Writer 连写 count 条 INFO 事件后退出。"""
     if len(argv) < 3:
-        sys.stderr.write("usage: python3 -m rmlog.worker <log_dir> <count> [max_bytes]\n")
+        sys.stderr.write(
+            "usage: python3 -m rmlog.worker <log_dir> <count> [max_bytes] [keep]\n")
         return 2
     log_dir = argv[1]
     count = int(argv[2])
     # max_bytes 可选: 传小值可让多进程场景下也触发轮转（压测轮转竞争路径）
     max_bytes = int(argv[3]) if len(argv) > 3 else 8 * 1024 * 1024
+    # keep 可选（F-1 支撑, 见模块头）: 缺省与 Writer 默认一致
+    keep = int(argv[4]) if len(argv) > 4 else 5
 
-    writer = Writer(log_dir=log_dir, max_bytes=max_bytes, keep=5)
+    writer = Writer(log_dir=log_dir, max_bytes=max_bytes, keep=keep)
     wid = os.getpid()
     for i in range(count):
         # 统一用 E-SYS-005(里程碑) 便于对账; 消息带 pid 交叉印证 wid
