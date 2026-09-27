@@ -4,10 +4,10 @@
 |---|---|
 | task_id | T-20260926-001-logging-platform-p0 |
 | 主责 | developer (R-003)（本会话上岗执行；前次中断的同任务产物已核验后并入） |
-| 交付日期 | 2026-09-26（R0 首交付）；2026-09-27（R1 整改返工）；2026-09-27（R2 复审微整改 RF-1~RF-5，commit 见 §7 / INDEX） |
+| 交付日期 | 2026-09-26（R0 首交付）；2026-09-27（R1 整改返工）；2026-09-27（R2 复审微整改 RF-1~RF-5）；2026-09-27（R3 终轮微修复 RF-6 + MIN-1/2/3，commit 见 §7 / INDEX） |
 | 需求依据 | `management/script/REQ-20260926-001-logging.md`（§4 P0-a~f、§6 AC1–AC8、§7.1 裁决） |
-| 任务书 | R0: inbox MAIL-…1620 + MAIL-…1640；R1: inbox MAIL-20260927-0922（F-1~F-9 整改书）；R2: inbox MAIL-20260927-1215（RF-1~RF-5 微整改书，范围冻结 5 项） |
-| 关联审查 | `code_reviewer/script/REVIEW-T-20260926-001-f3331b0.md`（结论 CONDITIONAL，F-1~F-9 逐条整改见 §1.1） |
+| 任务书 | R0: inbox MAIL-…1620 + MAIL-…1640；R1: inbox MAIL-20260927-0922（F-1~F-9 整改书）；R2: inbox MAIL-20260927-1215（RF-1~RF-5 微整改书，范围冻结 5 项）；R3: inbox MAIL-20260927-1336（RF-6 + MIN-1/2/3 终轮微修复书，范围冻结 4 项） |
+| 关联审查 | `code_reviewer/script/REVIEW-T-20260926-001-f3331b0.md`（结论 CONDITIONAL，F-1~F-9 逐条整改见 §1.1）；`code_reviewer/script/REVIEW-T-20260926-001-rf-a675c8d.md`（R3 复审 FAIL：RF-6 严重级 + MIN-1/2/3，逐条处置见 §1.3） |
 
 ## 1. 改动清单（交付物全集，均在 `developer/script/`）
 
@@ -25,10 +25,11 @@
 | `rmlog/example.c` | C 最小示例（四级事件各一条） | AC1 |
 | `rmlog/encode_cases.py` | AC4 用例集与二进制传输编解码（开发机自测专用） | AC4 |
 | `rmlog/_ac4_probe.c` | AC4 C 探针（selftest 运行时生成，读二进制用例→渲染→写二进制输出） | AC4 |
-| `rmlog/selftest.py` | 自测入口（R1 起 12 用例：AC2–AC6 + F-1 组合对账 + F-2 前缀回归 + 附加） | AC1 |
+| `rmlog/selftest.py` | 自测入口（R3 起 13 用例：AC2–AC6 + F-1 组合对账 + F-2 前缀回归 + RF-6 句柄守恒 + 附加） | AC1 |
 | `rmlog_read.py` | 读端工具：parse/tail/filter；R1 增时间前缀归一（F-2） | AC5 |
 | `USAGE.md` | 场下使用方法；R1 修正 §2 复现命令（F-4）与 §5 时间窗示例语义（F-2） | AC7 |
-| `tests/selftest-*.log` | 自测原始输出留档（含修复过程各轮，R1 末轮 12/12 PASS） | AC1 |
+| `tests/selftest-*.log` | 自测原始输出留档（含修复过程各轮，R3 末轮 13/13 PASS） | AC1 |
+| `tests/probe_fdleak_rf6.c` | RF-6 句柄泄漏回归探针（R3 新增，selftest 用例编译运行；POSIX/Windows 双口径，前后对照留档 `tests/probe_fdleak_rf6_before_after.log`） | RF-6 |
 | `INDEX.md` | 交付单元登记 | 通用 |
 
 ### 1.1 R1 返工处置索引（F-1~F-9，逐条对应审查报告 §5）
@@ -47,13 +48,22 @@
 
 ### 1.2 R2 微整改处置索引（RF-1~RF-5，逐条对应复审报告 REVIEW-…-45eeb04 §6/§8）
 
-| 发现项 | 级别 | 处置摘要（详细位置与行号见复审请求信 MAIL-20260927-HHMM 的 RF 逐条节） |
+| 发现项 | 级别 | 处置摘要（详细位置与行号见复审请求信 MAIL-20260927-1305 的 RF 逐条节） |
 |---|---|---|
 | RF-1 C 端 close 后重开落点与注释失实（显式目录形态） | 一般 | **选"让行为与注释一致"**（二选一的前者）：`rmlog__open_locked` 在 `g_path` 已有值时跳过目录裁决直接复用（rmlog.c，与 Python 端 Writer 构造期裁决一次的语义对齐）；close 后 emit 重开落点 = 本进程最近一次成功打开的目录，显式目录形态成立（reviewer probe_c2 场景已由本角色复验探针证实修复）。取舍理由见 §4.1。rmlog.h 注释同步限定重开落点语义 |
 | RF-2 IMPL §3 的 810 vs 留档 813 | 提示 | **已更正**：§3 数字改按留档原始记录 813/1200，并注明该处曾为转写笔误（GEN-33 证据诚实） |
 | RF-3 selftest docstring keep=10 残留 | 提示 | **已更正**：test_ac5_concurrent_rotation docstring 改为 keep=20 并注明残留来源（1010 轮参数误校准修复后注释未同步） |
 | RF-4 Windows 写锁 open 失败误计 write_failures | 一般 | **已修**：`_win_write_line` 锁文件 open 失败改计 `lock_degradations`（与 locking/解锁失败同口径），`write_failures` 只反映真实写失败；`__init__` 计数器注释同步收紧。selftest 12 用例断言未直接涉该计数语义，无需改断言（健康口径见 §2 第 7 条） |
 | RF-5 C 端 rotlock 获取失败无计数 | 提示 | **已修**：rmlog.c 增 `g_lock_degradations`（对齐 Python `lock_degradations` 风格），`rmlog__rotate_locked` 取锁失败路径计数；仅在持写锁的 emit 路径自增，线程安全；Windows 平台的 -2 约定值（无跨进程锁）不计入，避免伪降级 |
+
+### 1.3 R3 终轮微修复处置索引（RF-6 + MIN-1/2/3，逐条对应复审报告 REVIEW-…-rf-a675c8d §6/§8）
+
+| 发现项 | 级别 | 处置摘要 |
+|---|---|---|
+| RF-6 `rmlog__open_locked` 双重 open + 句柄泄漏（rmlog.c:162-175 区域，1000 轮 emit→close 实测 +1000，1:1） | 严重 | **已修（结构归位：裁决与打开分离）**：三个裁决分支只裁决/复用 `g_path`，文件 `open` 保留为函数尾部唯一一次——首个 fd 被覆盖泄漏的结构性根源消除。返回值语义逐分支与修复前等价：① 各分支 open 失败 ⇒ 修复后尾部同路径同 flags 的 open 同样失败 ⇒ 返回 -1（等价，打开失败不回滚 g_path 的行为也未变）；② 各分支 open 成功 ⇒ 修复后打开同一同 flags 路径成功 ⇒ 返回 0（等价）。调用路径全走查：emit 按需重开（`rmlog__emit_locked` 打开分支，RF-6 主要触发面）、`rmlog_open(NULL)` 缺省裁决路径、INIT_ONCE 初始化路径（仅初始化写锁，与本函数无耦合，未变）——均不复现泄漏。**回归闸**：selftest 新增第 13 用例 `test_c_fdleak_reopen`（600 轮 emit→close 句柄守恒断言，探针 `tests/probe_fdleak_rf6.c` 留档进 tests/）+ 前后对照数据 `tests/probe_fdleak_rf6_before_after.log`（修复前 1000 轮 +1000 / 500 轮 +500 / 快路径 +0，泄漏复现；修复后 1000 轮 +0 / 500 轮 +0 / 快路径 +0，且 reopen 组落盘自检同时断言 RF-1 语义保持） |
+| MIN-1 IMPL:52 / INDEX:11 邮件引用占位符"MAIL-…-HHMM/<HHMM>"未填实（实际 1305） | 一般 | **已更正**：IMPL §1.2 处置索引表头占位符改为 MAIL-20260927-1305；INDEX #3 行同步（见 §1.3 登记）；worklog #4 的同名占位符一并更正（worklog 只可追加，以新条目 #5 更正，不改动历史条目） |
+| MIN-2 IMPL §7 / INDEX:11 未登记 R2 交付 commit a675c8d | 提示 | **已补登记**：INDEX #3 行 commit 栏补 `a675c8d（R2）`；IMPL §7 补 R2 交付 commit 与本轮 R3 交付顺序说明 |
+| MIN-3 复审请求信"任务书随附入库"声明与 git 实际不符（1215 任务书未随 a675c8d 入库） | 一般 | **按管理侧裁定双向更正**：① 1215 任务书原件按"收件方应提交"原则随本轮提交入库（`developer/mailbox/inbox/MAIL-20260927-1215-…TASK-rf-microfix.md`，属流程更正非扩围——任务书MAIL-20260927-1336 已明示）；② 1305 请求信已发出即冻结，不再改动，其"随附入库说明"与 git 实际的出入以本轮提交事实与 worklog #5 更正说明为准（in-box 只可追加、发出信冻结，故采用新条目更正而非改历史信） |
 
 ## 2. 关键决策与理由
 
@@ -144,6 +154,7 @@ POSIX 语义的逐调用推演，**未经板端实测**。推演依据：
 | 20260927-1010-r1 | **FAIL 10/12** | R1 第 1 轮：两个新用例 FAIL —— F-1 组合用例误报（参数 keep=10 过小，触发**正常保留淘汰**而非数据销毁，见下）+ F-2 用例期望值写反 |
 | 20260927-1028-r1 | **PASS 12/12** | **R1 末轮 PASS**（修复=组合用例 keep 提至 20 保证轮转次数 < 链槽位；F-2 用例改为正确的日历语义断言）|
 | 20260927-1235-rf | **PASS 12/12** | **R2 微整改末轮 PASS**（RF-1/RF-3/RF-4/RF-5 代码与注释修正后全量重跑，28.2s，退出码 0；RF-2 为文档修正）|
+| 20260927-1352-rf6 | **PASS 13/13** | **R3 终轮微修复末轮 PASS**（RF-6 修复 + selftest 新增第 13 用例 test_c_fdleak_reopen——600 轮 emit→close 句柄守恒探针，44.3s，退出码 0；句柄前后对照数据见 `tests/probe_fdleak_rf6_before_after.log`：修复前 1000 轮 +1000/500 轮 +500/快路径 +0，修复后全部 +0。用例数 12→13，新增用例为本轮范围）|
 
 R1 迭代说明（诚实记录；RF-2 更正：本段旧文的"810"系转写笔误，留档原始记录为
 **813**/1200，以留档为准）：20260927-1010 轮的 F-1 FAIL 经临时诊断脚本定位 —— 磁盘可见
@@ -240,6 +251,10 @@ LOGV1|4|2026-09-26T20:16:57.034|361818156|FATAL|E-FSM-004|fsm|状态机进入未
   ③ 未采用"加终态标志收紧行为"，因那会改变 close 的既有承诺面（幂等重开），超出 RF-1
   范围（DN5）；④ 与 INIT_ONCE/线程锁的交互无回归 —— once 只初始化锁，重开全程持同一把
   写锁，g_path 的读写均在锁内（reviewer F-5 核销时已核对该组合，本轮分支前置不引入新交互）。
+  **R3（RF-6）追记**：R2 的上述实现残留了"分支内 open + 尾部再 open"的旧结构（RF-6 句柄
+  泄漏，R3 复审 §6 实证 1000 轮 +1000），已按复审建议归位为"裁决与打开分离"（函数尾部
+  唯一 open）；本节描述的 RF-1 语义（重开落点=最近一次成功打开的目录）经修复后探针复验
+  保持不变（前后对照数据见 §1.3 RF-6 行与 `tests/probe_fdleak_rf6_before_after.log`）。
 
 ## 5. 板端未核实项清单 + 用户探测命令（AC8，按 Q1=A 裁决执行）
 
@@ -263,9 +278,15 @@ LOGV1|4|2026-09-26T20:16:57.034|361818156|FATAL|E-FSM-004|fsm|状态机进入未
 ## 7. 提交信息
 
 - 提交隔离：按路径显式添加本轮文件（契约 §2.1.2）；发现他方（management）未提交改动，
-  不触碰，并在此 NOTIFY：**management 名下有未提交改动（memory/PROJECT-BOARD/worklog 及
-  from_human 原件），请其自行提交**。
-- commit hash 与产物以 INDEX.md 登记为准（审查/验收以该 hash 为基准）。
-- R1 交付顺序（契约 §2.1.1，本次已按序执行）：修复 → 自测全量重跑留档 →
-  **先发复审请求**（新 commit hash + F-1~F-9 逐条处置）→ 审查通过 →
+  不触碰，并在此 NOTIFY：**management 名下有未提交改动（memory/PROJECT-BOARD/worklog、
+  from_human 原件及 outbox 新邮件），请其自行提交**。
+- commit hash 与产物以 INDEX.md 登记为准（审查/验收以该 hash 为基准）：
+  R0=f3331b0；R1=45eeb04；**R2=a675c8d**（MIN-2 补登记：R2 交付权威 hash，亦为 R3 复审
+  基准）；R3=本轮提交（hash 以 git log 为准，与本轮复审请求信同值）。
+- 交付顺序（契约 §2.1.1，R1/R2/R3 三轮均按序执行）：修复 → 自测全量重跑留档 →
+  **先发复审请求**（新 commit hash + 逐条处置）→ 审查通过 →
   合格确认通知 maintainer（备料）→ 再向 management 报 RESULT。
+- MIN-3 流程更正（R3）：R2 复审请求信 MAIL-20260927-1305 的"任务书随附入库"声明与 git
+  实际不符（a675c8d 未含 1215 任务书原件，该文件当时仍未跟踪）。已发出信件冻结不改；
+  按管理侧裁定：1215 任务书原件按"收件方应提交"原则随 R3 提交入库（属流程更正非扩围），
+  声明出入以本节与 worklog #5 更正条目为准。

@@ -15,6 +15,12 @@
  *       目录裁决, 显式目录形态下事件继续落原目录, 与 rmlog.h 注释一致）;
  *   RF-5 轮转锁获取失败计入 g_lock_degradations（对齐 Python 端可观测口径,
  *       全程持写锁, 计数线程安全）。
+ * R3 终轮微修复: 复审报告 RF-6 ——
+ *   RF-6 rmlog__open_locked 结构归位（裁决与打开分离）: R2 实现各分支内
+ *       open 一次、函数尾部又无条件第二次 open, 首个 fd 未 close 即被覆盖,
+ *       每次"按需重开"泄漏 1 个文件句柄（1000 轮 emit→close 实测 +1000, 1:1）。
+ *       修复后全函数 open 恰好一次（尾部）, 返回值语义逐分支不变;
+ *       回归探针 tests/probe_fdleak_rf6.c（selftest RF6 用例守护）。
  *
  * 设计决策（与 Python 端 writer.py/format.py 对齐，理由见对应文件头）:
  * - O_APPEND + 一次 write() 写一条完整行（含换行）—— 多进程行完整性根基（AC5）;
@@ -154,24 +160,37 @@ static int rmlog__dir_usable(const char *dir)
  * 事件静默落到缺省目录, rmlog.h 承诺的"重开继续记录"对显式目录形态失实
  * （reviewer probe_c2 实证）。g_path 为空才做缺省裁决, 与 Python 端 Writer
  * 构造期裁决一次的行为对齐。轮转/emit 期的按路径重开走
- * rmlog__reopen_current_locked（同样只复用 g_path, 从不重新裁决）。 */
+ * rmlog__reopen_current_locked（同样只复用 g_path, 从不重新裁决）。
+ * R3（RF-6）: 裁决与打开分离 —— 本函数内 open 恰好一次（函数尾部）,
+ * 各裁决分支不再 open; R2 曾分支内 open + 尾部再 open, 首个 fd 未 close
+ * 即被覆盖, 每次按需重开泄漏 1 个句柄（回归探针 probe_fdleak_rf6 守护）。 */
 static int rmlog__open_locked(void)
 {
     int fd;
 
-    if (g_path[0] != '\0') {
-        /* 落点已裁决（显式目录或此前缺省裁决）: 直接按既有路径重开 */
-        fd = open(g_path, RMLOG_OPEN_FLAGS, RMLOG_OPEN_MODE);
-    } else if (rmlog__dir_usable(RMLOG_DEFAULT_DIR)) {
-        snprintf(g_path, sizeof(g_path), "%s/rmlog.log", RMLOG_DEFAULT_DIR);
-        fd = open(g_path, RMLOG_OPEN_FLAGS, RMLOG_OPEN_MODE);
-    } else if (rmlog__dir_usable(RMLOG_FALLBACK_DIR)) {
-        snprintf(g_path, sizeof(g_path), "%s/rmlog.log", RMLOG_FALLBACK_DIR);
-        fd = open(g_path, RMLOG_OPEN_FLAGS, RMLOG_OPEN_MODE);
-    } else {
-        return -1;   /* 两级缺省目录都不可建: g_path 保持为空, 下次 emit 再重试裁决 */
+    /* 目录裁决段: 只裁决/复用 g_path, 不打开文件（RF-6, R3 结构归位）。
+     * 打开动作保留为函数尾部唯一一次 —— R2 曾在各分支内各 open 一次、
+     * 尾部又无条件第二次 open, 首个 fd 未 close 即被覆盖, 每次"按需重开"
+     * 泄漏 1 个文件句柄（1000 轮 emit→close 实测 +1000, 1:1）。
+     * 语义与修复前逐分支等价:
+     *   - g_path 为空 → 两级缺省裁决, 命中即拼路径; 两级皆败 → 返回 -1,
+     *     g_path 保持为空, 下次 emit 再重试裁决;
+     *   - g_path 已有值（显式目录或此前缺省裁决过）→ 跳过裁决直接落到底部
+     *     按既有路径重开（RF-1 语义保留: close 后重开落点=最近一次成功
+     *     打开的目录, 显式目录形态成立）。 */
+    if (g_path[0] == '\0') {
+        if (rmlog__dir_usable(RMLOG_DEFAULT_DIR)) {
+            snprintf(g_path, sizeof(g_path), "%s/rmlog.log", RMLOG_DEFAULT_DIR);
+        } else if (rmlog__dir_usable(RMLOG_FALLBACK_DIR)) {
+            snprintf(g_path, sizeof(g_path), "%s/rmlog.log", RMLOG_FALLBACK_DIR);
+        } else {
+            return -1;   /* 两级缺省目录都不可建: g_path 保持为空, 下次 emit 再重试裁决 */
+        }
     }
-    /* O_APPEND 是多进程行完整性的根基: 内核保证每次 write 追加到当前末尾 */
+    /* 文件打开: 全函数唯一一次 open（O_APPEND 是多进程行完整性的根基:
+     * 内核保证每次 write 追加到当前末尾）。g_path 已有值时（含显式目录）
+     * 直接按既有路径重开。打开失败时不回滚 g_path —— 与修复前语义一致
+     * （首 open 失败即整体失败返回 -1）, 下次 emit 按既有 g_path 重试打开。 */
     fd = open(g_path, RMLOG_OPEN_FLAGS, RMLOG_OPEN_MODE);
     if (fd < 0) {
         return -1;

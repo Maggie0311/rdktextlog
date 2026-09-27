@@ -4,6 +4,8 @@
 任务: T-20260926-001-logging-platform-p0。
 R1 返工: 新增 2 用例 —— test_ac5_concurrent_rotation（F-1 多进程×轮转逐 worker
 对账）与 test_reader_time_prefix（F-2 分钟前缀回归）。
+R3 终轮微修复: 新增 1 用例 —— test_c_fdleak_reopen（RF-6 句柄泄漏回归,
+编译并运行 tests/probe_fdleak_rf6.c, 共 13 用例）。
 
 用法与输出约定（CODE-STYLE §5）::
 
@@ -20,6 +22,7 @@ R1 返工: 新增 2 用例 —— test_ac5_concurrent_rotation（F-1 多进程×
                        test_ac5_concurrent_rotation（F-1 组合对账）/ test_ac5_read_filter
     F-2 时间前缀:      test_reader_time_prefix（分钟前缀整分钟语义回归）
     AC6 崩溃取证:      test_ac6_last_line_survives
+    RF-6 句柄泄漏:     test_c_fdleak_reopen（C 端 emit→close 循环重开句柄守恒）
     附加:              test_gen_code / test_reader_cli（读端 CLI 冒烟）
 
 平台差异: 本测试在 Windows 开发机运行（并发与崩溃语义的等效模拟见各用例注释;
@@ -532,6 +535,50 @@ def test_reader_cli(work):
     print("  PASS  READ parse/tail CLI 冒烟")
 
 
+# ---------------------------------------------------------------- RF-6
+def test_c_fdleak_reopen(work):
+    """RF-6 回归: C 端 emit→close 循环 ≥500 轮句柄数不随轮次增长。
+
+    回归背景（reviewer REVIEW-T-20260926-001-rf-a675c8d §6 实证）:
+    R2 的 RF-1 修复在 rmlog__open_locked 残留"分支内 open + 尾部又无条件
+    第二次 open"的旧结构, 首个 fd 从未 close 即被覆盖 —— close 后按需重开
+    的合法用法（rmlog.h 记载）每循环泄漏 1 个文件句柄, 1000 轮实测 +1000
+    （1:1）; 数据正确性用例全绿测不出（两 fd 同指一文件, O_APPEND 语义不变）,
+    资源不变量必须由本用例这类专项探针覆盖。
+    探针（tests/probe_fdleak_rf6.c, 与本文件同目录, 独立 .c 便于静态审查）
+    双组隔离变量:
+      reopen 组 —— rmlog_open(显式目录) 后每轮 1 条 emit + rmlog_close,
+        每轮恰走一次 rmlog__open_locked 按需重开（RF-6 触发面）;
+      fast 组 —— 常驻 fd 连续 emit 零重开（对照, 应恒定）。
+    断言: 每组句柄增量 < 10（GetProcessHandleCount; POSIX 侧为 /proc/self/fd
+    计数同口径实现）且各组落盘行数 = 轮数（落盘自检同时断言 RF-1 语义 ——
+    close 后事件必须落回显式目录, 否则探针以退出码 2 失败）。
+    修复前后对照原始输出留档: tests/probe_fdleak_rf6_before_after.log
+    （修复前 1000 轮 +1000 / 500 轮 +500 / 快路径 +0; 修复后全部 +0）。
+    """
+    exe = os.path.join(work, "probe_fdleak_rf6.exe" if os.name == "nt"
+                       else "probe_fdleak_rf6")
+    probe_c = os.path.join(_SCRIPT_DIR, "tests", "probe_fdleak_rf6.c")
+    check(os.path.exists(probe_c), "RF6 探针源码缺失: %s" % probe_c)
+    cmd = ["gcc", "-std=c99", "-Wall", "-Wextra", "-I", _PKG_DIR,
+           "-o", exe, _C_SOURCE, probe_c]
+    proc = subprocess.run(cmd, capture_output=True, text=True)
+    if proc.returncode != 0:
+        raise Fail("RF6 探针编译失败:\n%s\n%s" % (proc.stdout, proc.stderr))
+    if proc.stderr.strip():
+        raise Fail("RF6 探针编译存在警告（-Wall -Wextra 下不允许）:\n%s" % proc.stderr)
+    reopen_dir = os.path.join(work, "rf6_reopen")
+    fast_dir = os.path.join(work, "rf6_fast")
+    # 600 轮: 高于任务书 ≥500 的下限, 与 reviewer 1000 轮定量口径同量级
+    proc = subprocess.run([exe, "600", reopen_dir, fast_dir],
+                          capture_output=True, text=True)
+    check(proc.returncode == 0,
+          "RF6 探针失败（退出码 %d, 2=自检失败/3=句柄泄漏）: %s%s"
+          % (proc.returncode, proc.stdout.strip(), proc.stderr.strip()))
+    # 打印探针的定量行, 让 PASS 证据直接落在 selftest 留档里
+    print("  PASS  RF6 C端 emit→close 600 轮句柄守恒: %s" % proc.stdout.strip())
+
+
 # ---------------------------------------------------------------- 主入口
 def main(argv):
     """自测主入口: 工作区 -> 依次执行用例 -> 汇总 PASS/FAIL 与退出码。
@@ -555,6 +602,7 @@ def main(argv):
         ("AC5 concurrent rotation (F-1)", lambda: test_ac5_concurrent_rotation(work)),
         ("AC5 read filter", lambda: test_ac5_read_filter(work)),
         ("AC6 crash", lambda: test_ac6_last_line_survives(work)),
+        ("C fdleak reopen (RF-6)", lambda: test_c_fdleak_reopen(work)),
         ("GEN doc/header", lambda: test_gen_code(work)),
         ("READ time prefix (F-2)", lambda: test_reader_time_prefix(work)),
         ("READ cli", lambda: test_reader_cli(work)),

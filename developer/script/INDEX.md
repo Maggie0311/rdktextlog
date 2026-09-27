@@ -8,7 +8,8 @@
 |---|---|---|---|---|---|---|---|
 | 1 | rmlog P0 文本日志平台（代码+自测+文档） | `script/`（`rmlog/`、`rmlog_read.py`、`USAGE.md`、`ERR-CATALOG.md`、`IMPL-T-20260926-001-logging-platform-p0.md`、`tests/selftest-*.log`） | 源码+文档+测试 | T-20260926-001-logging-platform-p0 | f3331b0（R0）/ d7e06da（reviewer 勘误） | 2026-09-26 | code_reviewer（审查）、management（验收）、人类用户（板端自测与场下使用） |
 | 2 | rmlog P0 整改返工 R1（F-1~F-9 逐条处置：轮转协议 v2 / 时间前缀归一 / selftest 12 用例） | 同上（变更：`rmlog/writer.py` 全量重写、`rmlog/rmlog.c` `rmlog.h`、`rmlog/worker.py`、`rmlog/selftest.py`、`rmlog_read.py`、`USAGE.md`、`IMPL-…md`、`CODE-STYLE.md` v1.1、`tests/selftest-20260927-{1010-r1,1028-r1}.log`） | 源码+文档+测试 | T-20260926-001-logging-platform-p0 | 45eeb04（R1） | 2026-09-27 | code_reviewer（复审）、management（验收） |
-| 3 | rmlog P0 复审微整改 R2（RF-1~RF-5 逐条处置：C 端 close 后重开复用 g_path / 写锁 open 失败计数口径收紧 / C 端锁降级计数 / 文档数字与 docstring 更正） | 同上（变更：`rmlog/rmlog.c`、`rmlog/rmlog.h`、`rmlog/writer.py`、`rmlog/selftest.py`、`IMPL-…md`、`tests/selftest-20260927-1235-rf.log`） | 源码+文档+测试 | T-20260926-001-logging-platform-p0 | （本轮 commit hash，见复审请求信 MAIL-20260927-<HHMM>-rf） | 2026-09-27 | code_reviewer（复审）、management（验收） |
+| 3 | rmlog P0 复审微整改 R2（RF-1~RF-5 逐条处置：C 端 close 后重开复用 g_path / 写锁 open 失败计数口径收紧 / C 端锁降级计数 / 文档数字与 docstring 更正） | 同上（变更：`rmlog/rmlog.c`、`rmlog/rmlog.h`、`rmlog/writer.py`、`rmlog/selftest.py`、`IMPL-…md`、`tests/selftest-20260927-1235-rf.log`） | 源码+文档+测试 | T-20260926-001-logging-platform-p0 | a675c8d（R2，交付权威 hash；复审请求信 MAIL-20260927-1305-rf。MIN-2 补登记） | 2026-09-27 | code_reviewer（复审）、management（验收） |
+| 4 | rmlog P0 终轮微修复 R3（RF-6 结构归位消除按需重开句柄泄漏 + selftest 增 RF-6 句柄守恒回归用例共 13 用例 + MIN-1/2/3 登记与流程更正：占位符填实 / R2 hash 补登 / 1215 任务书按收件方原则补入库） | 同上（变更：`rmlog/rmlog.c`、`rmlog/selftest.py`、`IMPL-…md`、`INDEX.md`、`tests/probe_fdleak_rf6.c`、`tests/probe_fdleak_rf6_before_after.log`、`tests/selftest-20260927-1352-rf6.log`；另有 inbox 1215 任务书入库） | 源码+文档+测试 | T-20260926-001-logging-platform-p0 | （R3 hash 见下行"待回填"，提交后由本轮复审请求信同值登记） | 2026-09-27 | code_reviewer（复审）、management（验收） |
 
 **自测留档索引**：
 
@@ -21,6 +22,7 @@
 | `tests/selftest-20260927-1010-r1.log` | R1 迭代 | FAIL 10/12（新用例参数误校准，定位后校准；过程见 IMPL §3） |
 | `tests/selftest-20260927-1028-r1.log` | **R1 末轮** | **PASS 12/12** |
 | `tests/selftest-20260927-1235-rf.log` | **R2 微整改末轮** | **PASS 12/12** |
+| `tests/selftest-20260927-1352-rf6.log` | **R3 终轮微修复末轮** | **PASS 13/13**（新增 RF-6 句柄守恒用例；句柄前后对照 `tests/probe_fdleak_rf6_before_after.log`） |
 
 **待产出（上岗后）**：
 
