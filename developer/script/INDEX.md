@@ -10,6 +10,7 @@
 | 2 | rmlog P0 整改返工 R1（F-1~F-9 逐条处置：轮转协议 v2 / 时间前缀归一 / selftest 12 用例） | 同上（变更：`rmlog/writer.py` 全量重写、`rmlog/rmlog.c` `rmlog.h`、`rmlog/worker.py`、`rmlog/selftest.py`、`rmlog_read.py`、`USAGE.md`、`IMPL-…md`、`CODE-STYLE.md` v1.1、`tests/selftest-20260927-{1010-r1,1028-r1}.log`） | 源码+文档+测试 | T-20260926-001-logging-platform-p0 | 45eeb04（R1） | 2026-09-27 | code_reviewer（复审）、management（验收） |
 | 3 | rmlog P0 复审微整改 R2（RF-1~RF-5 逐条处置：C 端 close 后重开复用 g_path / 写锁 open 失败计数口径收紧 / C 端锁降级计数 / 文档数字与 docstring 更正） | 同上（变更：`rmlog/rmlog.c`、`rmlog/rmlog.h`、`rmlog/writer.py`、`rmlog/selftest.py`、`IMPL-…md`、`tests/selftest-20260927-1235-rf.log`） | 源码+文档+测试 | T-20260926-001-logging-platform-p0 | a675c8d（R2，交付权威 hash；复审请求信 MAIL-20260927-1305-rf。MIN-2 补登记） | 2026-09-27 | code_reviewer（复审）、management（验收） |
 | 4 | rmlog P0 终轮微修复 R3（RF-6 结构归位消除按需重开句柄泄漏 + selftest 增 RF-6 句柄守恒回归用例共 13 用例 + MIN-1/2/3 登记与流程更正：占位符填实 / R2 hash 补登 / 1215 任务书按收件方原则补入库） | 同上（变更：`rmlog/rmlog.c`、`rmlog/selftest.py`、`IMPL-…md`、`INDEX.md`、`tests/probe_fdleak_rf6.c`、`tests/probe_fdleak_rf6_before_after.log`、`tests/selftest-20260927-1352-rf6.log`；另有 inbox 1215 任务书入库） | 源码+文档+测试 | T-20260926-001-logging-platform-p0 | 2d83644（R3，交付权威 hash；复审请求信 MAIL-20260927-1435-rf6） | 2026-09-27 | code_reviewer（复审）、management（验收） |
+| 5 | rmlog 构建可移植性修复 R4（T-20260927-003 linux-build-fix：`rmlog.c` 源码内定义 `_POSIX_C_SOURCE 200809L` 使 `-std=c99` 在 glibc 板端可编译 + 轮转副本路径缓冲放大根除 3× `-Wformat-truncation` + selftest 两 C 探针板端链接追加 `-lpthread` + 文档同步） | 变更：`rmlog/rmlog.c`、`rmlog/selftest.py`、`tests/probe_fdleak_rf6.c`、`USAGE.md`、`IMPL-…md`（§3/§8）、`INDEX.md`、`tests/selftest-20260927-2208-r4.log` | 源码+文档+测试 | T-20260927-003-logging-c-linux-build | 164d4c7（R4，交付权威 hash；复审请求信 MAIL-20260927-2212-r4） | 2026-09-27 | code_reviewer（复审）、management（验收）、software_tester（板端复测） |
 
 **自测留档索引**：
 
@@ -23,6 +24,7 @@
 | `tests/selftest-20260927-1028-r1.log` | **R1 末轮** | **PASS 12/12** |
 | `tests/selftest-20260927-1235-rf.log` | **R2 微整改末轮** | **PASS 12/12** |
 | `tests/selftest-20260927-1352-rf6.log` | **R3 终轮微修复末轮** | **PASS 13/13**（新增 RF-6 句柄守恒用例；句柄前后对照 `tests/probe_fdleak_rf6_before_after.log`） |
+| `tests/selftest-20260927-2208-r4.log` | **R4 构建可移植性修复末轮** | **PASS 13/13**（Windows 复验；板端待 software_tester 复测，见 IMPL §8.3） |
 
 **待产出（上岗后）**：
 
