@@ -4,7 +4,7 @@
 |---|---|
 | task_id | T-20260926-001-logging-platform-p0 |
 | 主责 | developer (R-003)（本会话上岗执行；前次中断的同任务产物已核验后并入） |
-| 交付日期 | 2026-09-26（R0 首交付）；2026-09-27（R1 整改返工）；2026-09-27（R2 复审微整改 RF-1~RF-5）；2026-09-27（R3 终轮微修复 RF-6 + MIN-1/2/3，commit 见 §7 / INDEX） |
+| 交付日期 | 2026-09-26（R0 首交付）；2026-09-27（R1 整改返工）；2026-09-27（R2 复审微整改 RF-1~RF-5）；2026-09-27（R3 终轮微修复 RF-6 + MIN-1/2/3）；2026-09-27（R4 构建可移植性修复，task_id T-20260927-003，见 §8；commit 见 §7 / INDEX） |
 | 需求依据 | `management/script/REQ-20260926-001-logging.md`（§4 P0-a~f、§6 AC1–AC8、§7.1 裁决） |
 | 任务书 | R0: inbox MAIL-…1620 + MAIL-…1640；R1: inbox MAIL-20260927-0922（F-1~F-9 整改书）；R2: inbox MAIL-20260927-1215（RF-1~RF-5 微整改书，范围冻结 5 项）；R3: inbox MAIL-20260927-1336（RF-6 + MIN-1/2/3 终轮微修复书，范围冻结 4 项） |
 | 关联审查 | `code_reviewer/script/REVIEW-T-20260926-001-f3331b0.md`（结论 CONDITIONAL，F-1~F-9 逐条整改见 §1.1）；`code_reviewer/script/REVIEW-T-20260926-001-rf-a675c8d.md`（R3 复审 FAIL：RF-6 严重级 + MIN-1/2/3，逐条处置见 §1.3） |
@@ -192,6 +192,13 @@ gcc -std=c99 -Wall -Wextra -I rmlog -o tests\_work\example.exe rmlog\example.c r
 tests\_work\example.exe tests\_work\demo3
 ```
 
+> **构建命令可移植说明（T-20260927-003 同步）**：`rmlog.c` 已源码内按平台定义
+> `_POSIX_C_SOURCE 200809L`（非 Windows，位于任何 `#include` 之前），故上述 `-std=c99`
+> 在 Windows（MinGW）与板端 Linux（glibc）**均原样可编译**（此前 `-std=c99` 在 glibc
+> 下隐藏 POSIX 声明导致编译失败，见 §8 追记）。板端 C 链接因 POSIX 分支用到 pthread，
+> 命令末尾追加 `-lpthread`（`gcc -std=c99 -Wall -Wextra -o example example.c rmlog.c -lpthread`）；
+> selftest 内 AC4/RF6 两 C 探针已在非 Windows 下自动追加 `-lpthread`（selftest.py）。
+
 C 示例真实运行输出（R0 时点留档，`tests/_work/demo3/rmlog.log`；时间戳/序号每次运行不同）：
 ```
 LOGV1|1|2026-09-26T20:16:57.032|361818154|INFO|E-INIT-000|ctrl|上电自检完成, 进入待机 state=1
@@ -290,3 +297,55 @@ LOGV1|4|2026-09-26T20:16:57.034|361818156|FATAL|E-FSM-004|fsm|状态机进入未
   实际不符（a675c8d 未含 1215 任务书原件，该文件当时仍未跟踪）。已发出信件冻结不改；
   按管理侧裁定：1215 任务书原件按"收件方应提交"原则随 R3 提交入库（属流程更正非扩围），
   声明出入以本节与 worklog #5 更正条目为准。
+- R4（T-20260927-003 linux-build-fix）：交付 commit 以 git log 为准，与 R4 复审请求信同值、
+  由 INDEX #5 行登记（commit 栏 = R4 hash）。本轮为缺陷修复（非改验收）：先发复审请求 →
+  审查通过 → 待 software_tester 板端复测通过 → 再走 maintainer 备料 / RESULT（顺序同 §7 交付顺序约定）。
+
+## 8. T-20260927-003 缺陷追记（R4 linux-build-fix，板端实测缺陷）
+
+> 触发：software_tester 板端 SSH 实测（T-20260927-002，TESTREPORT-…-001 §4/§6）发现
+> `rmlog.c` 在目标平台（aarch64 glibc gcc 11.2.0）以文档化参数 `-std=c99 -Wall -Wextra`
+> **无法编译**（Q4 硬错误），导致板端 selftest 11/13（AC4/RF-6 两 C 探针编译失败）。
+> management 裁定开 T-20260927-003 修复（ACCEPT-20260927 §3 条件 1）。范围冻结 5 项，DN5。
+
+### 8.1 根因（板端实测坐实，非推演）
+
+严格 `-std=c99`（gcc 定义 `__STRICT_ANSI__`）下 glibc 的 `<features.h>` 隐藏 POSIX 声明，
+本文件 POSIX 分支用到的 `clock_gettime`/`CLOCK_MONOTONIC`/`localtime_r`/`fdatasync` 因此
+"未声明/未定义"（硬错误 + 隐式声明警告）。开发机 MinGW 走 `_WIN32` 分支、不触及这些符号，
+故 gcc 13.2.0"零警告"掩盖了目标平台缺陷。另有 3× `-Wformat-truncation`：`rmlog__rotate_chain_locked`
+用与 `g_path`（512B）等长的缓冲拼副本路径 `"%s.%d"`/`"%s.1"`，gcc 无法证明不截断（最坏
+511+1+11=523 字节 > 512）。
+
+### 8.2 修复（逐项，与任务书 §3 一一对应）
+
+| # | 项 | 处置 | 落点 |
+|---|---|---|---|
+| 1 | 构建可移植性（硬错误） | **选"源码内定义特性测试宏"而非改 `-std=gnu99`**：在 `rmlog.c` 任何 `#include` 之前 `#if !defined(_WIN32) #define _POSIX_C_SOURCE 200809L`。理由：① POSIX.1-2008 是覆盖全部缺失符号的最小开关；② 保持严格 ISO C99 模式（比 gnu99 更早暴露非标准写法）；③ 文档命令 `-std=c99` 原样可编译，无需改文档命令、无需使用者加 `-D`；④ tester 边界表征已证 `-D_POSIX_C_SOURCE=200809L` 硬错误清零，此选择有板端证据背书 | `rmlog/rmlog.c`（文件头 + 特性宏块） |
+| 2 | 3× `-Wformat-truncation` | **根上消除（非 `-Wno` 压制）**：副本路径缓冲 `RMLOG_ROTATE_PATH_CAP = RMLOG_PATH_CAP + 16`（528B），任何合法 `g_path`(≤511 字符) + `.N` 后缀的最坏输出 523B 也放得下，gcc 可证明不截断。**不涉及日志消息截断**——消息截断仍走 `vsnprintf` 进 `msg[RMLOG_LINE_MAX]` 并由 `g_write_failures` 计数（§4.3 能力原样保留），本修复只放大**轮转副本路径**缓冲（该路径本不应截断，旧实现是潜在的静默路径破坏） | `rmlog/rmlog.c`（`RMLOG_ROTATE_PATH_CAP` + `rmlog__rotate_chain_locked`） |
+| 3 | selftest C 探针 | AC4 探针 `_ac4_probe.c` 仅用 ISO C，板端已证其无自身编译错误（Q1 原始输出仅 rmlog.c 报错），无需改源码；RF-6 探针 `tests/probe_fdleak_rf6.c` POSIX 分支的 dirent 函数板端亦无自身错误。**编译链接参数**：selftest 两用例在非 Windows 下追加 `-lpthread`（`selftest.py` 新增 `_CC_LINK_LIBS`），与 example.c 板端文档命令一致；`-std=c99` 不变 | `rmlog/selftest.py`、`tests/probe_fdleak_rf6.c`（文件头命令注释补板端形态） |
+| 4 | 文档同步 | USAGE §2 与 IMPL §3 构建命令保持 `-std=c99`（现已真实可编译），并补"可移植说明"；IMPL 追记本节（根因/修复/验证边界）；INDEX 登记新 hash | `USAGE.md`、本文件 §3/§8、`INDEX.md` |
+| 5 | Windows 不回退 | 开发机 gcc 13.2.0 `-Wall -Wextra` 复验零警告（`_WIN32` 分支不受影响，见 §8.3） | §8.3 |
+
+### 8.3 验证边界（诚实声明，DN6/DN9）
+
+- **本机（Windows 开发机）已验证**：全量 selftest 13/13 PASS（留档 `tests/selftest-20260927-2208-r4.log`，
+  本轮新留档）；`gcc 13.2.0 -std=c99 -Wall -Wextra -c rmlog.c` **零警告、退出码 0**（`_WIN32` 分支路径，
+  未回退）。
+- **本机无法复现板端失败，也未声称"已板端验证"**：开发机**无 aarch64/glibc 工具链**，且经查
+  **无 WSL / 无 docker**（`wsl --status` 未安装、`docker` 命令不存在），故无法在本机做 glibc 交叉加验。
+  板端复测由 software_tester 执行（management 随后下发），**通过前本结论对"板端可编译/零警告"不作断言**。
+- **静态论证 glibc 行为**（供复测对照，非实测结论）：`_POSIX_C_SOURCE=200809L` 使 glibc 定义
+  `__USE_POSIX199309` 等，`clock_gettime`/`CLOCK_MONOTONIC`（POSIX.1b，≥199309L）、`localtime_r`
+  （POSIX.1c/2001）、`fdatasync`（POSIX.1b）均被声明；该阈值下的声明集已被 tester 边界表征
+  （`-D_POSIX_C_SOURCE=200809L` → 硬错误清零）坐实。3× format-truncation 在**所有**参数组合下均不消失
+  （tester 实证），故必须靠 §8.2 项 2 的缓冲放大根除，不能靠 `-std=gnu99`/`-D` 顺带解决。
+- **链接**：板端 Ubuntu 22.04 为 glibc 2.35（pthread 已并入 libc，`-lpthread` 为兼容空桩），
+  selftest 探针链接追加 `-lpthread` 后在最坏旧 glibc（<2.34）下亦成立；此点未板端实测。
+
+### 8.4 未覆盖项（诚实清单）
+
+1. 板端 aarch64 gcc 11.2.0 复编译（含 `-std=c99 -Wall -Wextra` 零警告）——**待 software_tester 复测**；
+2. 板端 AC4/RF-6 两 C 探针的编译+链接+执行全链路——同上，待板端 selftest 13/13 复跑；
+3. clang 编译（板端无 clang，历史未覆盖项延续，UV 类）；
+4. 其他非 glibc POSIX 工具链（如 musl）——不在目标平台范围，未验证。

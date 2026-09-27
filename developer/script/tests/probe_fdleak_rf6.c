@@ -23,8 +23,13 @@
  *   相差三个数量级, 阈值放宽 10 仅用于排除 CRT/探针自身的非日志句柄抖动。
  *   探针退出码: 0=两组均无泄漏; 3=任一组超阈值。
  *
- * 用法: probe_fdleak_rf6.exe <轮数> <reopen日志目录> <fast日志目录>
- * 编译: gcc -std=c99 -Wall -Wextra -I rmlog -o probe_fdleak_rf6.exe rmlog/rmlog.c tests/probe_fdleak_rf6.c
+ * 用法: probe_fdleak_rf6 <轮数> <reopen日志目录> <fast日志目录>
+ * 编译（开发机 MinGW, _WIN32 分支无 pthread）:
+ *   gcc -std=c99 -Wall -Wextra -I rmlog -o probe_fdleak_rf6.exe rmlog/rmlog.c tests/probe_fdleak_rf6.c
+ * 编译（板端 Linux; rmlog.c 已源码内定义 _POSIX_C_SOURCE 使 -std=c99 可编译,
+ *   POSIX 分支用到 pthread 故追加 -lpthread —— glibc≥2.34 已并入 libc 可省,
+ *   显式给出以兼容旧 glibc）:
+ *   gcc -std=c99 -Wall -Wextra -I rmlog -o probe_fdleak_rf6 rmlog/rmlog.c tests/probe_fdleak_rf6.c -lpthread
  * （selftest 用例 RF6 以同口径编译并自动执行本探针。）
  */
 #include "rmlog.h"

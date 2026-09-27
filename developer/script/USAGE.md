@@ -39,6 +39,11 @@ type tests\_work\demo\rmlog.log          :: 看到 4 行 LOGV1|... 即成功
 python rmlog_read.py filter tests\_work\demo\rmlog.log --level ERROR
 ```
 
+> **构建命令可移植说明（T-20260927-003）**：`rmlog.c` 已在**任何 `#include` 之前**按平台
+> 定义 `_POSIX_C_SOURCE 200809L`（非 Windows），因此上面的 `-std=c99` 在 Windows（MinGW）
+> 与板端 Linux（glibc，gcc 11.x）都**原样可编译**，无需改用 `-std=gnu99` 或额外 `-D` 参数。
+> 板端链接时因 POSIX 分支用到 pthread，命令末尾追加 `-lpthread`（见 `rmlog/example.c` 文件头）。
+
 ## 3. 板端自测步骤（用户执行 —— 需要你回贴输出）
 
 > 目标: 在 RDK X5 真机上验证"组件可运行"（AC1 板端证据）。全程约 10 分钟。

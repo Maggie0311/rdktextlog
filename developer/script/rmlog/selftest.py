@@ -6,6 +6,9 @@ R1 返工: 新增 2 用例 —— test_ac5_concurrent_rotation（F-1 多进程×
 对账）与 test_reader_time_prefix（F-2 分钟前缀回归）。
 R3 终轮微修复: 新增 1 用例 —— test_c_fdleak_reopen（RF-6 句柄泄漏回归,
 编译并运行 tests/probe_fdleak_rf6.c, 共 13 用例）。
+R4（T-20260927-003-logging-c-linux-build）: 两 C 探针的编译链接命令板端化
+（非 Windows 追加 -lpthread）; rmlog.c 已源码内按平台定义 _POSIX_C_SOURCE,
+故 -std=c99 在 glibc 板端直接可编译（根因/验证边界见 IMPL §8 T-003 追记）。
 
 用法与输出约定（CODE-STYLE §5）::
 
@@ -49,6 +52,12 @@ _C_HEADER = os.path.join(_PKG_DIR, "rmlog.h")
 _GEN_HEADER = os.path.join(_PKG_DIR, "rmlog_errors.h")
 _PROBE_C = os.path.join(_PKG_DIR, "_ac4_probe.c")
 _READER = os.path.join(_SCRIPT_DIR, "rmlog_read.py")
+
+# C 探针链接库（板端 Linux 才需要; Windows/MinGW 走 _WIN32 分支无 pthread）:
+# rmlog.c 的 POSIX 分支用到 pthread, 板端链接需 -lpthread（glibc≥2.34 已并入
+# libc 故可省, 但显式给出与 example.c 板端命令一致、兼容旧 glibc）——T-20260927-003
+# 修正, 保证 selftest 内 AC4/RF6 两 C 探针在板端"可编译且可链接"。
+_CC_LINK_LIBS = ["-lpthread"] if os.name != "nt" else []
 
 
 class Fail(Exception):
@@ -235,8 +244,11 @@ def _build_c_probe(work):
                    check=True, stdout=subprocess.DEVNULL)
     check(os.path.exists(_GEN_HEADER), "rmlog_errors.h 未生成")
     exe = os.path.join(work, "ac4_probe.exe" if os.name == "nt" else "ac4_probe")
+    # 编译参数与文档化命令一致（-std=c99 -Wall -Wextra -I <pkg>）; rmlog.c 已
+    # 在源码内按平台定义 _POSIX_C_SOURCE, 故 -std=c99 在 glibc 板端直接可编译;
+    # 板端链接追加 -lpthread（_CC_LINK_LIBS, 见模块头）。库须在源文件之后。
     cmd = ["gcc", "-std=c99", "-Wall", "-Wextra", "-I", _PKG_DIR,
-           "-o", exe, _C_SOURCE, _PROBE_C]
+           "-o", exe, _C_SOURCE, _PROBE_C] + _CC_LINK_LIBS
     proc = subprocess.run(cmd, capture_output=True, text=True)
     if proc.returncode != 0:
         raise Fail("C 探针编译失败:\n%s\n%s" % (proc.stdout, proc.stderr))
@@ -560,8 +572,11 @@ def test_c_fdleak_reopen(work):
                        else "probe_fdleak_rf6")
     probe_c = os.path.join(_SCRIPT_DIR, "tests", "probe_fdleak_rf6.c")
     check(os.path.exists(probe_c), "RF6 探针源码缺失: %s" % probe_c)
+    # 编译参数同 AC4 探针（-std=c99 -Wall -Wextra -I <pkg>）; rmlog.c 已源码内
+    # 定义 _POSIX_C_SOURCE, -std=c99 在 glibc 板端直接可编译; 板端链接追加
+    # -lpthread（_CC_LINK_LIBS）。库须在源文件之后。
     cmd = ["gcc", "-std=c99", "-Wall", "-Wextra", "-I", _PKG_DIR,
-           "-o", exe, _C_SOURCE, probe_c]
+           "-o", exe, _C_SOURCE, probe_c] + _CC_LINK_LIBS
     proc = subprocess.run(cmd, capture_output=True, text=True)
     if proc.returncode != 0:
         raise Fail("RF6 探针编译失败:\n%s\n%s" % (proc.stdout, proc.stderr))

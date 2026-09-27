@@ -21,6 +21,12 @@
  *       每次"按需重开"泄漏 1 个文件句柄（1000 轮 emit→close 实测 +1000, 1:1）。
  *       修复后全函数 open 恰好一次（尾部）, 返回值语义逐分支不变;
  *       回归探针 tests/probe_fdleak_rf6.c（selftest RF6 用例守护）。
+ * R4 构建可移植性修复（T-20260927-003-logging-c-linux-build, 板端实测缺陷）:
+ *   严格 -std=c99 下 glibc 隐藏 POSIX 声明, 使本文件在 aarch64 gcc 11.2.0
+ *   无法编译（CLOCK_MONOTONIC 未声明 + localtime_r/clock_gettime/fdatasync
+ *   隐式声明 + 3× -Wformat-truncation）。修复 = 下方"特性测试宏"块（在**任何
+ *   #include 之前**按平台定义 _POSIX_C_SOURCE）+ rmlog__rotate_chain_locked
+ *   的副本路径缓冲加余量; 详细根因/取舍/验证边界见 IMPL §8（T-003 追记）。
  *
  * 设计决策（与 Python 端 writer.py/format.py 对齐，理由见对应文件头）:
  * - O_APPEND + 一次 write() 写一条完整行（含换行）—— 多进程行完整性根基（AC5）;
@@ -38,6 +44,19 @@
  *   多进程轮转演示, 双进程轮转组合用例由 Python 端覆盖, 见 selftest）。两侧行
  *   字节流完全一致（selftest AC4 验证）。
  */
+/* ---- 特性测试宏（必须在**任何**标准头之前定义） ----
+ * 严格 -std=c99（gcc 定义 __STRICT_ANSI__）下, glibc 的 <features.h> 会隐藏
+ * POSIX 声明 —— 本文件 POSIX 分支用到的 clock_gettime/CLOCK_MONOTONIC/
+ * localtime_r/fdatasync 因此在 aarch64 gcc 11.2.0 上"未声明/未定义", 编译失败
+ * （T-20260927-003 板端实测硬错误; 开发机 MinGW 走 _WIN32 分支不触及, 故
+ * 曾"零警告"掩盖）。_POSIX_C_SOURCE=200809L 是 POSIX.1-2008 全套声明的最小
+ * 开关, 覆盖上述全部符号（tester 边界表征已证 -D_POSIX_C_SOURCE=200809L 硬
+ * 错误清零）, 且**不改文档命令**——文档化的 -std=c99 因此原样可编译。
+ * Windows/MinGW 无 <features.h>, 该宏无意义; 仅在非 _WIN32 下定义以保持清晰。 */
+#if !defined(_WIN32)
+#  define _POSIX_C_SOURCE 200809L
+#endif
+
 #include "rmlog.h"
 
 #include <stdio.h>
@@ -103,6 +122,14 @@
 
 /* 拼接路径用的缓冲（与 g_path 一致; 副本名 = 主名 + ".N"） */
 #define RMLOG_PATH_CAP      512
+
+/* 轮转副本路径缓冲容量 = g_path 容量 + 副本序号后缀余量。
+ * 副本路径 = g_path(≤RMLOG_PATH_CAP-1 有效字符) + "." + 十进制序号(int 最坏
+ * 11 字符含符号)。旧实现用与 g_path 等长的 512 缓冲, 理论上可能截断, 触发
+ * gcc -Wformat-truncation（板端 gcc 11.2 实测 ×3）; +16 余量后最坏输出
+ * 511+1+11=523 字节也放得下（< 528）, gcc 可证明不截断 —— 从根上消除告警,
+ * 而非 -Wno 压制（T-20260927-003）。 */
+#define RMLOG_ROTATE_PATH_CAP  (RMLOG_PATH_CAP + 16)
 
 /* 单条行缓冲上限。
  * 容量边界真实表述（F-9 修正）: vsnprintf 把超长消息截断到 RMLOG_LINE_MAX-1 后
@@ -426,10 +453,13 @@ static void rmlog__rotlock_release(int lfd)
 
 /* 轮转链操作: rmlog.log -> .1 -> ... -> .keep, 最老删除。
  * 调用方必须已持跨进程轮转锁（或平台无跨进程锁, 见上）。逐段失败保守跳过:
- * 轮转是容量治理, 宁可超限也不冒险; 失败段下次轮转重试, 数据不丢。 */
+ * 轮转是容量治理, 宁可超限也不冒险; 失败段下次轮转重试, 数据不丢。
+ * 副本路径缓冲用 RMLOG_ROTATE_PATH_CAP（比 g_path 大 16）: 保证任何合法
+ * g_path（≤511 字符）加 ".N" 序号后缀都不截断, gcc -Wformat-truncation 可
+ * 证明不截断（根上消除告警, 非 -Wno 压制; 详见 RMLOG_ROTATE_PATH_CAP 注释）。 */
 static void rmlog__rotate_chain_locked(void)
 {
-    char src[RMLOG_PATH_CAP], dst[RMLOG_PATH_CAP];
+    char src[RMLOG_ROTATE_PATH_CAP], dst[RMLOG_ROTATE_PATH_CAP];
     int i;
 
     for (i = RMLOG_KEEP - 1; i >= 1; i--) {
