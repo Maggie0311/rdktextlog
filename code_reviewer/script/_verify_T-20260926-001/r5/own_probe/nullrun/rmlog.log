@@ -1,0 +1,3 @@
+LOGV1|1|2026-09-27T14:38:05.021|427887708|INFO|E-SYS-005|probe|r5 null-default open (default)
+LOGV1|1|2026-09-27T14:38:08.552|427891239|INFO|E-SYS-005|probe|r5 null-default open (fallback)
+LOGV1|1|2026-09-27T14:40:23.288|428025975|INFO|E-SYS-005|probe|r5 null-default open (default)
