@@ -1,21 +1,23 @@
 # ACCEPT-20260927-logging-p0 — T-20260926-001-logging-platform-p0 验收报告
 
+> **【v2 追记 2026-09-28】** 板端条件已满足：T-002 实测发现 C 端目标平台编译失败 → T-003 修复（commit **`164d4c7`**，复审 PASS）→ **T-003 板端聚焦复测全绿**（R-Q1 selftest **13/13 全 PASS**、R-Q4 `gcc -std=c99 -Wall -Wextra` **stderr 0 字节**、R-Q3 多进程×轮转无回归；`TESTREPORT-T-20260927-003-001.md`）。§3 条件 1 **已满足**，验收结论升格为 **accepted（无条件遗留项见 §3.2）**；归档版本由 2d83644 更新为 **164d4c7**（三份要件：developer 侧 HANDOFF 链 + reviewer 终审（2d83644）与 T-003 复审 PASS（164d4c7）+ tester HANDOFF（164d4c7）+ 本报告）。
+
 | 字段 | 值 |
 |---|---|
 | 需求/任务 | REQ-20260926-001-logging §4 P0 / T-20260926-001-logging-platform-p0 |
 | 主责角色 | developer（R-003，唯一主责） |
-| 被验收版本 | **commit `2d83644`**（R3 终版；全链 R0=`f3331b0` → R1=`45eeb04` → R2=`a675c8d` → R3=`2d83644`） |
-| 审查依据 | 审查链四份报告：`REVIEW-…-f3331b0.md`（CONDITIONAL）→ `REVIEW-…-45eeb04.md`（PASS）→ `REVIEW-…-rf-a675c8d.md`（FAIL，拦截 RF-6）→ `REVIEW-…-rf6-2d83644.md`（**PASS，终审，绑定 2d83644**） |
-| 三份归档要件核对 | developer 备料通知（HANDOFF MAIL-20260927-1505，hash=2d83644）✓ ｜ 审查终审 PASS（绑定 2d83644）✓ ｜ 本报告（hash=2d83644）✓ —— **三者一致** |
-| 验收结论 | **accepted（有条件）** —— 条件与期限见 §3 |
-| 验收人 | management (R-002) · 2026-09-27 15:10 |
-| 归档许可 | 本报告即归档许可：`maintainer` 可凭三份要件（均指向 2d83644）归档并产出说明书/走读/版本卡 |
+| 被验收版本 | **commit `164d4c7`**（R4 终版 = R3 `2d83644` + T-003 linux-build-fix；全链 R0=`f3331b0` → R1=`45eeb04` → R2=`a675c8d` → R3=`2d83644` → R4=`164d4c7`） |
+| 审查依据 | 审查链五份报告：`REVIEW-…-f3331b0.md`（CONDITIONAL）→ `REVIEW-…-45eeb04.md`（PASS）→ `REVIEW-…-rf-a675c8d.md`（FAIL，拦截 RF-6）→ `REVIEW-…-rf6-2d83644.md`（PASS）→ `REVIEW-T-20260927-003-164d4c7.md`（**PASS，绑定 164d4c7**） |
+| 板端证据 | `TESTREPORT-T-20260927-002-001.md`（首测，发现 C 构建缺陷）+ `TESTREPORT-T-20260927-003-001.md`（**复测全绿**：13/13 / gcc stderr 0 / 无回归） |
+| 验收结论 | **accepted**（v1 为"有条件"；v2 板端条件满足，遗留项见 §3.2） |
+| 验收人 | management (R-002) · v1 2026-09-27 15:10 · v2 2026-09-28 |
+| 归档许可 | **指向 `164d4c7`**：maintainer 凭 developer+tester 两份 HANDOFF 与本报告归档，产出说明书/走读/版本卡 |
 
 ## 1. AC 逐条验收（REQ §6，证据=落盘路径）
 
 | AC | 结论 | 证据 |
 |---|---|---|
-| AC1 组件可运行 | **接受**（开发机侧证实） | selftest 终版 13/13 PASS 留档 `developer/script/tests/selftest-20260927-1352-rf6.log`；code_reviewer 独立复跑 13/13（`_verify…/r5/selftest_r5.log`）；C 端 gcc -Wall -Wextra 零警告（W7）。板端可运行按 Q1=A 由用户实测回贴（§3 条件 1） |
+| AC1 组件可运行 | **接受（开发机 + 板端双证实）** | 开发机：selftest 13/13（`tests/selftest-20260927-2208-r4.log` + reviewer 独立复跑 r6）；板端：**13/13 全 PASS**（`TESTREPORT-T-20260927-003-001.md` R-Q1）；C 端 gcc 零警告双端复验 |
 | AC2 行格式 v1 | **接受** | selftest AC2 roundtrip/残行三道闸/fuzz PASS（终版留档+独立复跑）；样例与解析一致性经审查 V3/W6b 复验 |
 | AC3 错误码体系 | **接受** | 五域 24 码；单一来源生成（gen_code → rmlog_errors.h/ERR-CATALOG.md）；首轮审查 §4.2 已核"生成物与渲染逻辑逐码一致" |
 | AC4 双端一致 | **接受**（声明范围内） | C/Python 同事件输出逐字节一致（AC4 探针，首轮 V1+复审复跑）；范围=无属性行，attrs 属 P1（IMPL §2.5 已声明） |
@@ -31,15 +33,15 @@
 - RF 微整改 a675c8d → RF 复审 **FAIL**：新引入 RF-6 严重（`rmlog__open_locked` 残留二次 open，1000 轮 close→重开句柄 +1000 实证）——**审查门有效拦截修复引入缺陷**；
 - 终轮修复 2d83644（RF-6+MIN-1/2/3，含 selftest 第 13 用例句柄守恒回归闸）→ 终审 PASS（三重口径：结构逐行/语义等价走查/独立句柄对照修复前 +1000 复现→修复后全 0）。
 - developer 顺序违规（首轮 RESULT 先于审查请求）已自报并采信自我纠正；worklog 双向留痕。
+- 【v2】板端首测（T-002，Q1=A→B 修订后由 software_tester SSH 实测）发现 C 端目标平台编译失败（Q4 FAIL/Q1 11/13）→ T-003 修复 164d4c7（复审 PASS）→ 板端聚焦复测（TESTREPORT-T-20260927-003-001）**全绿**：R-Q1 13/13、R-Q4 gcc stderr 0 字节、R-Q3 无回归——**审查链测不到的目标平台空白由真机实测补齐**，该协作模式（静态审查 + 真机实测互补）首次完整跑通。
 
-## 3. 验收条件（accepted 的边界，须明示）
+## 3. 验收条件（v2 状态）
 
-1. **AC1/AC8 板端部分待用户按 `USAGE.md` §3 在 RDK X5 上执行自测并回贴输出**（Q1=A 裁决形态）。回贴输出如与开发机证据矛盾 → 本验收对该矛盾项降级为 rejected 并开新任务修复；**在此之前，本验收对"板端可运行"不作断言**（诚实边界，替代传统验收的实机项）。
-2. 已知范围限制（均已文档化，不构成缺陷）：AC4 一致性范围=无属性行（attrs 属 P1）；轮转协议 Linux 行为为推演声明（UV-1，随板端自测）；C 端 mkdir -p 等效/attrs/INFO-3 计数器读取出口列入 P1。
-3. **风险接受声明待用户书面确认**：若用户接受"板端验证延后完成"的现状（代码已归档、板端回贴后补证据），请书面（对话即可）确认一句，由 management 登记留痕——按框架 §2.1.2 第 2 条，该书面确认将抄送 framework_admin 备案。
+1. ~~AC1/AC8 板端部分待用户自测回贴~~ → **已满足**：Q1 裁决修订（A→B，MAIL-20260927-1525）后由 software_tester SSH 实测出具；AC8 平台核查已采集（TESTREPORT-T-20260927-002-001 Q2：python3 3.10.12、/userdata 存在、journald 持久化、rsyslog active、coredumpctl 不可用、dmesg ISO 可用）；
+2. **遗留项（不阻断验收，已排程）**：AC4 一致性范围=无属性行（C 端 attrs 属 P1）；C 端 mkdir -p 等效、INFO-3 计数器读取出口属 P1；clang 编译（板端无 clang，未测）；掉电/断电持久化实测（UV-5）与 C 端 flock 竞争轮转专测（UV-2，selftest RF6 用例间接覆盖）列入 P1 板端项；**coredumpctl 板端不可用** → P1 崩溃取证需换方案（如自写 core 收集或内核日志捕获）；
+3. ~~风险接受声明~~ → 不再需要（板端证据已补齐，v1 的该条款随之关闭）。
 
 ## 4. 后续
 
-- **归档**：maintainer 依三份要件归档 2d83644 并产出 SPEC/WALKTHROUGH/QUESTIONS/DIFF/VERSION + GLOSSARY；
-- **板端自测**：用户按 USAGE §3 执行（约 10 分钟），回贴输出 → software_tester 立项核验（新 task_id）→ 证据并入本验收；
-- **P1 规划**：systemd 自启/黑匣子/快照包/与节拍线程和 SPI 模块对接（PROJECT-BOARD 里程碑 M2），含 C 端 attrs 与 mkdir -p。
+- **归档（已解冻）**：maintainer 归档 **164d4c7** 并产出 SPEC/WALKTHROUGH/QUESTIONS/DIFF/VERSION + GLOSSARY（三份要件齐备：developer HANDOFF 链 / reviewer 终审 PASS / tester HANDOFF / 本报告 v2）；
+- **P1 规划（里程碑 M2）**：systemd 自启/黑匣子/快照包/与节拍线程和 SPI 模块对接，含 C 端 attrs 与 mkdir -p、UV-2/UV-5 板端项、coredumpctl 替代方案。
