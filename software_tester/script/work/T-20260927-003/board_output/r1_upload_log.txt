@@ -1,0 +1,12 @@
+CONNECT_OK host=2409:893d:5175:915b:84d8:86d7:ff02:f8da
+=== rebuild (rc=0) ===
+REBUILD_OK
+
+=== upload ===
+UPLOAD_OK
+
+=== remote md5 (rc=1) ===
+
+[remote stderr]
+bash: line 1: cd: /root/rmlog_test/src/developer/script: No such file or directory
+

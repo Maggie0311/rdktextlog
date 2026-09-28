@@ -22,9 +22,9 @@
 | 操作系统 | Ubuntu 22.04.5 LTS；kernel `6.1.83-rt28` PREEMPT_RT | 已验证 | `cat /etc/os-release` | 2026-09-27 |
 | Python 解释器 | python3 3.10.12（aarch64） | 已验证 | `python3 --version` | 2026-09-27 |
 | C 编译器 | gcc 11.2.0（`/usr/bin/gcc`、`cc`）；**clang 不存在** | 已验证 | `which gcc clang` | 2026-09-27 |
-| 通信接口 | SSH :22（IPv6 `2409:893d:5175:915b:7e04:818a:e96a:69ef`，root/root 密码认证） | 已验证 | paramiko 连接 + `uname -a` 成功 | 2026-09-27 |
+| 通信接口 | SSH :22（IPv6 root/root 密码认证）；地址随网络环境轮换：`2409:893d:5175:915b:7e04:818a:e96a:69ef`（T-002）→ `2409:893d:5175:915b:84d8:86d7:ff02:f8da`（T-003，2026-09-28 实测连通） | 已验证 | paramiko 连接 + `uname -a` 成功（两地址各一轮） | 2026-09-28 |
 | 存储 | `/userdata` 存在（挂载 `/dev/root` 29G）；journald 持久化目录 `/var/log/journal` 存在 | 已验证 | `ls -ld /userdata` / `ls -ld /var/log/journal` | 2026-09-27 |
-| 板端工作目录 | `/root/rmlog_test/`（自建，不触碰系统配置、不 apt 安装） | 已验证 | 本任务上传/运行 | 2026-09-27 |
+| 板端工作目录 | `/root/rmlog_test/`（自建，不触碰系统配置、不 apt 安装；T-003 复测时清空重建） | 已验证 | T-002/T-003 两轮任务上传/运行 | 2026-09-28 |
 
 ## 3. 远程计算机
 
@@ -49,8 +49,9 @@
 
 - 本机 `pip install` 不可用：沙箱拦截 `tempfile.mkdtemp` 目录写入（`Permission denied`），但 PyPI 网络可达——已用 `urllib` 直下 wheel + `zipfile` 解包绕过（paramiko 及依赖）。
 - 板端**无 clang**、**无 systemd-coredump/coredumpctl**（`core_pattern=core`）；Q4 clang 侧与 UV-2 崩溃取证侧因此不可测。
-- 板端 gcc 11.2.0 下 `rmlog.c` 用 `-std=c99` 编译**失败**（`CLOCK_MONOTONIC` 未声明），详见 `TESTREPORT-T-20260927-002-001.md` §6 Q4。
-- 掉电/断电持久化（UV-5）、C 端 Linux flock 轮转路径（UV-2）未实测（见报告 §7 覆盖声明）。
+- ~~板端 gcc 11.2.0 下 `rmlog.c` 用 `-std=c99` 编译失败~~ **已于 T-003 复测解除**：commit `164d4c7`（`_POSIX_C_SOURCE` 特性宏 + 轮转缓冲放大修复）实测退出码 0、stderr 0 字节、selftest 13/13（见 `TESTREPORT-T-20260927-003-001.md`）。
+- 掉电/断电持久化（UV-5）、C 端 Linux flock 竞争轮转专测（UV-2）未实测（见 T-003 报告 §7 覆盖声明）。
+- 板端 SSH 地址随网络环境轮换（两轮任务两地址）；复用测试操作包时仅需改 `board.py` 的 HOST（见 STM-001）。
 
 ## 6. 变更记录
 
@@ -58,3 +59,4 @@
 |---|---|---|
 | 2026-09-25 | 骨架由 framework_admin 建立；全部条目标「假设」 | `DECISION-20260925-006` |
 | 2026-09-27 | 实测回填本机/板端/远程/采集各节为「已验证/不可用」，附证据路径 | TASK `T-20260927-002`（板端 SSH 实测） |
+| 2026-09-28 | 通信接口轮换地址实测回填（新 IPv6）；板端工作目录 T-003 重建记录；已知限制更新（gcc `-std=c99` 编译失败已由 commit 164d4c7 修复解除） | TASK `T-20260927-003`（板端聚焦复测） |

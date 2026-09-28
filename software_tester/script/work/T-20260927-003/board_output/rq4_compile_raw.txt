@@ -1,0 +1,10 @@
+rc=0
+GCC_EXIT=0
+--- stderr bytes ---
+0
+--- stderr content (if any) ---
+--- object file ---
+-rw-r--r-- 1 root root 25544 Sep 28 19:45 /root/rmlog_test/work/rmlog_gcc.o
+
+[stderr]
+

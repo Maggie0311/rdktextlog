@@ -1,0 +1,27 @@
+CONNECT_OK host=2409:893d:5175:915b:84d8:86d7:ff02:f8da
+=== connect_banner (rc=0) ===
+SSH_CONNECT_OK
+ubuntu
+2026-09-28 19:42:54 +0800
+
+=== uname (rc=0) ===
+Linux ubuntu 6.1.83-rt28 #2 SMP PREEMPT_RT Wed Apr  8 21:26:24 CST 2026 aarch64 aarch64 aarch64 GNU/Linux
+
+=== os_release (rc=0) ===
+PRETTY_NAME="Ubuntu 22.04.5 LTS"
+NAME="Ubuntu"
+VERSION_ID="22.04"
+
+=== python3 (rc=0) ===
+Python 3.10.12
+
+=== gcc (rc=0) ===
+gcc (Ubuntu 11.2.0-19ubuntu1) 11.2.0
+
+=== old_workdir (rc=0) ===
+drwxr-xr-x 5 root root 4096 Sep 27 21:50 /root/rmlog_test
+q3
+q3.tar
+src
+work
+

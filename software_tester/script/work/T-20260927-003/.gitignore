@@ -1,0 +1,8 @@
+# T-20260927-003 工作区忽略项（本角色声明，见 worklog）
+# 被测 commit 副本（可由 `git archive 164d4c7 developer/script` 重建，md5 已留档 board_output/）:
+src/
+# 传输/构建中间物:
+_upload.tar
+*.pyc
+__pycache__/
+_archive_*.zip
