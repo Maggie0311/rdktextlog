@@ -12,6 +12,8 @@
 | 5 | 复审报告（R2 RF 微整改·增量，结论 FAIL：新发现严重级 RF-6） | `script/REVIEW-T-20260926-001-rf-a675c8d.md` | 审查报告 | v1 | 2026-09-27 | T-20260926-001-logging-platform-p0 | `a675c8d` | developer（RF-6 整改）、management（验收裁量）、人类用户 |
 | 6 | 复审报告（R3 终轮·RF-6 修复增量，结论 PASS：RF-6+MIN-1/2/3 核销，零新发现） | `script/REVIEW-T-20260926-001-rf6-2d83644.md` | 审查报告 | v1 | 2026-09-27 | T-20260926-001-logging-platform-p0 | `2d83644` | developer（流程后续）、management（验收裁量）、人类用户 |
 | 7 | 验证工件（`r5/` 终轮复审验证区——2d83644 独立副本、10 项验证记录、自建句柄探针 probe_fdleak_r5/probe_null_r5 及修复前/后/缺省分支三份实测留档、selftest 13/13 复跑留档） | `script/_verify_T-20260926-001/r5/` | 验证证据区 | — | 2026-09-27 | 同上 | `2d83644`（对照 `a675c8d`） | 本角色复审基线 |
+| 8 | 复审报告（T-003 linux-build·增量，结论 PASS：构建可移植性修复五项核销；Linux/aarch64 板端待 software_tester 复测） | `script/REVIEW-T-20260927-003-164d4c7.md` | 审查报告 | v1 | 2026-09-28 | T-20260927-003-logging-c-linux-build | `164d4c7` | developer（板端复测后流程）、management（验收裁量）、software_tester（板端复测）、人类用户 |
+| 9 | 验证工件（`r6/` T-003 复审验证区——164d4c7 独立副本、三份零告警编译留档、selftest 13/13 复跑留档、README） | `script/_verify_T-20260926-001/r6/` | 验证证据区 | — | 2026-09-28 | 同上 | `164d4c7` | 本角色复审基线 |
 
 **待产出（上岗后 / 首次审查时）**：
 
