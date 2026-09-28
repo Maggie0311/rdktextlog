@@ -12,11 +12,37 @@
 
 ## 术语表
 
+> 位置行号以归档版本 001（来源 commit `164d4c7`）带注版为准；换算来源 commit 行号的方法见 SPEC-001 卷首。
+
 | 术语 / 缩写 | 人话解释 | 代码位置与用法 | 备注 |
 |---|---|---|---|
-| — | （暂无；首份归档时建立） | — | — |
+| **rmlog** | 本项目的业务层文本日志平台名（"RM"=RoboMaster + log）。场上自动记错误，场下一条命令定位 | 包名 `rmlog/`、`rmlog_read.py`、C 前缀 `rmlog_` | REQ §3 裁定命名；"平台层（journald/dmesg）直接用 + 业务层自建"中的业务层 |
+| **错误码五域** | 错误码 `E-<域>-<3位序号>` 的五个域：INIT 初始化 / COMM 通信 / HW 硬件 / FSM 状态机 / SYS 系统资源 | `DOMAINS`（catalog.py:29）、`ERRORS`（catalog.py:42）、生成头 `rmlog_error_table` | 用户四类错误 + 系统资源类（REQ §4 P0-a）；每码绑定默认级别/含义/建议动作 |
+| **行格式 v1 / LOGV1** | 一行一条事件的冻结字段序：`LOGV1|seq|墙上时间戳|单调ms|LEVEL|CODE|MODULE|message[|k=v…]`；`LOGV1` 前缀是读端识别有效行的依据 | 唯一权威定义 format.py 模块头 + `PREFIX`（format.py:47）、`encode`（167）、`parse_line`（201）；C 端同构 rmlog.c `rmlog_line`（330） | 破坏性变更须升格式版本并同步 `__version__`（__init__.py:36 区） |
+| **双时间戳** | 每行同时带墙上时间（ISO8601 毫秒，对表/对时间线用）与单调时间（ms，防 NTP 跳变，算间隔用）；跨上电比较单调时间无意义 | `wall_timestamp`（format.py:139）/ `mono_timestamp`（158）；C 端 `rmlog__wall_ts`/`rmlog__mono_ms`（rmlog.c:358/378 区） | CODE-STYLE §4.4"缺一不可" |
+| **轮转协议 v2** | 多进程×轮转不丢数据的写入协议：①每写按路径 open→一次 write→close（无常驻 fd）②rename 链全程持跨进程轮转锁 ③锁内 stat 真实大小裁决。R1 为修 F-1 引入，双端同协议 | writer.py 模块 docstring"轮转协议 v2"（14-59 行）；rmlog.c 372-392 行注释块 | 旧协议（R0，常驻 fd）已废；C 端保留常驻 fd 但 emit 前"对准"补齐关键性质 |
+| **ROTLOCK / .rmlog.ROTLOCK** | 跨进程轮转互斥锁的锁体文件：与日志同目录的隐藏文件，只当锁用，不写数据、永不进副本链；双端同名=协议约定 | `_ROTLOCK_NAME`（writer.py:84）、`RMLOG_ROTLOCK_NAME`（rmlog.c:121）；取锁 `_rotate_if_needed`（writer.py:407）/`rmlog__rotlock_acquire`（rmlog.c:423） | advisory 锁：互斥前提=同目录所有写入方都经本组件（部署约束，USAGE §6） |
+| **O_APPEND** | open(2) 的追加标志：每次 write 自动写到文件当前末尾。Linux 上是内核级原子追加——"一次 write 写整行"行完整性的根基 | `_open_append`（writer.py:200）、`RMLOG_OPEN_FLAGS`（rmlog.c:106 区） | Windows CRT 的 _O_APPEND 是"写前 seek"不原子 → Windows 写路径加字节锁（writer.py:54-56 注释） |
+| **特性测试宏（_POSIX_C_SOURCE）** | POSIX 规定的宏：在 include 任何标准头**之前**定义，告诉 glibc 暴露哪一代 POSIX 声明。`200809L`=POSIX.1-2008，解锁 clock_gettime/localtime_r/fdatasync 等 | rmlog.c:56-58（`#if !defined(_WIN32) #define _POSIX_C_SOURCE 200809L`） | R4 修复核心：严格 `-std=c99` 下 glibc 默认隐藏这些声明（板端编译失败根因，IMPL §8.1） |
+| **advisory 锁（建议锁）** | 内核不强制执行的锁——不参与约定的进程可以无视它直接操作文件。flock/msvcrt.locking 都属此类 | rmlog.c:395-397 注释；USAGE §6 部署约束 | 后果：第三方工具直写 rmlog.log 时互斥前提失效（已知边界，非缺陷判定） |
+| **残行三道闸** | 读端丢弃崩溃/断电残行的三道顺序判定：①`LOGV1|` 前缀 ②段数 ≥8 ③seq 与 mono 为纯 ASCII 数字；解析永不抛异常 | `parse_line`（format.py:201-226）、`_ASCII_DIGITS`（format.py:63 区） | AC2；rmlog_read 的丢弃计数（stderr）依赖它 |
+| **转义表 / \xNN 编码** | 行内危险字符的编码替换规则：`\`→`\\`（最先）、`\|`→`\x7c`、换行→`\x0a`、其余 C0/DEL→`\xNN`。选编码替换而非引用转义，解析端零状态机 | `_ESCAPES`（format.py:67）、`_escape`（78）；C 端同表 `rmlog_escape`（rmlog.c:287） | 双端同表=AC4 一致的根基；改任一侧即跨端接口变更 |
+| **write_failures / lock_degradations** | 两个必须分开的健康计数：前者=真实写失败（打开/写入），后者=锁相关降级（锁文件开不出/取锁失败/解锁失败）。混计会让健康检查误报 | writer.py:175-181 注释、`_win_write_line` 降级路径（329-382）；C 端 `g_write_failures`/`g_lock_degradations`（rmlog.c:164-165 区） | RF-4 口径收紧；C 端 Windows rotlock 约定值 -2 不计（RF-5） |
+| **每写即开即关** | Python 端写路径形态：每条事件按路径 open(O_APPEND)→一次 write 整行→close，无常驻 fd。fd 生命周期=一条事件 | `_posix_write_line`（writer.py:298）+ maintainer 补注 | 代价=每条事件 3 次系统调用（µs 级）；换来多进程×轮转数据不灭失（F-1） |
+| **裁决与打开分离** | C 端 `rmlog__open_locked` 的结构不变量：函数头部各分支只裁决/复用落点 `g_path`，open 全函数恰好一次在尾部。R3 为修 RF-6（双重 open 句柄泄漏）归位 | rmlog.c:194-218 注释 + `rmlog__open_locked`（219，尾部唯一 open 约 :246） | 回归闸=selftest 第 10 用例 + tests/probe_fdleak_rf6.c |
+| **可证安全（528 缓冲）** | 指缓冲放大不是"试出来没告警"，而是给出最坏输出算术让 gcc 能证明不截断：副本路径最坏 511+1+11+1=524 字节 ≤ 528 | `RMLOG_ROTATE_PATH_CAP = RMLOG_PATH_CAP + 16`（rmlog.c:126-149 注释） | R4 根除 3× -Wformat-truncation 的方式（非 -Wno 压制） |
+| **fdatasync / fsync / _commit** | fd 级落盘三形态：fdatasync 只刷数据最快（Linux）、fsync 连元数据（其他 POSIX 回退）、_commit 是 MSVCRT 等效 | `RMLOG_FDATASYNC`（rmlog.c:100-105 区）、`_sync_fd`（writer.py:215） | ERROR/FATAL 写后立即调用（AC6 崩溃取证）；INFO/WARN 靠页缓存回写（断电窗口声明，IMPL §4.2） |
+| **AC1~AC8** | 需求验收标准编号（REQ §6 冻结）：AC1 可运行 / AC2 行格式 / AC3 错误码 / AC4 双端一致 / AC5 落盘与查询 / AC6 崩溃取证 / AC7 使用方法 / AC8 平台核查 | REQ-20260926-001 §6；selftest 覆盖矩阵（selftest.py:20-33 区） | selftest 覆盖 AC1~AC6 可自测项；AC7=USAGE、AC8=平台核查证据 |
+| **F-x / RF-x / MIN-x / NIT-x / UV-x** | 审查体系编号：F=首轮发现项、RF=复审发现项、MIN=轻微登记项、NIT=提示级（不要求返工）、UV=unverified（审查/测试无法实测项） | REVIEW-* 系列报告 §5/§6/§7；UV-1~5 见 REVIEW-…-rf-a675c8d §6 | 本角色只转述不裁定（KN4） |
+| **selftest 13 用例** | `python3 -m rmlog.selftest` 的断言式自测集：AC2×2/AC3/AC4/AC5×4/AC6/RF6/GEN/F2/READ | 注册表 selftest.py:645 区；逐用例说明=maintainer 补注（selftest.py:13-28） | 12→13 用例的分界=R3（新增 RF6 句柄守恒） |
 
 ## 维护提示
 
 - 每完成一次归档，检查本版本是否引入新术语；有则补充，无则记一行"本版无新术语"；
 - 术语解释若被用户或 `developer` 纠正，**不改旧行**，在该行下加"【更正】"并注明纠正内容。
+
+## 版本收录记录
+
+| 归档版本 | 新增术语 |
+|---|---|
+| 001（来源 164d4c7，2026-09-28） | 首次建档：上表全部 22 条（rmlog、错误码五域、行格式 v1/LOGV1、双时间戳、轮转协议 v2、ROTLOCK、O_APPEND、特性测试宏、advisory 锁、残行三道闸、转义表/\xNN、write_failures 与 lock_degradations、每写即开即关、裁决与打开分离、可证安全 528、fdatasync 三形态、AC 编号、审查编号体系、selftest 13 用例等） |
