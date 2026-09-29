@@ -1,0 +1,2 @@
+2026-09-28T22:17:06.932 [ERROR] E-COMM-001 spi: SPI 传输超时  dev=/dev/spidev0.0 retry=3
+2026-09-28T22:17:06.937 [ERROR] E-FSM-001 fsm: 状态机非法跃迁 test
