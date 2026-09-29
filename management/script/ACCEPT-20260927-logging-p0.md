@@ -1,5 +1,7 @@
 # ACCEPT-20260927-logging-p0 — T-20260926-001-logging-platform-p0 验收报告
 
+> **【v3 追记 2026-09-29】** 用户审查意见（USAGE 视角错位、板端自测章节过时）经 T-20260928-004 整改完毕：USAGE 重构为用户优先六主题手册 + 过时章节删除（commit **`08f6ce8`**，代码零变更）；复审 PASS 零发现项（`REVIEW-T-20260928-004-08f6ce8.md`，含 reviewer 独立实跑抽查）。**验收结论扩展：accepted（版本 002 = 08f6ce8，增量归档）**；归档许可相应更新——maintainer 以增量方式归档版本 002（USAGE.md + IMPL §9 + 双指纹增补），版本 001 归档件继续冻结不动。
+
 > **【v2 追记 2026-09-28】** 板端条件已满足：T-002 实测发现 C 端目标平台编译失败 → T-003 修复（commit **`164d4c7`**，复审 PASS）→ **T-003 板端聚焦复测全绿**（R-Q1 selftest **13/13 全 PASS**、R-Q4 `gcc -std=c99 -Wall -Wextra` **stderr 0 字节**、R-Q3 多进程×轮转无回归；`TESTREPORT-T-20260927-003-001.md`）。§3 条件 1 **已满足**，验收结论升格为 **accepted（无条件遗留项见 §3.2）**；归档版本由 2d83644 更新为 **164d4c7**（三份要件：developer 侧 HANDOFF 链 + reviewer 终审（2d83644）与 T-003 复审 PASS（164d4c7）+ tester HANDOFF（164d4c7）+ 本报告）。
 
 | 字段 | 值 |
