@@ -35,6 +35,8 @@
 | **AC1~AC8** | 需求验收标准编号（REQ §6 冻结）：AC1 可运行 / AC2 行格式 / AC3 错误码 / AC4 双端一致 / AC5 落盘与查询 / AC6 崩溃取证 / AC7 使用方法 / AC8 平台核查 | REQ-20260926-001 §6；selftest 覆盖矩阵（selftest.py:20-33 区） | selftest 覆盖 AC1~AC6 可自测项；AC7=USAGE、AC8=平台核查证据 |
 | **F-x / RF-x / MIN-x / NIT-x / UV-x** | 审查体系编号：F=首轮发现项、RF=复审发现项、MIN=轻微登记项、NIT=提示级（不要求返工）、UV=unverified（审查/测试无法实测项） | REVIEW-* 系列报告 §5/§6/§7；UV-1~5 见 REVIEW-…-rf-a675c8d §6 | 本角色只转述不裁定（KN4） |
 | **selftest 13 用例** | `python3 -m rmlog.selftest` 的断言式自测集：AC2×2/AC3/AC4/AC5×4/AC6/RF6/GEN/F2/READ | 注册表 selftest.py:645 区；逐用例说明=maintainer 补注（selftest.py:13-28） | 12→13 用例的分界=R3（新增 RF6 句柄守恒） |
+| **k=v 属性（attrs）** | 事件消息后的可变参数字段：落盘为行尾 `|k=v` 段，读端解析回显，便于肉眼比对与脚本统计；**只放会变化、需事后比对的参数**（如 `dev=/dev/spidev0.0`、`retry=3`），固定上下文写进消息文本即可；C 端宏暂不支持（P1 扩展项） | Python `attrs={...}` 参数（writer.py:247/531、format.py:167/178）、解析回显 format.py:223-238；C 端无（encode_cases.py:15-16 声明） | v002 USAGE §2.3 给出使用时机口径（本版手册新增的整理）；行为面 v001 起未变 |
+| **分钟级前缀（时间窗）** | `--since/--until` 接受非全精度时间前缀（如 `T14:38`）：按**日历段语义**解释——`--until 14:38` 含 14:38 这一整分钟（段末 59.999），`--since` 前缀=段始 00.000；实现为读端把前缀归一成毫秒定宽串再做字典序比较 | `_normalize_wall_prefix`（rmlog_read.py:136-156 区）、CLI 参数说明（rmlog_read.py:263-265）、maintainer 补注（rmlog_read.py:139-143/205 区） | F-2 修复的读端落点；v002 USAGE §2.5/§3.3 的命令语义来源 |
 
 ## 维护提示
 
@@ -46,3 +48,4 @@
 | 归档版本 | 新增术语 |
 |---|---|
 | 001（来源 164d4c7，2026-09-28） | 首次建档：上表全部 22 条（rmlog、错误码五域、行格式 v1/LOGV1、双时间戳、轮转协议 v2、ROTLOCK、O_APPEND、特性测试宏、advisory 锁、残行三道闸、转义表/\xNN、write_failures 与 lock_degradations、每写即开即关、裁决与打开分离、可证安全 528、fdatasync 三形态、AC 编号、审查编号体系、selftest 13 用例等） |
+| 002（来源 08f6ce8，2026-09-29） | +2 条：k=v 属性（attrs）、分钟级前缀（时间窗）——v002 USAGE 手册六主题重排后，这两个"看不出来"的使用口径词有了成文出处；行为面本身 v001 起未变（零代码变更） |
