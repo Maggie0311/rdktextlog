@@ -222,6 +222,8 @@ def cmd_filter(args):
             continue
         if code_prefix is not None and not ev["code"].startswith(code_prefix):
             continue
+        if args.session and ev["attrs"].get("session") != args.session:
+            continue
         if since and ev["wall_ts"] < since:
             continue
         if until and ev["wall_ts"] > until:
@@ -254,6 +256,7 @@ def build_parser():
     fp.add_argument("--level", choices=["INFO", "WARN", "ERROR", "FATAL"],
                     help="只看不低于该级别的行")
     fp.add_argument("--code", help="错误码, 支持前缀通配（如 E-INIT-*）")
+    fp.add_argument("--session", help="只显示属性 session 等于该 ID 的事件")
     fp.add_argument("--since", help="起始墙上时间（含）, 支持前缀: 2026-09-26T16:00 或 2026-09-26T16:00:00.000")
     fp.add_argument("--until", help="结束墙上时间（含）, 前缀视为该段末（如 T14:38 含 14:38 这一整分钟）")
     return p
