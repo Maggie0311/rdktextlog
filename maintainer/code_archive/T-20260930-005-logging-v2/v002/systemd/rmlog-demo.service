@@ -1,0 +1,17 @@
+# （maintainer 补注（v002）：本文件 = 来源 3148fed 逐字节内容 + 仅此注释行；纠正 v001 归档件第 17 行伪 [Unit] 非注释节头，恢复与来源一致。）
+[Unit]
+Description=RoboMaster rmlog business logger demo
+After=local-fs.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 -m rmlog.daemon /userdata/rmlog
+WorkingDirectory=/opt/rdk_x5_software/developer/script
+Restart=on-failure
+RestartSec=1
+StartLimitIntervalSec=30
+StartLimitBurst=5
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target

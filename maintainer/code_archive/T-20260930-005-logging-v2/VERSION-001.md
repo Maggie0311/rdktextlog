@@ -67,3 +67,7 @@ X5 aarch64 基础运行已由板端真机 `TESTREPORT-T-20261001-008-001` 实测
 3. **developer 备料**：无落盘 HANDOFF 信；developer 为外部实例直接提交 `3148fed`（feature/logging-v2），`developer/script` 四处 commit 逐字节一致已由 code_reviewer 复核，本卡不伪造 HANDOFF 记录。
 4. **SPEC/WALKTHROUGH/QUESTIONS/DIFF**：其 `file:line` 代码引用与来源一致，按 DECISION §2.3 不改内容。注：SPEC-001 §9 与 DIFF-001「事实边界」仍写 "accepted（开发机范围）/ 未覆盖 X5 aarch64"，该表述已被板端真机 T-008 与 ACCEPT「板端实测通过」取代——此项更正仅记于本卡，原文档冻结于归档时点不改（是当时基于空壳引用的诚实记录）。
 5. **归档件 KN3 缺陷**：`systemd/rmlog-demo.service` 归档件含 1 个伪 `[Unit]` 非注释行（见 §4），来源代码无此问题；按 KN2 归档件冻结不改，留待 management 裁定是否以新版本纠正。
+
+## 7. 版本去向注记（2026-10-01 追加，DECISION `MAIL-20261001-1630`）
+
+本版本 `systemd/rmlog-demo.service` 归档件的伪 `[Unit]` 缺陷（§4 / §6-5 所述 KN3 越界）**已由版本 002 纠正**（见 VERSION-002 / DIFF-002 / `v002/systemd/rmlog-demo.service`）；本卡及 `code/` 32 文件保持冻结不改。
