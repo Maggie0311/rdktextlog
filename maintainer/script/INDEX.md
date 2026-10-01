@@ -5,7 +5,7 @@
 
 | # | 交付单元 | 路径 | 类型 | 关联 task_id | 版本 | 创建日期 | 消费者 |
 |---|---|---|---|---|---|---|---|
-| — | （暂无） | — | — | — | — | — | — |
+| 1 | T-20260930-005-logging-v2 归档交付 | `../code_archive/T-20260930-005-logging-v2/` | VERSION/SPEC/WALKTHROUGH/QUESTIONS/DIFF | T-20260930-005-logging-v2 | 001 | 2026-10-01 | management / 维护者 |
 
 **待产出（上岗后）**：
 

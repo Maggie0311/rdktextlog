@@ -37,6 +37,8 @@
 | **selftest 13 用例** | `python3 -m rmlog.selftest` 的断言式自测集：AC2×2/AC3/AC4/AC5×4/AC6/RF6/GEN/F2/READ | 注册表 selftest.py:645 区；逐用例说明=maintainer 补注（selftest.py:13-28） | 12→13 用例的分界=R3（新增 RF6 句柄守恒） |
 | **k=v 属性（attrs）** | 事件消息后的可变参数字段：落盘为行尾 `|k=v` 段，读端解析回显，便于肉眼比对与脚本统计；**只放会变化、需事后比对的参数**（如 `dev=/dev/spidev0.0`、`retry=3`），固定上下文写进消息文本即可；C 端宏暂不支持（P1 扩展项） | Python `attrs={...}` 参数（writer.py:247/531、format.py:167/178）、解析回显 format.py:223-238；C 端无（encode_cases.py:15-16 声明） | v002 USAGE §2.3 给出使用时机口径（本版手册新增的整理）；行为面 v001 起未变 |
 | **分钟级前缀（时间窗）** | `--since/--until` 接受非全精度时间前缀（如 `T14:38`）：按**日历段语义**解释——`--until 14:38` 含 14:38 这一整分钟（段末 59.999），`--since` 前缀=段始 00.000；实现为读端把前缀归一成毫秒定宽串再做字典序比较 | `_normalize_wall_prefix`（rmlog_read.py:136-156 区）、CLI 参数说明（rmlog_read.py:263-265）、maintainer 补注（rmlog_read.py:139-143/205 区） | F-2 修复的读端落点；v002 USAGE §2.5/§3.3 的命令语义来源 |
+| **有界队列（bounded queue）** | 设定正整数容量的内存队列；满时显式拒绝事件并计数，不把无限堆积伪装成成功 | `rmlog/async_writer.py:20`、`AsyncWriter` 构造与入队路径 | v2 新增接入层；开发机 smoke 已测，硬实时边界 `unverified` |
+| **session（会话标识）** | 启动到停止的一段事件共同携带的短标识，用于跨轮转文件筛选和 manifest 对账 | `rmlog/session.py:1`、`export_evidence.py` session filter | v2 新增业务接入词；不等于进程或 systemd unit 的唯一身份 |
 
 ## 维护提示
 
@@ -49,3 +51,4 @@
 |---|---|
 | 001（来源 164d4c7，2026-09-28） | 首次建档：上表全部 22 条（rmlog、错误码五域、行格式 v1/LOGV1、双时间戳、轮转协议 v2、ROTLOCK、O_APPEND、特性测试宏、advisory 锁、残行三道闸、转义表/\xNN、write_failures 与 lock_degradations、每写即开即关、裁决与打开分离、可证安全 528、fdatasync 三形态、AC 编号、审查编号体系、selftest 13 用例等） |
 | 002（来源 08f6ce8，2026-09-29） | +2 条：k=v 属性（attrs）、分钟级前缀（时间窗）——v002 USAGE 手册六主题重排后，这两个"看不出来"的使用口径词有了成文出处；行为面本身 v001 起未变（零代码变更） |
+| 003（来源 3148fed，2026-10-01） | +2 条：有界队列、session（会话标识）——v2 接入与跨轮转导出主线；X5/硬实时边界仍 `unverified` |
