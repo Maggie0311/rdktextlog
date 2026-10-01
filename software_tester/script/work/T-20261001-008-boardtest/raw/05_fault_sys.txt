@@ -1,0 +1,23 @@
+CMD: rm -rf /tmp/rmlog-fault-sys; mkdir -p /tmp/rmlog-fault-sys; cd /tmp/rmlog-v2 && PYTHONPATH=. python3 rmlog/fault_demo.py /tmp/rmlog-fault-sys --fail sys
+
+[exit] 0
+
+[stdout]
+
+
+[stderr]
+
+
+[日志文件与内容] rc=0
+--- files ---
+/tmp/rmlog-fault-sys/rmlog.log
+--- content ---
+===== /tmp/rmlog-fault-sys/rmlog.log =====
+LOGV1|1|2026-10-01T11:02:48.480|1073818|INFO|E-INIT-000|check|injected=False|check=init|session=fault-demo-20261001-110248-046b43eb|pid=3525
+LOGV1|2|2026-10-01T11:02:48.481|1073818|WARN|E-COMM-003|check|injected=False|check=comm|session=fault-demo-20261001-110248-046b43eb|pid=3525
+LOGV1|3|2026-10-01T11:02:48.481|1073819|WARN|E-HW-005|check|injected=False|check=hw|session=fault-demo-20261001-110248-046b43eb|pid=3525
+LOGV1|4|2026-10-01T11:02:48.482|1073819|WARN|E-FSM-002|check|injected=False|check=fsm|session=fault-demo-20261001-110248-046b43eb|pid=3525
+LOGV1|5|2026-10-01T11:02:48.482|1073819|ERROR|E-SYS-002|check|injected=True|check=sys|session=fault-demo-20261001-110248-046b43eb|pid=3525
+
+[stderr]
+

@@ -1,0 +1,72 @@
+local source dir: D:\rdk_x5_software\software_tester\script\work\T-20261001-008-boardtest\src\developer\script
+tar size bytes: 399360
+[prep] rc=0 out='' err=''
+[extract] rc=0
+[stdout]
+UPLOAD_OK
+./CODE-STYLE.md
+./ERR-CATALOG.md
+./export_evidence.py
+./.gitignore
+./IMPL-T-20260926-001-logging-platform-p0.md
+./IMPL-T-20260930-005-logging-v2.md
+./INDEX.md
+./PLAN-T-20260930-005-logging-v2.md
+./README.md
+./rmlog/_ac4_probe.c
+./rmlog/async_writer.py
+./rmlog/catalog.py
+./rmlog/checks.py
+./rmlog/daemon.py
+./rmlog/encode_cases.py
+./rmlog/example.c
+./rmlog/fault_demo.py
+./rmlog/format.py
+./rmlog/gen_code.py
+./rmlog/__init__.py
+./rmlog_read.py
+./rmlog/rmlog.c
+./rmlog/rmlog_errors.h
+./rmlog/rmlog.h
+./rmlog/selftest.py
+./rmlog/session.py
+./rmlog/USAGE.md
+./rmlog/worker.py
+./rmlog/writer.py
+./systemd/rmlog-demo.service
+./tests/probe_fdleak_rf6_before_after.log
+./tests/probe_fdleak_rf6.c
+./tests/selftest-20260926-1958.log
+./tests/selftest-20260926-2002.log
+./tests/selftest-20260926-2020-final.log
+./tests/selftest-20260926-2035.log
+./tests/selftest-20260926-2042.log
+./tests/selftest-20260926-2055.log
+./tests/selftest-20260927-1010-r1.log
+./tests/selftest-20260927-1028-r1.log
+./tests/selftest-20260927-1235-rf.log
+./tests/selftest-20260927-1352-rf6.log
+./tests/selftest-20260927-2208-r4.log
+./tests/test_v2_smoke.py
+./USAGE.md
+FILES=45
+
+[stderr]
+
+[remote md5sum] rc=0
+[stdout]
+0ce52398c0117687686d43a36ea4e343  rmlog/selftest.py
+e4d1c2fd0e93317c02e2a6cc2d896265  rmlog/writer.py
+b0e338bdde7fc71466fb0b76f92a9d84  rmlog/rmlog.c
+0bd92f501d52d9d30525329c9bd1dcea  rmlog/fault_demo.py
+b28c5510b83fe2bcf3fbcf27fa1e4e25  tests/test_v2_smoke.py
+c2e2bb63c25372415a03aee8d388a973  rmlog_read.py
+
+[stderr]
+
+MATCH  rmlog/selftest.py  local=0ce52398c0117687686d43a36ea4e343 remote=0ce52398c0117687686d43a36ea4e343
+MATCH  rmlog/writer.py  local=e4d1c2fd0e93317c02e2a6cc2d896265 remote=e4d1c2fd0e93317c02e2a6cc2d896265
+MATCH  rmlog/rmlog.c  local=b0e338bdde7fc71466fb0b76f92a9d84 remote=b0e338bdde7fc71466fb0b76f92a9d84
+MATCH  rmlog/fault_demo.py  local=0bd92f501d52d9d30525329c9bd1dcea remote=0bd92f501d52d9d30525329c9bd1dcea
+MATCH  tests/test_v2_smoke.py  local=b28c5510b83fe2bcf3fbcf27fa1e4e25 remote=b28c5510b83fe2bcf3fbcf27fa1e4e25
+MATCH  rmlog_read.py  local=c2e2bb63c25372415a03aee8d388a973 remote=c2e2bb63c25372415a03aee8d388a973

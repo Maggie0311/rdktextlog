@@ -1,0 +1,11 @@
+CMD: cd /tmp/rmlog-v2 && PYTHONPATH=. python3 tests/test_v2_smoke.py
+elapsed=3.8s
+
+[exit] 0
+
+[stdout]
+V2 SMOKE PASS accepted=1 dropped=9
+
+
+[stderr]
+
