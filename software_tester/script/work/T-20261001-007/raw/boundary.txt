@@ -1,0 +1,3 @@
+maxsize=0: REJECTED maxsize must be a positive integer
+queue accepted=1 dropped=29 close=True
+worker_failures=1 write_failures=0

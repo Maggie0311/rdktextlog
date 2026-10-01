@@ -1,0 +1,5 @@
+exported=2026-09-30T20:29:20.771550
+business.log: MISSING (no main log or rotation members)
+journal: OK (exit=0)
+kernel: UNAVAILABLE (exit=1)
+version: OK (exit=0)

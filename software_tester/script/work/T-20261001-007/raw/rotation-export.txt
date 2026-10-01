@@ -1,0 +1,13 @@
+members ['rmlog.log', 'rmlog.log.1', 'rmlog.log.2', 'rmlog.log.3']
+export_rc 0
+exported=2026-09-30T20:29:29.639171
+business.log: OK session=rot-fixed (7/7 lines; 4 sources)
+rmlog.log: OK (1/1 lines)
+rmlog.log.1: OK (2/2 lines)
+rmlog.log.2: OK (2/2 lines)
+rmlog.log.3: OK (2/2 lines)
+journal: OK (exit=0)
+kernel: UNAVAILABLE (exit=1)
+version: OK (exit=0)
+
+business_bytes 644

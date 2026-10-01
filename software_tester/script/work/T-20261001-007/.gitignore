@@ -1,0 +1,5 @@
+subject/
+selftest-work/
+fault-*/
+daemon-run/
+export-missing/
