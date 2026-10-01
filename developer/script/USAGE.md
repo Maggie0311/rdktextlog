@@ -2,10 +2,9 @@
 
 > 读者: 电控队员（会 C/Python，不要求 Linux 专家）· 版本: 002（T-20260928-004 重构为用户优先结构）
 > 一句话: **上电后 rmlog 自动把错误按"错误码 + 级别 + 双时间戳"写进板上的日志文件；比赛时你什么都不用做，赛后用一条命令把问题定位出来。**
-> 平台: RDK X5（Ubuntu 22.04 aarch64）。组件在板端已由 software_tester 真机实测全绿
-> （selftest 13/13、`gcc -std=c99` 编译零告警——见 TESTREPORT-T-20260927-003-001），
-> **你不需要再做板端自测**，按本手册接入和使用即可。
-> 文中每条命令与示例均已实跑核对（Windows 侧核对记录见 IMPL-T-20260926-001 §9）。
+> 平台目标: RDK X5（Ubuntu 22.04 aarch64）。本 T-20260930-005 v2 候选仅在开发机验证；
+> X5 板端 selftest、编译、systemd 安装和运行仍待按本手册复测，不能用第一版历史报告替代。
+> 命令是使用示例，不表示当前 v2 commit 已在板端实跑；版本证据见 `IMPL-T-20260930-005-logging-v2.md`。
 
 ---
 
@@ -232,7 +231,7 @@ sudo dmesg --time-format iso | grep -iE "spi|error" | head -50
 ## 4. 与系统日志的关系（journald / dmesg）
 
 **分工**：系统组件的账 journald/dmesg 记，比赛业务语义的账（错误码/建议动作/双时间戳）rmlog 记；
-两边用**墙上时间戳**对齐时间线。板端已核实：journald 持久化成立、rsyslog 在跑、
+两边用**墙上时间戳**对齐时间线。journald 持久化、rsyslog 状态和 dmesg 时间格式需在目标板端复测；
 `dmesg --time-format iso` 输出 ISO 时间（与 rmlog 墙上时间同格式可比）。
 
 | 你要看 | 命令 | 说明 |
@@ -342,8 +341,9 @@ WantedBy=multi-user.target
 sudo systemctl daemon-reload && sudo systemctl enable --now rmlog-demo
 ```
 
-> 该样例形态与 P1 的正式常驻服务交付兼容；已按此部署的队伍，赛前检查用 §3.1 的
-> `systemctl is-active` 一条即可。
+> `ExecStart` 必须指向持续运行的业务入口（不能指向写几条日志后正常退出的 fault demo）。
+> 仓库模板 `systemd/rmlog-demo.service` 使用 `python3 -m rmlog.daemon` 作为持续运行示例；
+> 它只写启动/停止事件，真实项目应在该入口接入业务循环。目标板上的安装、权限和重启行为仍待复测。
 
 ### 6.3 更新组件的方法
 
