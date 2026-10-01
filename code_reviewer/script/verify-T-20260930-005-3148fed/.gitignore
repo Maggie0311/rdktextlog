@@ -1,0 +1,16 @@
+# 验证区工作产物（不入库）：代码副本与生成文件
+rmlog/
+tests/
+export_evidence.py
+rmlog_read.py
+_selftest_work/
+_smoke_tmp/
+_smoke_full/
+_posctl_b/
+_probe_loc_mkdirs/
+_probe_loc_bg_mkdirs/
+__pycache__/
+*.pyc
+*.exe
+*.o
+smoke-redirected.log
