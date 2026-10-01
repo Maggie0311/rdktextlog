@@ -22,3 +22,4 @@ references: [maintainer/mailbox/inbox/MAIL-20261001-1210-management--maintainer-
 未验证边界：X5 aarch64、板端 systemd/真实硬件、断电、1 kHz 硬实时与长跑容量；本 RESULT 不作发布或整车交付裁定。
 
 maintainer (R-006)
+commit: c09f376
