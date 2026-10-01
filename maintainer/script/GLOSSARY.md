@@ -40,6 +40,11 @@
 | **有界队列（bounded queue）** | 设定正整数容量的内存队列；满时显式拒绝事件并计数，不把无限堆积伪装成成功 | `rmlog/async_writer.py:20`、`AsyncWriter` 构造与入队路径 | v2 新增接入层；开发机 smoke 已测，硬实时边界 `unverified` |
 | **session（会话标识）** | 启动到停止的一段事件共同携带的短标识，用于跨轮转文件筛选和 manifest 对账 | `rmlog/session.py:1`、`export_evidence.py` session filter | v2 新增业务接入词；不等于进程或 systemd unit 的唯一身份 |
 | **manifest（导出清单）** | `export_evidence.py` 逐来源导出的清单：列出每个证据来源（business.log / journal / kernel / version 等）的状态（OK / MISSING / UNAVAILABLE）与行数，缺失项如实标注而非伪造成功 | `export_evidence.py` 生成 MANIFEST 段；SPEC-001 §8 声明本版增补 | v2 新增；与「有界队列」「session」同属 v2 证据导出主线 |
+| **AsyncWriter（异步写入器）** | v2 新增的异步写入类：调用线程只做**非阻塞入队**（`put_nowait`），落盘由后台线程完成；队列满显式丢弃并计数。它是「有界队列」的宿主类——有界队列讲"容量满即拒"，AsyncWriter 讲"谁入队、谁落盘" | `rmlog/async_writer.py:12`（类）、`emit` :27（`put_nowait` :33）、`_run` :39（后台消费）、`flush` :54、`close` :72 | v2 源码行号（来源 3148fed）；**非硬实时**，IMPL 第 4 条 |
+| **dropped（丢队计数）** | `AsyncWriter` 队列满时被丢弃事件的计数；**非零 = 丢过事件**（"非零丢失"的诚实出口，不伪装成功），调用方应把它接入健康监控 | `rmlog/async_writer.py:20`（初始化）、`:35-37`（`queue.Full`→`dropped += 1`） | 与 `write_failures`/`worker_failures` 分开计数（:21-22）；v2-USAGE「故障与队列边界」节 |
+| **checks（检测适配器）** | 把业务传入的五域检测事实（init/comm/hw/fsm/sys）**映射到既有错误码**的适配函数 `emit_check`；库不探测硬件，只记录业务提供的事实 | `rmlog/checks.py:8`（`emit_check`）、`:10-12`（mapping 表 init/comm/hw/fsm/sys）、`:1-5`（模块头边界声明） | 映射到的码全为 v1 既有 24 码——**v2 无新增错误码**，新增的是"事实→错误码"适配层 |
+| **fault_demo（五域故障注入演示）** | 可运行的故障注入演示脚本：`--fail` 指定某一域注入失败、其余四域记 ok，用于开发机/板端 smoke | `rmlog/fault_demo.py:9`（`main`）、`:15`（`Session("fault-demo")`）、`:16-18`（五域循环 `emit_check`） | 演示"事实→错误码"接口形态；真实 SPI/CAN/电机事实须由业务提供（`unverified`） |
+| **export_evidence（证据导出）** | 一键导出脚本：业务日志（主文件 + 轮转副本 `.1...N`）始终先导出，再尝试 journal/dmesg/uname，逐项降级、失败标 `UNAVAILABLE`、缺失标 `MISSING`，最后生成 `MANIFEST.txt` | `export_evidence.py:18`（`main`）、`:32-54`（business.log 导出与 `--session` 过滤）、`:55-58`（可选证据 + MANIFEST） | 与「manifest」互补——manifest 是它的输出清单；v2-USAGE「证据与平台边界」节 |
 
 ## 维护提示
 
@@ -53,3 +58,4 @@
 | 001（来源 164d4c7，2026-09-28） | 首次建档：上表全部 22 条（rmlog、错误码五域、行格式 v1/LOGV1、双时间戳、轮转协议 v2、ROTLOCK、O_APPEND、特性测试宏、advisory 锁、残行三道闸、转义表/\xNN、write_failures 与 lock_degradations、每写即开即关、裁决与打开分离、可证安全 528、fdatasync 三形态、AC 编号、审查编号体系、selftest 13 用例等） |
 | 002（来源 08f6ce8，2026-09-29） | +2 条：k=v 属性（attrs）、分钟级前缀（时间窗）——v002 USAGE 手册六主题重排后，这两个"看不出来"的使用口径词有了成文出处；行为面本身 v001 起未变（零代码变更） |
 | 003（来源 3148fed，2026-10-01） | +3 条：有界队列、session（会话标识）、manifest（导出清单）——v2 接入与跨轮转导出主线；板端 X5 基础运行经 T-008 实测通过，systemd 实装/断电/硬实时边界仍 `unverified` |
+| T-20261001-010（文档重整，非代码归档，2026-10-01） | +5 条：AsyncWriter（异步写入器）、dropped、checks、fault_demo、export_evidence——统一文档入口任务（T-20261001-010）§3.3 补记；`session` 与「有界队列」已随 003 收录，本次不重复 |
