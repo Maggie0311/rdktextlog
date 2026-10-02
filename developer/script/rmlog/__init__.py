@@ -27,15 +27,16 @@ from .format import (LEVELS, PREFIX,
                      encode, parse_line, wall_timestamp, mono_timestamp,
                      level_rank)
 from .writer import Writer, event, get_writer, set_default_writer
+from .code_map import encode as encode_code, decode as decode_code, hex_code
 from . import catalog
 
 # 包版本（P0 交付; 行格式或错误码表破坏性变更时同步升版本）
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 __all__ = [
     "event", "get_writer", "set_default_writer", "Writer",
     "encode", "parse_line", "wall_timestamp", "mono_timestamp", "level_rank",
-    "LEVELS", "PREFIX", "catalog",
+    "LEVELS", "PREFIX", "catalog", "encode_code", "decode_code", "hex_code",
 ]
 
 

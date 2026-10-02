@@ -1,13 +1,17 @@
 # -*- coding: utf-8 -*-
-"""持续运行的 systemd 入口示例；真实业务应在 loop 中接入自己的采集逻辑。"""
+"""T-20261001-logging-v3：systemd 入口，负责启动 marker 与优雅停机。"""
 import argparse
 import signal
 import threading
 import time
+import os
+import subprocess
 
 from .async_writer import AsyncWriter
 from .session import Session
 from .writer import Writer
+from .auto import LogRuntime
+from .crash import install_signal_hooks
 
 
 def main(argv=None):
@@ -19,12 +23,20 @@ def main(argv=None):
         signal.signal(sig, lambda *_: stop.set())
     session = Session("service")
     writer = AsyncWriter(Writer(log_dir=a.directory), session=session)
-    writer.emit("E-INIT-000", "service", "logging service started")
+    runtime = LogRuntime(writer, os.path.join(a.directory, "blackbox"), session=session)
+    install_signal_hooks(runtime)
+    try:
+        git = subprocess.check_output(["git", "rev-parse", "--short", "HEAD"],
+                                      stderr=subprocess.DEVNULL, text=True).strip()
+    except (OSError, subprocess.SubprocessError):
+        git = "unknown"
+    runtime.emit("E-INIT-000", "service", "logging service started",
+                 attrs={"git": git, "power": "unknown", "session": session.id})
     try:
         while not stop.wait(1.0):
             pass
     finally:
-        writer.emit("E-SYS-005", "service", "logging service stopping")
+        runtime.emit("E-SYS-005", "service", "logging service stopping")
         writer.close()
     return 0
 

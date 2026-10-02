@@ -40,3 +40,9 @@
 - 命名 `<slug>.<ext>`；重大变更另存 `-v2`，**不覆盖历史**；
 - 每个**交付单元**（一个 `task_id` 的产出批次、说明文档、打包件）必须登记到 `INDEX.md`；
 - 交付前必须自测并在 `IMPL` 中留下可复现证据（`ROLE-LIMIT.md` §6 DoD）。
+# v3 增量组件
+
+`rmlog/auto.py` 是业务推荐入口：通过 `sample()`、`heartbeat()` 和 `emit()` 自动
+关联黑匣子与错误快照；`blackbox.py`、`monitors.py`、`resources.py` 提供可注入
+的 P0/P1 组件。`python3 -m rmlog.gen_code` 同时生成旧 C 头和
+`shared/rmlog_schema.h`，后者是 STM32/Linux 共用的生成头。

@@ -17,9 +17,11 @@ import os
 import sys
 
 from . import catalog
+from .code_map import DOMAIN_IDS, LEVEL_IDS, encode
 
 # 生成的头文件名（C 端 include 用; 与 rmlog.h 同目录）
 HEADER_NAME = "rmlog_errors.h"
+SCHEMA_HEADER_NAME = "rmlog_schema.h"
 
 # 生成的头文件说明头 —— 明确标记"生成物勿手改"，并指向再生成命令
 _HEADER_BANNER = """\
@@ -64,6 +66,7 @@ def render_header():
     """把 catalog 表渲染为 rmlog_errors.h 全文（纯函数, 便于自测对照）。"""
     lines = [_HEADER_BANNER]
     lines.append("/* 表版本: rmlog.catalog.CATALOG_VERSION = %s */" % catalog.CATALOG_VERSION)
+    lines.append("/* bit 码布局: domain(8) | level(4) | number(12), 24-bit uint32_t */")
     lines.append("")
 
     # 1) 级别常量: 取值顺序与 rmlog.format.LEVELS 严格一致（自测会对照）。
@@ -81,6 +84,7 @@ def render_header():
         sym = symbol_for(item["code"])
         lines.append("#define RMLOG_CODE_%s %s" % (sym, _c_string(item["code"])))
         lines.append("#define RMLOG_LVL_%s RMLOG_LVL_%s" % (sym, item["level"]))
+        lines.append("#define RMLOG_BIT_%s 0x%06Xu" % (sym, encode(item["code"])))
     lines.append("")
 
     # 3) 结构化码表（静态数组）: 供 C 端查询函数/调试工具遍历
@@ -130,6 +134,17 @@ def write_header(out_dir=None):
     out_path = os.path.join(out_dir, HEADER_NAME)
     with open(out_path, "w", encoding="utf-8", newline="\n") as fh:
         fh.write(render_header())
+    return out_path
+
+
+def write_schema(out_dir=None):
+    """把同一份 catalog 生成给 Linux 与 STM32 工程引用的公共头文件。"""
+    if out_dir is None:
+        out_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "shared")
+    os.makedirs(out_dir, exist_ok=True)
+    out_path = os.path.join(out_dir, SCHEMA_HEADER_NAME)
+    with open(out_path, "w", encoding="utf-8", newline="\n") as fh:
+        fh.write(render_header().replace("RMLOG_ERRORS_H", "RMLOG_SCHEMA_H"))
     return out_path
 
 
@@ -196,8 +211,9 @@ def main(argv):
         return 0
     out_dir = args[0] if args else None
     path = write_header(out_dir)
-    print("rmlog.gen_code: 已生成 %s（%d 个错误码, 表版本 %s）" % (
-        path, len(catalog.ERRORS), catalog.CATALOG_VERSION))
+    schema = write_schema()
+    print("rmlog.gen_code: 已生成 %s 与 %s（%d 个错误码, 表版本 %s）" % (
+        path, schema, len(catalog.ERRORS), catalog.CATALOG_VERSION))
     return 0
 
 

@@ -22,6 +22,7 @@ import argparse
 import os
 import sys
 import time
+from collections import Counter
 
 # 允许脚本被直接执行（python3 rmlog_read.py ...）也可作为模块导入:
 # 把脚本所在目录加入 sys.path, 保证 `from rmlog import ...` 在两种方式下都成立。
@@ -235,6 +236,24 @@ def cmd_filter(args):
     return 0
 
 
+def cmd_stats(args):
+    """按错误码和级别统计频次，快速确定场下排查方向。"""
+    counts, levels, dropped = Counter(), Counter(), 0
+    for _, ev, _raw in iter_events([args.file]):
+        if ev is None:
+            dropped += 1
+            continue
+        counts[ev["code"]] += 1
+        levels[ev["level"]] += 1
+    print("总事件: %d" % sum(counts.values()))
+    print("级别: " + " ".join("%s=%d" % (k, levels[k])
+                              for k in ("INFO", "WARN", "ERROR", "FATAL") if levels[k]))
+    for code, count in counts.most_common():
+        print("%s\t%d" % (code, count))
+    _summary(dropped)
+    return 0
+
+
 def build_parser():
     """参数解析器（三个子命令共用一套残行统计行为）。"""
     p = argparse.ArgumentParser(
@@ -259,6 +278,8 @@ def build_parser():
     fp.add_argument("--session", help="只显示属性 session 等于该 ID 的事件")
     fp.add_argument("--since", help="起始墙上时间（含）, 支持前缀: 2026-09-26T16:00 或 2026-09-26T16:00:00.000")
     fp.add_argument("--until", help="结束墙上时间（含）, 前缀视为该段末（如 T14:38 含 14:38 这一整分钟）")
+    sp = sub.add_parser("stats", help="按错误码和级别统计频次")
+    sp.add_argument("file")
     return p
 
 
@@ -269,6 +290,8 @@ def main(argv):
         return cmd_parse(args)
     if args.cmd == "tail":
         return cmd_tail(args)
+    if args.cmd == "stats":
+        return cmd_stats(args)
     return cmd_filter(args)
 
 
