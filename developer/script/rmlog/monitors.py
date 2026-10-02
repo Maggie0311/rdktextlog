@@ -12,20 +12,25 @@ class CommStats:
     def __init__(self, runtime, name, window=20, fail_threshold=3):
         self.runtime, self.name = runtime, name
         self.window, self.fail_threshold = window, fail_threshold
-        self.total = self.failed = 0
+        self.total = self.failed = self.consecutive_failures = 0
 
     def success(self):
         self.total += 1
-        self.runtime.sample("comm", name=self.name, ok=1, total=self.total, failed=self.failed)
+        self.consecutive_failures = 0
+        self.runtime.sample("comm", name=self.name, ok=1, total=self.total,
+                            failed=self.failed, consecutive=0)
 
     def failure(self, detail="transport failure"):
         self.total += 1
         self.failed += 1
-        self.runtime.sample("comm", name=self.name, ok=0, total=self.total, failed=self.failed)
-        if self.failed >= self.fail_threshold:
-            code = "E-COMM-004" if self.failed >= self.window else "E-COMM-003"
+        self.consecutive_failures += 1
+        self.runtime.sample("comm", name=self.name, ok=0, total=self.total,
+                            failed=self.failed, consecutive=self.consecutive_failures)
+        if self.consecutive_failures >= self.fail_threshold:
+            code = "E-COMM-004" if self.consecutive_failures >= self.window else "E-COMM-003"
             return self.runtime.emit(code, self.name, detail,
-                                     attrs={"failed": self.failed, "total": self.total})
+                                     attrs={"failed": self.failed, "total": self.total,
+                                            "consecutive": self.consecutive_failures})
         return True
 
 
@@ -36,6 +41,7 @@ class HeartbeatWatchdog:
         self.runtime, self.name, self.timeout, self.interval = runtime, name, timeout, interval
         self._stop = threading.Event()
         self._thread = None
+        self.runtime.ensure_heartbeat(name)
 
     def start(self):
         self._thread = threading.Thread(target=self._run, name="rmlog-watchdog", daemon=True)

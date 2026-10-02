@@ -24,7 +24,7 @@ def main(argv=None):
     session = Session("service")
     writer = AsyncWriter(Writer(log_dir=a.directory), session=session)
     runtime = LogRuntime(writer, os.path.join(a.directory, "blackbox"), session=session)
-    install_signal_hooks(runtime)
+    install_signal_hooks(runtime, directory=os.path.join(a.directory, "crash"))
     try:
         git = subprocess.check_output(["git", "rev-parse", "--short", "HEAD"],
                                       stderr=subprocess.DEVNULL, text=True).strip()

@@ -22,11 +22,45 @@ class BlackBox:
         self.directory = os.path.abspath(directory)
         self.samples = deque(maxlen=capacity)
         self._lock = threading.Lock()
+        self._snapshot_seq = 0
+
+    @staticmethod
+    def _safe_value(value, depth=0):
+        """把业务对象转换成不会让取证路径抛异常的 JSON 值。"""
+        if depth > 4 or value is None or isinstance(value, (bool, int, float, str)):
+            return value
+        if isinstance(value, (bytes, bytearray, memoryview)):
+            return bytes(value).hex()
+        if isinstance(value, dict):
+            result = {}
+            for key, item in value.items():
+                try:
+                    safe_key = str(BlackBox._safe_value(key, depth + 1))
+                except Exception:
+                    safe_key = "<unserializable-key>"
+                result[safe_key] = BlackBox._safe_value(item, depth + 1)
+            return result
+        if isinstance(value, (list, tuple, set, frozenset)):
+            return [BlackBox._safe_value(v, depth + 1) for v in value]
+        tolist = getattr(value, "tolist", None)
+        if callable(tolist):
+            try:
+                return BlackBox._safe_value(tolist(), depth + 1)
+            except Exception:
+                pass
+        try:
+            return repr(value)
+        except Exception:
+            return "<unserializable>"
 
     def record(self, kind, **values):
         """追加一条高频样本；不做字段白名单，便于不同机器人复用。"""
-        sample = {"mono_ms": int(time.monotonic() * 1000), "kind": str(kind)}
-        sample.update(values)
+        try:
+            safe_kind = str(kind)
+        except Exception:
+            safe_kind = "<unserializable-kind>"
+        sample = {"mono_ms": int(time.monotonic() * 1000), "kind": safe_kind}
+        sample.update({key: self._safe_value(value) for key, value in values.items()})
         with self._lock:
             self.samples.append(sample)
 
@@ -36,18 +70,23 @@ class BlackBox:
             rows = list(self.samples)
         try:
             os.makedirs(self.directory, exist_ok=True)
-            stamp = "%d-%d" % (int(time.time()), os.getpid())
+            with self._lock:
+                self._snapshot_seq += 1
+                sequence = self._snapshot_seq
+            stamp = "%d-%d-%d-%d" % (int(time.time()), time.monotonic_ns(), os.getpid(), sequence)
             final = os.path.join(self.directory, "blackbox-%s.jsonl" % stamp)
             fd, temp = tempfile.mkstemp(prefix=".blackbox-", dir=self.directory, text=True)
             with os.fdopen(fd, "w", encoding="utf-8") as fh:
-                fh.write(json.dumps({"reason": reason, "code": code, "count": len(rows)}, ensure_ascii=False) + "\n")
+                header = {"reason": self._safe_value(reason), "code": self._safe_value(code),
+                          "count": len(rows)}
+                fh.write(json.dumps(header, ensure_ascii=False) + "\n")
                 for row in rows:
                     fh.write(json.dumps(row, ensure_ascii=False, separators=(",", ":")) + "\n")
                 fh.flush()
                 os.fsync(fh.fileno())
             os.replace(temp, final)
             return final
-        except OSError:
+        except Exception:
             try:
                 os.unlink(temp)
             except (OSError, UnboundLocalError):

@@ -47,7 +47,12 @@ class ResourceMonitor:
 
     def check_once(self):
         """执行一次采样并返回读取值；不支持的资源只被跳过。"""
-        values = dict(self.provider() or {})
+        try:
+            values = dict(self.provider() or {})
+        except Exception as exc:
+            self.runtime.write_failures += 1
+            self.runtime.last_error = "resource provider: %r" % (exc,)
+            return {}
         self.runtime.sample("resources", **values)
         if values.get("temp_mdeg", 0) > self.temp_limit:
             self.runtime.emit("E-HW-002", "resource", "temperature limit exceeded",

@@ -21,7 +21,11 @@ class LogRuntime:
         self.session = session
         self.blackbox = BlackBox(blackbox_dir, capacity)
         self._heartbeat = {}
+        self._heartbeat_started = {}
         self._lock = threading.Lock()
+        self.write_failures = 0
+        self.blackbox_failures = 0
+        self.last_error = None
 
     def sample(self, kind, **values):
         """记录一个高频样本；仅入内存，不落盘。"""
@@ -30,6 +34,7 @@ class LogRuntime:
     def heartbeat(self, name="main", count=None, **values):
         """更新指定主循环心跳并自动进入黑匣子样本。"""
         with self._lock:
+            self._heartbeat_started.setdefault(name, time.monotonic())
             self._heartbeat[name] = (time.monotonic(), count)
         self.sample("heartbeat", name=name, count=count, **values)
 
@@ -38,17 +43,39 @@ class LogRuntime:
         if self.session is not None:
             attrs = self.session.attrs(attrs)
         method = getattr(self.writer, "event", None) or getattr(self.writer, "emit")
-        ok = method(code, module, message, level=level, attrs=attrs)
+        try:
+            ok = method(code, module, message, level=level, attrs=attrs)
+        except Exception as exc:
+            self.write_failures += 1
+            self.last_error = repr(exc)
+            ok = False
+        else:
+            if not ok:
+                self.write_failures += 1
         effective = level or catalog.default_level(code) or "INFO"
         if effective in ("ERROR", "FATAL"):
             path = self.blackbox.snapshot("error", code)
             if path:
-                method("E-SYS-005", "blackbox", "blackbox snapshot written",
-                       attrs={"code": code, "path": path})
+                try:
+                    method("E-SYS-005", "blackbox", "blackbox snapshot written",
+                           attrs={"code": code, "path": path})
+                except Exception as exc:
+                    self.write_failures += 1
+                    self.last_error = repr(exc)
+            else:
+                self.blackbox_failures += 1
         return ok
 
     def health_attrs(self):
         """返回可挂在诊断事件上的当前心跳状态。"""
         with self._lock:
-            return {"heartbeat_%s" % key: int((time.monotonic() - value[0]) * 1000)
-                    for key, value in self._heartbeat.items()}
+            now = time.monotonic()
+            names = set(self._heartbeat_started) | set(self._heartbeat)
+            return {"heartbeat_%s" % key: int((now - self._heartbeat.get(
+                key, (self._heartbeat_started[key], None))[0]) * 1000)
+                    for key in names}
+
+    def ensure_heartbeat(self, name="main"):
+        """注册尚未喂过的心跳，使看门狗能发现主循环从未启动。"""
+        with self._lock:
+            self._heartbeat_started.setdefault(name, time.monotonic())
