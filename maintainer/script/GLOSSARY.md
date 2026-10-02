@@ -45,6 +45,17 @@
 | **checks（检测适配器）** | 把业务传入的五域检测事实（init/comm/hw/fsm/sys）**映射到既有错误码**的适配函数 `emit_check`；库不探测硬件，只记录业务提供的事实 | `rmlog/checks.py:8`（`emit_check`）、`:10-12`（mapping 表 init/comm/hw/fsm/sys）、`:1-5`（模块头边界声明） | 映射到的码全为 v1 既有 24 码——**v2 无新增错误码**，新增的是"事实→错误码"适配层 |
 | **fault_demo（五域故障注入演示）** | 可运行的故障注入演示脚本：`--fail` 指定某一域注入失败、其余四域记 ok，用于开发机/板端 smoke | `rmlog/fault_demo.py:9`（`main`）、`:15`（`Session("fault-demo")`）、`:16-18`（五域循环 `emit_check`） | 演示"事实→错误码"接口形态；真实 SPI/CAN/电机事实须由业务提供（`unverified`） |
 | **export_evidence（证据导出）** | 一键导出脚本：业务日志（主文件 + 轮转副本 `.1...N`）始终先导出，再尝试 journal/dmesg/uname，逐项降级、失败标 `UNAVAILABLE`、缺失标 `MISSING`，最后生成 `MANIFEST.txt` | `export_evidence.py:18`（`main`）、`:32-54`（business.log 导出与 `--session` 过滤）、`:55-58`（可选证据 + MANIFEST） | 与「manifest」互补——manifest 是它的输出清单；v2-USAGE「证据与平台边界」节 |
+| **黑匣子（BlackBox / blackbox 快照）** | 只保存最近 N 条高频样本的内存环形缓冲，正常不落盘；ERROR/FATAL 时把当前窗口原子写成 JSONL 快照（"飞行记录仪"）。`max_snapshots=0` 表示不淘汰、无限保留 | `rmlog/blackbox.py:16`（类）、`record` :83、`snapshot` :94、`_prune_snapshots` :31 | v3 P0 新增；快照文件名 `blackbox-<wallsec>-<mono_ns>-<pid>-<seq>.jsonl` |
+| **环形缓冲（ring buffer / deque(maxlen=N)）** | 容量固定的双端队列：写满后最旧元素被自动挤出，只保留最近 N 条——黑匣子、错误率窗口都用它 | `rmlog/blackbox.py:26`（`deque(maxlen=capacity)`）、`rmlog/monitors.py:21`（`deque(maxlen=rate_window)`） | v3 术语；区别于磁盘轮转（轮转=文件级，环形缓冲=内存级） |
+| **崩溃遗言（crash last words）** | 进程被 SIGSEGV/SIGABRT 等打死前，在预打开 fd 上写一行 `CRASH|signal=N|pid=M`；写完恢复 SIG_DFL 重抛以保留 core dump | `rmlog/crash.py:30`（`install_signal_hooks`）、handler :40-48 | v3 P0 新增；是否真落 core 取决于板端 `ulimit`/`kernel.core_pattern`（unverified） |
+| **sd_notify** | systemd 服务向 init 报告状态（READY=1 就绪 / WATCHDOG=1 喂狗 / STOPPING=1 停机）的 socket 协议；无 NOTIFY_SOCKET 时静默跳过 | `rmlog/daemon.py:19-34`（`sd_notify`）、调用 :57/:61/:64 | v3 P1 新增；abstract socket `@`→`\0`；实际投递未在板端验证（unverified） |
+| **WatchdogSec** | systemd 服务单元项：服务须在 N 秒内再次 sd_notify(WATCHDOG=1)，否则 systemd 判定卡死并重启 | `systemd/rmlog-demo.service:7`（`WatchdogSec=2`）、配合 `daemon.py:59-61` 0.5s 心跳 | v3 P1 新增；心跳 0.5s < 2s 有余量；板端实装重启未验证 |
+| **错误率滑动窗口（rate window）** | 只统计最近 rate_window 次通信结果的滑动窗口错误率，替代"连续失败"阈值；与"连续失败窗口"并列，区分链路中断 vs 分散失败/突发 | `rmlog/monitors.py:13-21`（`rate_window`/`error_rate_threshold`/`_outcomes`）、判定 :37-45 | v3 P1 新增（F-06 核销）；`E-COMM-004`=连续中断、`E-COMM-003`=分散/突发 |
+| **24bit 双轨码（bit code）** | 与字符串错误码并存的紧凑整数编码：`domain(8)|level(4)|number(12)`，高 8 位保留为零（可放 uint32_t）；如 `E-COMM-004`→`0x223004` | `rmlog/code_map.py:10-21`（`DOMAIN_IDS`/`encode`）、`rmlog/gen_code.py:87`（`RMLOG_BIT_*`） | v3 P2 新增；字符串码仍是日志主显示，bit 码用于跨 MCU 传输 |
+| **公共头（rmlog_schema.h）** | 由 `gen_code.write_schema` 从 catalog.py 单一来源生成的共享头，供 Linux 与 STM32/RT-Thread 下位机引用同一份 24 码/bit 码表；生成物勿手改 | `rmlog/gen_code.py:140-149`（`write_schema`）、`shared/rmlog_schema.h` | v3 P2 新增；与 `rmlog_errors.h` 同源，仅 banner/guard 不同（F-05） |
+| **资源监控（ResourceMonitor）** | 周期读 sysfs/procfs（温度/电压/内存），越限映射既有 24 码（E-HW-002/E-HW-001/E-SYS-001）；provider 可注入，读不到的资源按设计跳过 | `rmlog/resources.py:10`（类）、`_linux_values` :29、`check_once` :48 | v3 P1 新增；RDK X5 无 BAT0 时电压跳过（unverified 是否需替代路径） |
+| **LogRuntime（低打点运行时）** | 业务侧单一入口：把日志写入、黑匣子采样、会话属性合成一个对象；`emit` 写 ERROR/FATAL 后自动倒黑匣子快照 | `rmlog/auto.py:16`（类）、`emit` :41、`heartbeat` :34 | v3 P0/P1 新增；保留 v2 `Writer.event`/`AsyncWriter.emit` 兼容 |
+| **stats（统计 CLI）** | 读端子命令：按错误码与级别统计频次（总事件/级别分布/各码次数），场下快速定位"哪类错误最多" | `rmlog_read.py:239-254`（`cmd_stats`）、`:281`（subparser） | v3 P2 新增 |
 
 ## 维护提示
 
@@ -59,3 +70,4 @@
 | 002（来源 08f6ce8，2026-09-29） | +2 条：k=v 属性（attrs）、分钟级前缀（时间窗）——v002 USAGE 手册六主题重排后，这两个"看不出来"的使用口径词有了成文出处；行为面本身 v001 起未变（零代码变更） |
 | 003（来源 3148fed，2026-10-01） | +3 条：有界队列、session（会话标识）、manifest（导出清单）——v2 接入与跨轮转导出主线；板端 X5 基础运行经 T-008 实测通过，systemd 实装/断电/硬实时边界仍 `unverified` |
 | T-20261001-010（文档重整，非代码归档，2026-10-01） | +5 条：AsyncWriter（异步写入器）、dropped、checks、fault_demo、export_evidence——统一文档入口任务（T-20261001-010）§3.3 补记；`session` 与「有界队列」已随 003 收录，本次不重复 |
+| 004（来源 d77d36c，2026-10-02） | +11 条：黑匣子（BlackBox）、环形缓冲、崩溃遗言、sd_notify、WatchdogSec、错误率滑动窗口、24bit 双轨码、公共头（rmlog_schema.h）、资源监控（ResourceMonitor）、LogRuntime、stats（统计 CLI）——v3 P0–P2 自动记录与场下定位主线；板端 X5 基础运行经 T-20261002-014 实测通过，systemd 实装/断电/真实硬件/1kHz 硬实时/板端 core 放开仍 `unverified` |

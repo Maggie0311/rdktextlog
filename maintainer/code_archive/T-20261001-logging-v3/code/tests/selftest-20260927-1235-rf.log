@@ -1,0 +1,15 @@
+rmlog.selftest — 工作区: D:\rdk_x5_software\developer\script\tests\_work
+  PASS  AC2 roundtrip(转义/属性/双时间戳)
+  PASS  AC2 残行三道闸 + 随机字节 fuzz(300 次, 解析不抛异常)
+  PASS  AC3 五域 INIT/COMM/HW/FSM/SYS 共 24 码(字段完整/无重复)
+  PASS  AC4 双端 7 个用例逐字节一致(含|/换行/控制字符/中文)
+  PASS  AC5 多进程并发 4x250=1000 行无丢行/无交错
+  PASS  AC5 轮转触发, 副本数 3 (2<=n<=keep=3), 最老已淘汰
+  PASS  AC5×F-1 多进程×轮转 3x400 行逐 worker 对账: 写成功=1200 可见=1200, 副本文件 16 个, 无半行/无全灭/无缺号
+  PASS  AC5 读端一条命令 --level ERROR --code E-INIT-* 命中 2/5
+  PASS  AC6 硬崩溃(os._exit)后最后一条 ERROR/FATAL 事件可读
+  PASS  GEN 生成头/文档与 catalog 单一来源一致
+  PASS  F2 时间前缀归一: 前缀=日历段语义（until=段末/since=段始）, 窗口与全精度行为正确
+  PASS  READ parse/tail CLI 冒烟
+自测结束: 12/12 通过, 用时 28.2s
+SELFTEST PASS

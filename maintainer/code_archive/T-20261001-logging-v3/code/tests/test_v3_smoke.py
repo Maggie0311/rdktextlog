@@ -1,0 +1,114 @@
+# （maintainer 补注，T-20261001-logging-v3 归档 001，来源 commit d77d36c）
+# 导读：test_v3_smoke.py = P0/P1/P2 开发机可测烟测，覆盖 bit 码双轨、黑匣子（含 max_snapshots
+# 保留上限/深度对象降级）、CommStats 滑动窗口、ResourceMonitor 注入、DmesgMonitor 启动竞态、
+# HeartbeatWatchdog、stats CLI 与 schema 生成；不宣称板端事实（板端以 TESTREPORT-T-20261002-014-001 为准）。
+"""T-20261001-logging-v3：P0/P1/P2 开发机可测烟测（不宣称板端事实）。"""
+
+import os
+import subprocess
+import sys
+import tempfile
+import time
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, ROOT)
+
+from rmlog.auto import LogRuntime
+from rmlog.blackbox import BlackBox
+from rmlog.code_map import decode, encode, hex_code
+from rmlog.crash import EmergencyWriter
+from rmlog.monitors import CommStats, DmesgMonitor, HeartbeatWatchdog
+from rmlog.resources import ResourceMonitor
+from rmlog.writer import Writer
+from rmlog.format import parse_line
+
+
+def main():
+    work = tempfile.mkdtemp(prefix="rmlog-v3-")
+    writer = Writer(log_dir=work, max_bytes=1024 * 1024)
+    runtime = LogRuntime(writer, os.path.join(work, "blackbox"), capacity=8)
+    runtime.sample("chassis", vx=1.2, vy=0.0, wz=0.1)
+    runtime.sample("imu", yaw=3.0, pitch=0.1, roll=0.2)
+    runtime.sample("custom", values={1, 2}, raw=b"abc", opaque=object())
+    runtime.heartbeat("main", count=1)
+    assert encode("E-INIT-000") is not None
+    assert decode(encode("E-INIT-000")) == "E-INIT-000"
+    assert hex_code("E-COMM-004") == "0x223004"
+    comm = CommStats(runtime, "spi", fail_threshold=2, window=2)
+    comm.failure("timeout")
+    comm.failure("timeout")
+    comm.success()
+    comm.failure("timeout")
+    assert comm.consecutive_failures == 1
+    ResourceMonitor(runtime, provider=lambda: {"temp_mdeg": 90000,
+                                                "voltage_mv": 12000,
+                                                "memory_available_kb": 1000}).check_once()
+    assert ResourceMonitor(runtime, provider=lambda: (_ for _ in ()).throw(RuntimeError("probe"))).check_once() == {}
+    DmesgMonitor(runtime, source=["spi controller error\n", "ordinary line\n"]).run()
+    lines = []
+    for name in os.listdir(work):
+        if name == "rmlog.log":
+            lines.extend(open(os.path.join(work, name), encoding="utf8"))
+    events = [parse_line(line) for line in lines]
+    assert any(event and event["code"] == "E-COMM-004" for event in events)
+    assert os.path.isdir(os.path.join(work, "blackbox"))
+    assert any(name.endswith(".jsonl") for name in os.listdir(os.path.join(work, "blackbox")))
+    bb = BlackBox(os.path.join(work, "bb"), capacity=2)
+    bb.record("opaque", obj=object())
+    deep = value = {}
+    for _ in range(8):
+        value["next"] = {}
+        value = value["next"]
+    bb.record("deep", value=deep)
+    first, second = bb.snapshot("x"), bb.snapshot("x")
+    assert first != second and os.path.exists(first) and os.path.exists(second)
+    limited = BlackBox(os.path.join(work, "limited"), max_snapshots=2)
+    limited.snapshot("1")
+    limited.snapshot("2")
+    limited.snapshot("3")
+    assert len([n for n in os.listdir(limited.directory) if n.endswith(".jsonl")]) == 2
+    unlimited = BlackBox(os.path.join(work, "unlimited"), max_snapshots=0)
+    unlimited.snapshot("1")
+    unlimited.snapshot("2")
+    unlimited.snapshot("3")
+    assert len([n for n in os.listdir(unlimited.directory) if n.endswith(".jsonl")]) == 3
+    emergency = EmergencyWriter(os.path.join(work, "crash"))
+    emergency.write(6)
+    emergency.close()
+    assert "CRASH|signal=6" in open(emergency.path, encoding="ascii").read()
+    distributed = CommStats(runtime, "can", window=5, fail_threshold=99,
+                             rate_window=4, error_rate_threshold=0.5)
+    distributed.failure("f")
+    distributed.success()
+    distributed.failure("f")
+    distributed.success()
+    assert distributed.consecutive_failures == 0
+    # 用真实阻塞 stdout 的子进程覆盖 DmesgMonitor.run/stop 的启动竞态与泄漏。
+    import threading
+    import rmlog.monitors as monitors
+    real_popen = monitors.subprocess.Popen
+    monitors.subprocess.Popen = lambda *args, **kwargs: real_popen(
+        [sys.executable, "-c", "import time; time.sleep(30)"], **kwargs)
+    dmesg = DmesgMonitor(runtime)
+    thread = threading.Thread(target=dmesg.run)
+    thread.start()
+    time.sleep(0.05)
+    dmesg.stop()
+    thread.join(2.0)
+    monitors.subprocess.Popen = real_popen
+    assert not thread.is_alive()
+    watchdog = HeartbeatWatchdog(runtime, name="never", timeout=0.001, interval=0.001)
+    watchdog.start()
+    time.sleep(0.01)
+    watchdog.stop()
+    assert runtime.health_attrs()["heartbeat_never"] >= 1
+    stats = subprocess.check_output([sys.executable, os.path.join(ROOT, "rmlog_read.py"),
+                                    "stats", os.path.join(work, "rmlog.log")], text=True)
+    assert "E-COMM-004" in stats and "总事件" in stats
+    subprocess.check_call([sys.executable, "-m", "rmlog.gen_code"], cwd=ROOT,
+                          env=dict(os.environ, PYTHONPATH=ROOT))
+    print("V3 SMOKE PASS bit-map blackbox monitors stats schema")
+
+
+if __name__ == "__main__":
+    main()

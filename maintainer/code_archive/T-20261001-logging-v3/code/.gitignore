@@ -1,0 +1,5 @@
+# developer/script 产物区忽略项（本角色维护）
+# Python 字节码缓存（运行自测必然产生，非交付物）
+__pycache__/
+# 自测/演示工作区（可由 python3 -m rmlog.selftest 与 USAGE §2 完全重建）
+tests/_work/

@@ -1,0 +1,20 @@
+# （maintainer 补注，T-20261001-logging-v3 归档 001，来源 commit d77d36c）
+# 导读：rmlog-demo.service 是 systemd 服务模板。v3 新增 WatchdogSec=2 与 daemon 的心跳
+# sd_notify(WATCHDOG=1) 接线：主循环每 0.5s 喂狗一次 < 2s，超时由 systemd 兜底重启（板端未实装验证）。
+[Unit]
+Description=RoboMaster rmlog business logger demo
+After=local-fs.target
+
+[Service]
+Type=simple
+WatchdogSec=2
+ExecStart=/usr/bin/python3 -m rmlog.daemon /userdata/rmlog
+WorkingDirectory=/opt/rdk_x5_software/developer/script
+Restart=on-failure
+RestartSec=1
+StartLimitIntervalSec=30
+StartLimitBurst=5
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target
