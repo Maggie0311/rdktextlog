@@ -20,10 +20,12 @@
 
 | 你是谁 / 想干什么 | 读什么（按顺序） |
 |---|---|
-| **电控队员，想上手用** | `developer/script/USAGE.md`（使用手册）→ `maintainer/code_archive/变更说明-v2.md`（v2 新功能 / 用法差异） |
-| **想知道 v2 相比 v1 新增了什么、用法有何不同** | `maintainer/code_archive/变更说明-v2.md`（本任务核心，v1→v2 完整差异，逐条带 `file:line` 依据） |
-| **想理解它是什么、开发过程、为什么这样** | `maintainer/code_archive/T-20260930-005-logging-v2/SPEC-001.md`（说明书·总览）→ `…/WALKTHROUGH-001.md`（逐模块走读）→ `…/DIFF-001.md`（版本差异） |
-| **想改代码 / 接入开发** | `developer/script/rmlog/USAGE.md`（v2 API 要点）→ `maintainer/code_archive/T-20260930-005-logging-v2/WALKTHROUGH-001.md` → `developer/script/IMPL-T-20260930-005-logging-v2.md`（实现说明） |
+| **电控队员，想上手用（v3 最新）** | `developer/script/USAGE.md`（使用手册）→ `maintainer/code_archive/变更说明-v3.md`（v3 用户使用说明：v2→v3 新功能 / 用法 / 注意点）→ 回看 `变更说明-v2.md`（v1→v2） |
+| **想知道 v3 相比 v2 新增了什么、用法有何不同** | `maintainer/code_archive/变更说明-v3.md`（本任务核心，v2→v3 用户向差异，逐条带 `file:line` 依据） |
+| **想知道 v2 相比 v1 新增了什么、用法有何不同** | `maintainer/code_archive/变更说明-v2.md`（v1→v2 完整差异，逐条带 `file:line` 依据） |
+| **想理解 v3 是什么、开发过程、为什么这样** | `maintainer/code_archive/T-20261001-logging-v3/SPEC-001.md`（说明书·总览）→ `…/WALKTHROUGH-001.md`（逐模块走读）→ `…/DIFF-001.md`（v2→v3 模块级差异） |
+| **想理解 v2 是什么、开发过程、为什么这样** | `maintainer/code_archive/T-20260930-005-logging-v2/SPEC-001.md`（说明书·总览）→ `…/WALKTHROUGH-001.md`（逐模块走读）→ `…/DIFF-001.md`（版本差异） |
+| **想改代码 / 接入开发** | `developer/script/rmlog/USAGE.md`（API 要点）→ `maintainer/code_archive/T-20261001-logging-v3/WALKTHROUGH-001.md` → `developer/script/IMPL-T-20261001-logging-v3.md`（实现说明） |
 | **想查某个名词/缩写是什么意思** | `maintainer/script/GLOSSARY.md`（项目级术语表，跨版本累积） |
 | **想审计版本链 / 追溯"这一版怎么来的、谁验收的"** | `maintainer/code_archive/INDEX.md`（总索引）→ 对应 task 的 `VERSION-<NNN>.md`（版本卡） |
 
@@ -40,24 +42,25 @@
 | `PLAN-*.md` | **开发计划**（开发者向）：差距分析、实施顺序 | 开发者 |
 | `VERSION-<NNN>` | **归档版本卡**（审计向）：三份要件、双指纹、diff 结论、验收状态 | 人类用户、审计 |
 | `变更说明-v2.md` | **跨 task 的版本差异**（v1→v2 完整对比）：v2 新增了什么、用法有何不同 | 电控队员 |
+| `变更说明-v3.md` | **v3 用户使用说明**（跨 task 的 v2→v3 差异，用户向）：v3 新增了什么、怎么用、注意点 | 电控队员 |
 
 > **「版本差异」有两条线，别混**：`DIFF-<NNN>.md` 是**同一 task 内**相邻归档版本之间的差异；
-> `变更说明-v2.md` 是**跨 task**（`T-20260926-001`(v1) → `T-20260930-005`(v2)）的完整差异。
-> 本框架的「DIFF」概念落在后者（v1→v2）；原 v2 归档的 `DIFF-001.md` 按新任务写成「首版」、不含 v1→v2 对比，**以 `变更说明-v2.md` 为准**（详见该文件文末注记）。
+> `变更说明-v2.md` / `变更说明-v3.md` 是**跨 task** 的完整差异（`T-20260926-001`(v1) → `T-20260930-005`(v2) → `T-20261001-logging-v3`(v3)）。
+> 本框架的「DIFF」概念落在后者（跨 task 对比）；v2 归档的 `DIFF-001.md` 按新任务写成「首版」、不含 v1→v2 对比，**以 `变更说明-v2.md` 为准**；v3 的 `DIFF-001.md` 是 v2→v3 模块级差异，**用户向差异以 `变更说明-v3.md` 为准**（详见两文件文末注记）。
 
 ---
 
-## 2. v1 / v2 归档关系
+## 2. v1 / v2 / v3 归档关系
 
-| | v1 | v2 |
-|---|---|---|
-| task_id | `T-20260926-001-logging-platform-p0` | `T-20260930-005-logging-v2` |
-| 定位 | **基线**（行格式 v1/LOGV1、五域错误码、C/Python 双端、轮转写入、读端） | **升级**（异步队列、session、五域故障检测适配、daemon/systemd、证据导出） |
-| 已归档版本 | v001（`164d4c7`）、v002（`08f6ce8`） | v001（`3148fed`）、v002（`3148fed`，纠正 v001 归档件一处 KN3 越界） |
-| 目录 | `T-20260926-001-logging-platform-p0/` | `T-20260930-005-logging-v2/` |
-| 主线 | 历史基线 | **当前主线** |
+| | v1 | v2 | v3 |
+|---|---|---|---|
+| task_id | `T-20260926-001-logging-platform-p0` | `T-20260930-005-logging-v2` | `T-20261001-logging-v3` |
+| 定位 | **基线**（行格式 v1/LOGV1、五域错误码、C/Python 双端、轮转写入、读端） | **升级**（异步队列、session、五域故障检测适配、daemon/systemd、证据导出） | **加自动层**（黑匣子/崩溃遗言/监控/看门狗/24bit 双轨/公共头/统计 CLI/LogRuntime） |
+| 已归档版本 | v001（`164d4c7`）、v002（`08f6ce8`） | v001（`3148fed`）、v002（`3148fed`，纠正 v001 归档件一处 KN3 越界） | v001（`d77d36c`） |
+| 目录 | `T-20260926-001-logging-platform-p0/` | `T-20260930-005-logging-v2/` | `T-20261001-logging-v3/` |
+| 主线 | 历史基线 | 历史基线 | **当前主线** |
 
-**两个 task = 两套独立归档**，互不覆盖；v2 在 v1 之上**新增**能力（`AsyncWriter`/`Session`/`checks`/`fault_demo`/`daemon`/`export_evidence`/`--session`），**未删改 v1 的既有用法**（`rmlog.event()` / C 宏 / LOGV1 / 五域错误码 / 读端基础过滤全兼容）。完整差异见 `变更说明-v2.md`。
+**三个 task = 三套独立归档**，互不覆盖；v3 在 v1/v2 之上**新增**能力（`BlackBox`/`crash`/`CommStats`/`DmesgMonitor`/`ResourceMonitor`/`HeartbeatWatchdog`/`code_map`/公共头/统计 CLI/`LogRuntime`），**未删改 v1/v2 的既有用法**（`rmlog.event()` / C 宏 / LOGV1 / 五域错误码 / 读端基础过滤全兼容）。完整差异见 `变更说明-v2.md`（v1→v2）与 `变更说明-v3.md`（v2→v3）。
 
 ---
 
@@ -104,6 +107,7 @@ code_archive/
 ├── README.md                本文件：文档导航入口 + 归档规则
 ├── INDEX.md                 总索引：task_id / 版本 / commit / 验收状态 / 三份来源 mail_id / 配套文档
 ├── 变更说明-v2.md           v1→v2 完整差异（新增功能表 + 用法差异 + 迁移注意点）
+├── 变更说明-v3.md           v2→v3 用户使用说明（新增功能表 + 用法 + 迁移注意点）
 ├── <task_id>/
 │   ├── VERSION-<NNN>.md     版本记录卡（三份要件、双指纹、diff 结论、状态）
 │   ├── SPEC-<NNN>.md        说明书（简洁总览；11 个冻结字段）

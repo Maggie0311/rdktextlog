@@ -56,6 +56,8 @@
 | **资源监控（ResourceMonitor）** | 周期读 sysfs/procfs（温度/电压/内存），越限映射既有 24 码（E-HW-002/E-HW-001/E-SYS-001）；provider 可注入，读不到的资源按设计跳过 | `rmlog/resources.py:10`（类）、`_linux_values` :29、`check_once` :48 | v3 P1 新增；RDK X5 无 BAT0 时电压跳过（unverified 是否需替代路径） |
 | **LogRuntime（低打点运行时）** | 业务侧单一入口：把日志写入、黑匣子采样、会话属性合成一个对象；`emit` 写 ERROR/FATAL 后自动倒黑匣子快照 | `rmlog/auto.py:16`（类）、`emit` :41、`heartbeat` :34 | v3 P0/P1 新增；保留 v2 `Writer.event`/`AsyncWriter.emit` 兼容 |
 | **stats（统计 CLI）** | 读端子命令：按错误码与级别统计频次（总事件/级别分布/各码次数），场下快速定位"哪类错误最多" | `rmlog_read.py:239-254`（`cmd_stats`）、`:281`（subparser） | v3 P2 新增 |
+| **快照（blackbox snapshot / .jsonl）** | 黑匣子在 ERROR/FATAL 时把当前内存窗口**原子写出**的 JSONL 文件：首行 header `{reason, code, count}`，后续每行一条窗口样本；`mkstemp`→`fsync`→`os.replace` 原子落名，受 `max_snapshots` 上限淘汰 | `rmlog/blackbox.py:94-116`（`snapshot`）、文件名拼装 :103-104 | v3 P0 新增；文件名 `blackbox-<wallsec>-<mono_ns>-<pid>-<seq>.jsonl`；是「黑匣子」的落盘产物 |
+| **喂狗 / 心跳看门狗（heartbeat / HeartbeatWatchdog）** | "喂狗"=业务周期调用 `runtime.heartbeat(name)` 更新主循环心跳，防看门狗误判卡死；应用层 `HeartbeatWatchdog` 独立线程读心跳 age 超 `timeout` 发 `E-FSM-003`；systemd 层由 `WatchdogSec` + `sd_notify(WATCHDOG=1)` 兜底重启——两层不同的"狗" | `rmlog/auto.py:34`（`heartbeat`）、`rmlog/monitors.py:53/71-80`（`HeartbeatWatchdog`）、`rmlog/daemon.py:59-61`（主循环喂狗） | v3 P1 新增；"喂狗"是口语，"心跳"是动作，"看门狗超时"是结果 |
 
 ## 维护提示
 
@@ -71,3 +73,4 @@
 | 003（来源 3148fed，2026-10-01） | +3 条：有界队列、session（会话标识）、manifest（导出清单）——v2 接入与跨轮转导出主线；板端 X5 基础运行经 T-008 实测通过，systemd 实装/断电/硬实时边界仍 `unverified` |
 | T-20261001-010（文档重整，非代码归档，2026-10-01） | +5 条：AsyncWriter（异步写入器）、dropped、checks、fault_demo、export_evidence——统一文档入口任务（T-20261001-010）§3.3 补记；`session` 与「有界队列」已随 003 收录，本次不重复 |
 | 004（来源 d77d36c，2026-10-02） | +11 条：黑匣子（BlackBox）、环形缓冲、崩溃遗言、sd_notify、WatchdogSec、错误率滑动窗口、24bit 双轨码、公共头（rmlog_schema.h）、资源监控（ResourceMonitor）、LogRuntime、stats（统计 CLI）——v3 P0–P2 自动记录与场下定位主线；板端 X5 基础运行经 T-20261002-014 实测通过，systemd 实装/断电/真实硬件/1kHz 硬实时/板端 core 放开仍 `unverified` |
+| T-20261002-015（文档补件，非代码归档，2026-10-02） | +2 条：快照（blackbox snapshot / .jsonl）、喂狗/心跳看门狗（heartbeat / HeartbeatWatchdog）——随 v3 用户使用说明（`变更说明-v3.md`）成文补记；其余 v3 术语（LogRuntime、黑匣子、环形缓冲、崩溃遗言、sd_notify、WatchdogSec、错误率滑动窗口、24bit 双轨码、公共头、资源监控、stats）已随 004 收录，本次不重复 |
