@@ -18,6 +18,8 @@
 | 11 | 验证工件（`r7/` T-004 复审验证区——08f6ce8 组件副本（8 件 blob MATCH）、V1~V5 实跑输出与脚本、轮转对照、读端 stdout/stderr 分离留档、VERIFY-R7 留档、selftest 13/13 复跑留档 selftest_r7.log；工作区目录不入库） | `script/_verify_T-20260926-001/r7/` | 验证证据区 | — | 2026-09-28（实跑）/ 2026-09-29（入库） | 同上 | `08f6ce8` | 本角色复审基线 |
 | 12 | 审查报告（T-005 logging-v2 首份静态审查，结论 PASS：v2 增量 15 文件零代码缺陷；smoke 失败根因定位为 DSH 沙箱阻断 tempfile.mkdtemp 目录写，非代码缺陷；断点续完——selftest/smoke 实跑前会话完成、静态审查+smoke 追查续完） | `script/REVIEW-T-20260930-005-3148fed.md` | 审查报告 | v1 | 2026-10-01 | T-20260930-005-logging-v2 | `3148fed` | developer（后续流程）、management（验收裁量）、人类用户 |
 | 13 | 验证工件（`verify-T-20260930-005-3148fed/`——selftest 13/13 留档、smoke FAIL 留档、五步最小探针脚本+输出 probe_smoke_race/probe_perm_boundary/probe_loc_thread/probe_positive_control/probe_full_smoke、README；代码副本与工作区目录不入库） | `script/verify-T-20260930-005-3148fed/` | 验证证据区 | — | 2026-10-01 | T-20260930-005-logging-v2 | `3148fed` | 本角色复审基线 |
+| 14 | 复审报告（T-20261001-logging-v3 v3 修复复审，结论 PASS：上轮 F-01~F-06 全核销、零新发现项；板端 UV-1/2/3 如实 unverified；断点续完——五项实跑留档前会话完成、smoke 补跑本会话完成） | `script/REVIEW-T-20261001-logging-v3-d77d36c.md` | 审查报告 | v1 | 2026-10-02 | T-20261001-logging-v3 | `d77d36c` | developer（后续流程）、management（验收裁量）、人类用户 |
+| 15 | 验证工件（`verify-T-20261002-013-d77d36c/`——selftest 13/13、gcc-rmlog/gcc-schema 零告警、gen_consistency 一致、schema_probe、smoke-d77d36c（v2/v3 双 PASS）+ run_smoke_shim.py；代码副本/工作区 tmp_smoke·regenerated·__pycache__/src.tar/.exe/.o 不入库） | `script/verify-T-20261002-013-d77d36c/` | 验证证据区 | — | 2026-10-02 | T-20261001-logging-v3 | `d77d36c` | 本角色复审基线 |
 
 **待产出（上岗后 / 首次审查时）**：
 
