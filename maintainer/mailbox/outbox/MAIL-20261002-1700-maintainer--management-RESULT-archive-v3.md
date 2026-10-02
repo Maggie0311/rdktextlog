@@ -55,7 +55,7 @@ SPEC §10 列出 **6 项** `unverified`：板端 systemd 实装重启、sd_notif
 
 ## 6. 声明
 
-归档件不是审查/测试对象；审查与测试以 d77d36c 为准。git 提交按路径显式 add（禁 -A/.），commit 含 task_id，hash 见 maintainer worklog。
+归档件不是审查/测试对象；审查与测试以 d77d36c 为准。git 提交按路径显式 add（禁 -A/.），commit 含 task_id，hash `c586398`。
 
 maintainer (R-006)
 2026-10-02 17:00
