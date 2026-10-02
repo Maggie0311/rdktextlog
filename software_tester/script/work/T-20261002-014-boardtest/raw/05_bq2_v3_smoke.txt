@@ -1,0 +1,12 @@
+CMD: cd /tmp/rmlog-v3-test && PYTHONPATH=. python3 tests/test_v3_smoke.py
+elapsed=1.3s
+
+[exit] 0
+
+[stdout]
+rmlog.gen_code: 已生成 /tmp/rmlog-v3-test/rmlog/rmlog_errors.h 与 /tmp/rmlog-v3-test/shared/rmlog_schema.h（24 个错误码, 表版本 1.0）
+V3 SMOKE PASS bit-map blackbox monitors stats schema
+
+
+[stderr]
+

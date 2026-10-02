@@ -22,9 +22,9 @@
 | 操作系统 | Ubuntu 22.04.5 LTS；kernel `6.1.83-rt28` PREEMPT_RT | 已验证 | `cat /etc/os-release` | 2026-09-27 |
 | Python 解释器 | python3 3.10.12（aarch64） | 已验证 | `python3 --version` | 2026-09-27 |
 | C 编译器 | gcc 11.2.0（`/usr/bin/gcc`、`cc`）；**clang 不存在** | 已验证 | `which gcc clang` | 2026-09-27 |
-| 通信接口 | SSH :22（IPv6 root/root 密码认证）；地址随网络环境轮换：`2409:893d:5175:915b:7e04:818a:e96a:69ef`（T-002）→ `2409:893d:5175:915b:84d8:86d7:ff02:f8da`（T-003）→ `2409:893d:5144:3d5c:a87d:a71:6eac:4fa5`（T-008，2026-10-01 `Resolve-DnsName ubuntu.local -Type AAAA` 首条实测连通；DNS 同轮另解析到 `2409:893d:5144:3d5c:b8b3:7b8:a711:f382` 未用） | 已验证 | paramiko 连接 + `uname -a` 成功（三地址各一轮） | 2026-10-01 |
+| 通信接口 | SSH :22（IPv6 root/root 密码认证）；地址随网络环境轮换：`2409:893d:5175:915b:7e04:818a:e96a:69ef`（T-002）→ `2409:893d:5175:915b:84d8:86d7:ff02:f8da`（T-003）→ `2409:893d:5144:3d5c:a87d:a71:6eac:4fa5`（T-008，2026-10-01）→ `2409:893d:5126:4ac:fd6a:39a3:6650:3cc8`（T-014，2026-10-02 `Resolve-DnsName ubuntu.local -Type AAAA` 首条实测连通，与任务书已知地址一致；DNS 同轮另解析到 `2409:893d:5126:4ac:c752:f7e7:a59:ce79` 与 IPv4 `172.20.10.2` 未用） | 已验证 | paramiko 连接 + `uname -a` 成功（多地址多轮） | 2026-10-02 |
 | 存储 | `/userdata` 存在（挂载 `/dev/root` 29G）；journald 持久化目录 `/var/log/journal` 存在 | 已验证 | `ls -ld /userdata` / `ls -ld /var/log/journal` | 2026-09-27 |
-| 板端工作目录 | `/root/rmlog_test/`（T-002/T-003 用）；T-008 v2 板端自测改用 `/tmp/rmlog-v2/` 与 `/tmp/rmlog-fault-*`（自建，不触碰系统配置、不 apt 安装） | 已验证 | T-002/T-003/T-008 三轮上传/运行 | 2026-10-01 |
+| 板端工作目录 | `/root/rmlog_test/`（T-002/T-003 用）；T-008 v2 板端自测用 `/tmp/rmlog-v2/`；T-014 v3 板端实测用 `/tmp/rmlog-v3-test/`（自建，不触碰系统配置、不 apt 安装、不改 /etc） | 已验证 | T-002/T-003/T-008/T-014 四轮上传/运行 | 2026-10-02 |
 
 ## 3. 远程计算机
 
@@ -61,3 +61,4 @@
 | 2026-09-27 | 实测回填本机/板端/远程/采集各节为「已验证/不可用」，附证据路径 | TASK `T-20260927-002`（板端 SSH 实测） |
 | 2026-09-28 | 通信接口轮换地址实测回填（新 IPv6）；板端工作目录 T-003 重建记录；已知限制更新（gcc `-std=c99` 编译失败已由 commit 164d4c7 修复解除） | TASK `T-20260927-003`（板端聚焦复测） |
 | 2026-10-01 | 通信接口 T-008 新地址实测回填（DNS AAAA 首条 `2409:893d:5144:3d5c:a87d:a71:6eac:4fa5`）；板端工作目录改 `/tmp/rmlog-v2`；v2（d2e1081）板端 selftest 13/13、smoke、五域故障注入全通过 | TASK `T-20261001-008`（v2 板端自测） |
+| 2026-10-02 | 通信接口 T-014 新地址实测回填（`2409:893d:5126:4ac:fd6a:39a3:6650:3cc8`）；板端工作目录 `/tmp/rmlog-v3-test`；v3（d77d36c）板端实测：BQ1 selftest 13/13、BQ2 v2/v3 双 smoke、BQ3 监控层读真实 dmesg/温度/内存（电压因无 BAT0 跳过）、BQ4 `ulimit -c`=0 / `core_pattern`=core、BQ5 daemon 心跳+SIGTERM 收尾退出码 0 全通过；systemd 实装 WatchdogSec 重启未做（安全边界外） | TASK `T-20261002-014`（v3 板端实测） |

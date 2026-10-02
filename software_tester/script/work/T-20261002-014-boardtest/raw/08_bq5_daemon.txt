@@ -1,0 +1,27 @@
+CMD: bash /tmp/rmlog-v3-test/bq5_daemon.sh
+elapsed=3.3s
+
+[exit] 0
+
+[stdout]
+DAEMON_PID=3416
+--- process alive check (after 3s) ---
+    PID    PPID STAT     ELAPSED CMD
+   3416    3413 Sl         00:03 python3 -m rmlog.daemon /tmp/rmlog-v3-test/bq5-daemon
+--- sending SIGTERM ---
+DAEMON_EXIT=0
+--- daemon stdout ---
+--- daemon stderr ---
+--- files under /tmp/rmlog-v3-test/bq5-daemon ---
+/tmp/rmlog-v3-test/bq5-daemon/crash/crash-3416.log
+/tmp/rmlog-v3-test/bq5-daemon/rmlog.log
+/tmp/rmlog-v3-test/bq5-daemon/stderr.log
+/tmp/rmlog-v3-test/bq5-daemon/stdout.log
+--- rmlog.log content ---
+LOGV1|1|2026-10-02T15:41:24.777|472203|INFO|E-INIT-000|service|logging service started|git=unknown|power=unknown|session=service-20261002-154124-15031afd|pid=3416
+LOGV1|2|2026-10-02T15:41:27.590|475017|INFO|E-SYS-005|service|logging service stopping|session=service-20261002-154124-15031afd|pid=3416
+BQ5 DONE
+
+
+[stderr]
+

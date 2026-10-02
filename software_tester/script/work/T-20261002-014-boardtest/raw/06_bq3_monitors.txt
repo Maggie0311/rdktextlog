@@ -1,0 +1,133 @@
+CMD: cd /tmp/rmlog-v3-test && PYTHONPATH=. python3 bq3_monitors.py
+elapsed=2.4s
+
+[exit] 0
+
+[stdout]
+=== 1) raw sysfs/procfs ground truth (只读) ===
+--- ls /sys/class/thermal ---
+  cooling_device0
+  cooling_device1
+  cooling_device2
+  cooling_device3
+  cooling_device4
+  thermal_zone0
+  thermal_zone1
+--- thermal zone temp 值 ---
+  thermal_zone0/temp = 52475
+  thermal_zone1/temp = 51400
+--- ls /sys/class/power_supply ---
+  (空)
+--- /proc/meminfo MemTotal/MemAvailable ---
+  MemTotal:        7250180 kB
+  MemAvailable:    6928060 kB
+=== 2) ResourceMonitor.check_once() 真实 provider ===
+ResourceMonitor.values = {"memory_available_kb": 6928060, "temp_mdeg": 52523}
+runtime.write_failures = 0
+runtime.last_error = None
+=== 3) DmesgMonitor 真实 dmesg --follow (有界 2s) ===
+DmesgMonitor 线程在 stop 后仍存活 = False
+=== 4) rmlog.log 事件（本脚本会话内产出） ===
+LOGV1|1|2026-10-02T15:41:22.137|469564|ERROR|E-COMM-002|kernel|2026-10-02T15:33:32,017453+08:00 BUG: sleeping function called from invalid context at kernel/locking/spinlock_rt.c:46
+LOGV1|2|2026-10-02T15:41:22.151|469578|INFO|E-SYS-005|blackbox|blackbox snapshot written|code=E-COMM-002|path=/tmp/rmlog-v3-test/bq3-work/blackbox/blackbox-1790926882-469571243385-3408-1.jsonl
+LOGV1|3|2026-10-02T15:41:22.153|469579|ERROR|E-COMM-002|kernel|2026-10-02T15:33:32,017540+08:00  rt_spin_lock+0x30/0xc4
+LOGV1|4|2026-10-02T15:41:22.163|469590|INFO|E-SYS-005|blackbox|blackbox snapshot written|code=E-COMM-002|path=/tmp/rmlog-v3-test/bq3-work/blackbox/blackbox-1790926882-469585634467-3408-2.jsonl
+LOGV1|5|2026-10-02T15:41:22.166|469593|WARN|E-HW-003|kernel|2026-10-02T15:33:32,148071+08:00 thermal_sys: Registered thermal governor 'step_wise'
+LOGV1|6|2026-10-02T15:41:22.167|469594|WARN|E-HW-003|kernel|2026-10-02T15:33:32,148076+08:00 thermal_sys: Registered thermal governor 'user_space'
+LOGV1|7|2026-10-02T15:41:22.172|469598|ERROR|E-COMM-002|kernel|2026-10-02T15:33:32,196681+08:00 platform 3e000000.disp_apb:bt1120_bridge: Fixed dependency cycle(s) with /soc/dsp_apb/i2c@320a0000/hdmi_bridge@3b
+LOGV1|8|2026-10-02T15:41:22.183|469610|INFO|E-SYS-005|blackbox|blackbox snapshot written|code=E-COMM-002|path=/tmp/rmlog-v3-test/bq3-work/blackbox/blackbox-1790926882-469602889408-3408-3.jsonl
+LOGV1|9|2026-10-02T15:41:22.185|469612|ERROR|E-COMM-002|kernel|2026-10-02T15:33:32,232463+08:00 HugeTLB: 0 KiB vmemmap can be freed for a 1.00 GiB page
+LOGV1|10|2026-10-02T15:41:22.195|469622|INFO|E-SYS-005|blackbox|blackbox snapshot written|code=E-COMM-002|path=/tmp/rmlog-v3-test/bq3-work/blackbox/blackbox-1790926882-469617763036-3408-4.jsonl
+LOGV1|11|2026-10-02T15:41:22.196|469623|ERROR|E-COMM-002|kernel|2026-10-02T15:33:32,232470+08:00 HugeTLB: 0 KiB vmemmap can be freed for a 32.0 MiB page
+LOGV1|12|2026-10-02T15:41:22.206|469633|INFO|E-SYS-005|blackbox|blackbox snapshot written|code=E-COMM-002|path=/tmp/rmlog-v3-test/bq3-work/blackbox/blackbox-1790926882-469627848872-3408-5.jsonl
+LOGV1|13|2026-10-02T15:41:22.207|469633|ERROR|E-COMM-002|kernel|2026-10-02T15:33:32,232475+08:00 HugeTLB: 0 KiB vmemmap can be freed for a 2.00 MiB page
+LOGV1|14|2026-10-02T15:41:22.218|469645|INFO|E-SYS-005|blackbox|blackbox snapshot written|code=E-COMM-002|path=/tmp/rmlog-v3-test/bq3-work/blackbox/blackbox-1790926882-469639847476-3408-6.jsonl
+LOGV1|15|2026-10-02T15:41:22.219|469646|ERROR|E-COMM-002|kernel|2026-10-02T15:33:32,232480+08:00 HugeTLB: 0 KiB vmemmap can be freed for a 64.0 KiB page
+LOGV1|16|2026-10-02T15:41:22.231|469658|INFO|E-SYS-005|blackbox|blackbox snapshot written|code=E-COMM-002|path=/tmp/rmlog-v3-test/bq3-work/blackbox/blackbox-1790926882-469650202190-3408-7.jsonl
+LOGV1|17|2026-10-02T15:41:22.234|469661|WARN|E-HW-003|kernel|2026-10-02T15:33:32,237078+08:00 reg-fixed-voltage 34000000.a55_apb0:regulator-1v8: adc_1v8 supplying 1800000uV
+LOGV1|18|2026-10-02T15:41:22.235|469662|ERROR|E-COMM-002|kernel|2026-10-02T15:33:32,241486+08:00 platform 3e000000.disp_apb:bt1120_bridge: Fixed dependency cycle(s) with /soc/dsp_apb/i2c@320a0000/hdmi_bridge@3b
+LOGV1|19|2026-10-02T15:41:22.247|469674|INFO|E-SYS-005|blackbox|blackbox snapshot written|code=E-COMM-002|path=/tmp/rmlog-v3-test/bq3-work/blackbox/blackbox-1790926882-469667949842-3408-8.jsonl
+LOGV1|20|2026-10-02T15:41:22.248|469675|ERROR|E-COMM-002|kernel|2026-10-02T15:33:32,241638+08:00 i2c 7-003b: Fixed dependency cycle(s) with /soc/disp_apb/bt1120_bridge
+LOGV1|21|2026-10-02T15:41:22.258|469685|INFO|E-SYS-005|blackbox|blackbox snapshot written|code=E-COMM-002|path=/tmp/rmlog-v3-test/bq3-work/blackbox/blackbox-1790926882-469680212740-3408-9.jsonl
+LOGV1|22|2026-10-02T15:41:22.262|469689|WARN|E-HW-003|kernel|2026-10-02T15:33:32,376721+08:00 phy phy-3e0a0028.phy.0: Looking up phy-supply property in node /soc/disp_apb/phy@3e0a0028 failed
+LOGV1|23|2026-10-02T15:41:22.263|469690|WARN|E-HW-003|kernel|2026-10-02T15:33:32,378026+08:00 hpu3501 2-001c: Failed to create device link (0x180) with gpiochip0
+LOGV1|24|2026-10-02T15:41:22.268|469694|ERROR|E-COMM-002|kernel|2026-10-02T15:33:32,416272+08:00 dw_spi_mmio 35000000.spi: bit_offset = 0
+LOGV1|25|2026-10-02T15:41:22.282|469709|INFO|E-SYS-005|blackbox|blackbox snapshot written|code=E-COMM-002|path=/tmp/rmlog-v3-test/bq3-work/blackbox/blackbox-1790926882-469704218905-3408-10.jsonl
+LOGV1|26|2026-10-02T15:41:22.283|469709|ERROR|E-COMM-002|kernel|2026-10-02T15:33:32,416467+08:00 dw_spi_mmio 35000000.spi: DMA init failed
+LOGV1|27|2026-10-02T15:41:22.293|469720|INFO|E-SYS-005|blackbox|blackbox snapshot written|code=E-COMM-002|path=/tmp/rmlog-v3-test/bq3-work/blackbox/blackbox-1790926882-469713380525-3408-11.jsonl
+LOGV1|28|2026-10-02T15:41:22.293|469720|ERROR|E-COMM-002|kernel|2026-10-02T15:33:32,417471+08:00 spi-nand spi7.0: GigaDevice SPI NAND was found.
+LOGV1|29|2026-10-02T15:41:22.304|469731|INFO|E-SYS-005|blackbox|blackbox snapshot written|code=E-COMM-002|path=/tmp/rmlog-v3-test/bq3-work/blackbox/blackbox-1790926882-469726379929-3408-12.jsonl
+LOGV1|30|2026-10-02T15:41:22.305|469731|ERROR|E-COMM-002|kernel|2026-10-02T15:33:32,417476+08:00 spi-nand spi7.0: 128 MiB, block size: 128 KiB, page size: 2048, OOB size: 128
+LOGV1|31|2026-10-02T15:41:22.317|469744|INFO|E-SYS-005|blackbox|blackbox snapshot written|code=E-COMM-002|path=/tmp/rmlog-v3-test/bq3-work/blackbox/blackbox-1790926882-469736446807-3408-13.jsonl
+LOGV1|32|2026-10-02T15:41:22.318|469745|ERROR|E-COMM-002|kernel|2026-10-02T15:33:32,417797+08:00 2 cmdlinepart partitions found on MTD device spi7.0
+LOGV1|33|2026-10-02T15:41:22.329|469756|INFO|E-SYS-005|blackbox|blackbox snapshot written|code=E-COMM-002|path=/tmp/rmlog-v3-test/bq3-work/blackbox/blackbox-1790926882-469750816639-3408-14.jsonl
+LOGV1|34|2026-10-02T15:41:22.330|469757|ERROR|E-COMM-002|kernel|2026-10-02T15:33:32,417802+08:00 Creating 2 MTD partitions on "spi7.0":
+LOGV1|35|2026-10-02T15:41:22.341|469768|INFO|E-SYS-005|blackbox|blackbox snapshot written|code=E-COMM-002|path=/tmp/rmlog-v3-test/bq3-work/blackbox/blackbox-1790926882-469762145778-3408-15.jsonl
+LOGV1|36|2026-10-02T15:41:22.342|469769|ERROR|E-COMM-002|kernel|2026-10-02T15:33:32,435633+08:00 dw_spi_mmio 34010000.spi: bit_offset = 0
+LOGV1|37|2026-10-02T15:41:22.351|469778|INFO|E-SYS-005|blackbox|blackbox snapshot written|code=E-COMM-002|path=/tmp/rmlog-v3-test/bq3-work/blackbox/blackbox-1790926882-469773290666-3408-16.jsonl
+LOGV1|38|2026-10-02T15:41:22.352|469779|ERROR|E-COMM-002|kernel|2026-10-02T15:33:32,436992+08:00 dw_spi_mmio 34050000.spi: bit_offset = 0
+LOGV1|39|2026-10-02T15:41:22.364|469791|INFO|E-SYS-005|blackbox|blackbox snapshot written|code=E-COMM-002|path=/tmp/rmlog-v3-test/bq3-work/blackbox/blackbox-1790926882-469784031008-3408-17.jsonl
+LOGV1|40|2026-10-02T15:41:22.366|469793|ERROR|E-COMM-002|kernel|2026-10-02T15:33:32,613845+08:00 i2c_dev: i2c /dev entries driver
+LOGV1|41|2026-10-02T15:41:22.378|469805|INFO|E-SYS-005|blackbox|blackbox snapshot written|code=E-COMM-002|path=/tmp/rmlog-v3-test/bq3-work/blackbox/blackbox-1790926882-469798019712-3408-18.jsonl
+LOGV1|42|2026-10-02T15:41:22.379|469806|WARN|E-HW-003|kernel|2026-10-02T15:33:32,617297+08:00 hwmon hwmon0: temp2_input not attached to any thermal zone
+LOGV1|43|2026-10-02T15:41:22.382|469808|WARN|E-HW-003|kernel|2026-10-02T15:33:32,622625+08:00 sdhci-dwcmshc 35030000.sdhci: mmc set to fixed voltage 1800
+LOGV1|44|2026-10-02T15:41:22.386|469813|WARN|E-HW-003|kernel|2026-10-02T15:33:32,662627+08:00 sdhci-dwcmshc 35020000.sdhci: Looking up vmmc-supply property in node /soc/hsio_apb/sdhci@35020000 failed
+LOGV1|45|2026-10-02T15:41:22.387|469814|WARN|E-HW-003|kernel|2026-10-02T15:33:32,662653+08:00 sdhci-dwcmshc 35020000.sdhci: Looking up vqmmc-supply property in node /soc/hsio_apb/sdhci@35020000 failed
+LOGV1|46|2026-10-02T15:41:22.388|469815|WARN|E-HW-003|kernel|2026-10-02T15:33:32,662747+08:00 sdhci-dwcmshc 35030000.sdhci: Looking up vmmc-supply property in node /soc/hsio_apb/sdhci@35030000 failed
+LOGV1|47|2026-10-02T15:41:22.388|469815|WARN|E-HW-003|kernel|2026-10-02T15:33:32,662767+08:00 sdhci-dwcmshc 35030000.sdhci: Looking up vqmmc-supply property in node /soc/hsio_apb/sdhci@35030000 failed
+LOGV1|48|2026-10-02T15:41:22.397|469824|ERROR|E-COMM-002|kernel|2026-10-02T15:33:35,770344+08:00 BUG: sleeping function called from invalid context at kernel/locking/spinlock_rt.c:46
+LOGV1|49|2026-10-02T15:41:22.411|469837|INFO|E-SYS-005|blackbox|blackbox snapshot written|code=E-COMM-002|path=/tmp/rmlog-v3-test/bq3-work/blackbox/blackbox-1790926882-469832109922-3408-19.jsonl
+LOGV1|50|2026-10-02T15:41:22.412|469839|ERROR|E-COMM-002|kernel|2026-10-02T15:33:35,770429+08:00  rt_spin_lock+0x30/0xc4
+LOGV1|51|2026-10-02T15:41:22.429|469856|INFO|E-SYS-005|blackbox|blackbox snapshot written|code=E-COMM-002|path=/tmp/rmlog-v3-test/bq3-work/blackbox/blackbox-1790926882-469844027274-3408-20.jsonl
+LOGV1|52|2026-10-02T15:41:22.430|469857|ERROR|E-COMM-002|kernel|2026-10-02T15:33:35,770434+08:00  osal_spin_lock_irqsave+0x30/0x1c0
+LOGV1|53|2026-10-02T15:41:22.440|469867|INFO|E-SYS-005|blackbox|blackbox snapshot written|code=E-COMM-002|path=/tmp/rmlog-v3-test/bq3-work/blackbox/blackbox-1790926882-469861576259-3408-21.jsonl
+LOGV1|54|2026-10-02T15:41:22.448|469875|ERROR|E-COMM-002|kernel|2026-10-02T15:33:38,807826+08:00 CAN device driver interface
+LOGV1|55|2026-10-02T15:41:22.459|469886|INFO|E-SYS-005|blackbox|blackbox snapshot written|code=E-COMM-002|path=/tmp/rmlog-v3-test/bq3-work/blackbox/blackbox-1790926882-469881152594-3408-22.jsonl
+LOGV1|56|2026-10-02T15:41:22.460|469887|ERROR|E-COMM-002|kernel|2026-10-02T15:33:38,825064+08:00 sii902x 7-003b: Looking up iovcc-supply property in node /soc/dsp_apb/i2c@320a0000/hdmi_bridge@3b failed
+LOGV1|57|2026-10-02T15:41:22.473|469900|INFO|E-SYS-005|blackbox|blackbox snapshot written|code=E-COMM-002|path=/tmp/rmlog-v3-test/bq3-work/blackbox/blackbox-1790926882-469892471566-3408-23.jsonl
+LOGV1|58|2026-10-02T15:41:22.474|469901|ERROR|E-COMM-002|kernel|2026-10-02T15:33:38,825972+08:00 sii902x 7-003b: Looking up cvcc12-supply property in node /soc/dsp_apb/i2c@320a0000/hdmi_bridge@3b failed
+LOGV1|59|2026-10-02T15:41:22.486|469913|INFO|E-SYS-005|blackbox|blackbox snapshot written|code=E-COMM-002|path=/tmp/rmlog-v3-test/bq3-work/blackbox/blackbox-1790926882-469907310694-3408-24.jsonl
+LOGV1|60|2026-10-02T15:41:22.488|469914|ERROR|E-COMM-002|kernel|2026-10-02T15:33:38,835514+08:00 BUG: sleeping function called from invalid context at kernel/locking/spinlock_rt.c:46
+LOGV1|61|2026-10-02T15:41:22.501|469927|INFO|E-SYS-005|blackbox|blackbox snapshot written|code=E-COMM-002|path=/tmp/rmlog-v3-test/bq3-work/blackbox/blackbox-1790926882-469922063779-3408-25.jsonl
+LOGV1|62|2026-10-02T15:41:22.502|469929|ERROR|E-COMM-002|kernel|2026-10-02T15:33:38,835590+08:00  rt_spin_lock+0x30/0xc4
+LOGV1|63|2026-10-02T15:41:22.513|469940|INFO|E-SYS-005|blackbox|blackbox snapshot written|code=E-COMM-002|path=/tmp/rmlog-v3-test/bq3-work/blackbox/blackbox-1790926882-469932959790-3408-26.jsonl
+LOGV1|64|2026-10-02T15:41:22.514|469940|ERROR|E-COMM-002|kernel|2026-10-02T15:33:38,835595+08:00  osal_spin_lock_irqsave+0x30/0x1c0
+LOGV1|65|2026-10-02T15:41:22.524|469951|INFO|E-SYS-005|blackbox|blackbox snapshot written|code=E-COMM-002|path=/tmp/rmlog-v3-test/bq3-work/blackbox/blackbox-1790926882-469946093944-3408-27.jsonl
+LOGV1|66|2026-10-02T15:41:22.525|469952|ERROR|E-COMM-002|kernel|2026-10-02T15:33:38,835600+08:00 i2c i2c-7: Added multiplexed i2c bus 8
+LOGV1|67|2026-10-02T15:41:22.540|469966|INFO|E-SYS-005|blackbox|blackbox snapshot written|code=E-COMM-002|path=/tmp/rmlog-v3-test/bq3-work/blackbox/blackbox-1790926882-469959649561-3408-28.jsonl
+LOGV1|68|2026-10-02T15:41:22.543|469969|ERROR|E-COMM-002|kernel|2026-10-02T15:33:38,851170+08:00 tcan4x5x spi5.0: Looking up vsup-supply from device tree
+LOGV1|69|2026-10-02T15:41:22.555|469982|INFO|E-SYS-005|blackbox|blackbox snapshot written|code=E-COMM-002|path=/tmp/rmlog-v3-test/bq3-work/blackbox/blackbox-1790926882-469974570939-3408-29.jsonl
+LOGV1|70|2026-10-02T15:41:22.556|469982|ERROR|E-COMM-002|kernel|2026-10-02T15:33:38,851185+08:00 tcan4x5x spi5.0: Looking up vsup-supply property in node /soc/a55_apb0/spi@34050000/tcan4x5x@0 failed
+LOGV1|71|2026-10-02T15:41:22.567|469994|INFO|E-SYS-005|blackbox|blackbox snapshot written|code=E-COMM-002|path=/tmp/rmlog-v3-test/bq3-work/blackbox/blackbox-1790926882-469989056397-3408-30.jsonl
+LOGV1|72|2026-10-02T15:41:22.568|469995|ERROR|E-COMM-002|kernel|2026-10-02T15:33:38,851224+08:00 tcan4x5x spi5.0: no clock found
+LOGV1|73|2026-10-02T15:41:22.581|470007|INFO|E-SYS-005|blackbox|blackbox snapshot written|code=E-COMM-002|path=/tmp/rmlog-v3-test/bq3-work/blackbox/blackbox-1790926882-470001700464-3408-31.jsonl
+LOGV1|74|2026-10-02T15:41:22.582|470008|ERROR|E-COMM-002|kernel|2026-10-02T15:33:38,851227+08:00 tcan4x5x spi5.0: no CAN clock source defined
+LOGV1|75|2026-10-02T15:41:22.594|470020|INFO|E-SYS-005|blackbox|blackbox snapshot written|code=E-COMM-002|path=/tmp/rmlog-v3-test/bq3-work/blackbox/blackbox-1790926882-470014454116-3408-32.jsonl
+LOGV1|76|2026-10-02T15:41:22.594|470021|ERROR|E-COMM-002|kernel|2026-10-02T15:33:38,854867+08:00 tcan4x5x spi5.0: m_can device registered (irq=55, version=32)
+LOGV1|77|2026-10-02T15:41:22.607|470034|INFO|E-SYS-005|blackbox|blackbox snapshot written|code=E-COMM-002|path=/tmp/rmlog-v3-test/bq3-work/blackbox/blackbox-1790926882-470026298593-3408-33.jsonl
+LOGV1|78|2026-10-02T15:41:22.608|470035|ERROR|E-COMM-002|kernel|2026-10-02T15:33:38,854879+08:00 tcan4x5x spi5.0 can0: TCAN4X5X successfully initialized.
+LOGV1|79|2026-10-02T15:41:22.620|470046|INFO|E-SYS-005|blackbox|blackbox snapshot written|code=E-COMM-002|path=/tmp/rmlog-v3-test/bq3-work/blackbox/blackbox-1790926882-470041683933-3408-34.jsonl
+LOGV1|80|2026-10-02T15:41:22.622|470049|WARN|E-HW-003|kernel|2026-10-02T15:33:39,051474+08:00 AICWFDBG(LOGERROR)\x09invalid cmd: loss_enable
+LOGV1|81|2026-10-02T15:41:22.622|470049|WARN|E-HW-003|kernel|2026-10-02T15:33:39,051485+08:00 AICWFDBG(LOGERROR)\x09invalid cmd: loss_value
+LOGV1|82|2026-10-02T15:41:22.623|470050|WARN|E-HW-003|kernel|2026-10-02T15:33:41,106221+08:00 dw-apb-uart 341a0000.serial: failed to request DMA
+LOGV1|83|2026-10-02T15:41:22.629|470055|ERROR|E-COMM-002|kernel|2026-10-02T15:33:41,842931+08:00 vs-vse 3d010000.vse: cannot get reset control (err=-6)
+LOGV1|84|2026-10-02T15:41:22.643|470070|INFO|E-SYS-005|blackbox|blackbox snapshot written|code=E-COMM-002|path=/tmp/rmlog-v3-test/bq3-work/blackbox/blackbox-1790926882-470062434654-3408-35.jsonl
+LOGV1|85|2026-10-02T15:41:22.644|470071|ERROR|E-COMM-002|kernel|2026-10-02T15:33:41,985055+08:00 bpu-core 3a000000.bpu: Can't get bpu power delay, use default
+LOGV1|86|2026-10-02T15:41:22.655|470082|INFO|E-SYS-005|blackbox|blackbox snapshot written|code=E-COMM-002|path=/tmp/rmlog-v3-test/bq3-work/blackbox/blackbox-1790926882-470075945562-3408-36.jsonl
+LOGV1|87|2026-10-02T15:41:22.659|470086|ERROR|E-COMM-002|kernel|2026-10-02T15:33:42,586023+08:00 BUG: sleeping function called from invalid context at kernel/locking/spinlock_rt.c:46
+LOGV1|88|2026-10-02T15:41:22.671|470098|INFO|E-SYS-005|blackbox|blackbox snapshot written|code=E-COMM-002|path=/tmp/rmlog-v3-test/bq3-work/blackbox/blackbox-1790926882-470093240335-3408-37.jsonl
+LOGV1|89|2026-10-02T15:41:22.672|470099|ERROR|E-COMM-002|kernel|2026-10-02T15:33:42,586110+08:00  rt_spin_lock+0x30/0xc4
+LOGV1|90|2026-10-02T15:41:22.683|470110|INFO|E-SYS-005|blackbox|blackbox snapshot written|code=E-COMM-002|path=/tmp/rmlog-v3-test/bq3-work/blackbox/blackbox-1790926882-470104556766-3408-38.jsonl
+LOGV1|91|2026-10-02T15:41:22.684|470111|ERROR|E-COMM-002|kernel|2026-10-02T15:33:42,586116+08:00  osal_spin_lock_irqsave+0x30/0x1c0
+LOGV1|92|2026-10-02T15:41:22.693|470120|INFO|E-SYS-005|blackbox|blackbox snapshot written|code=E-COMM-002|path=/tmp/rmlog-v3-test/bq3-work/blackbox/blackbox-1790926882-470114910230-3408-39.jsonl
+LOGV1|93|2026-10-02T15:41:22.704|470131|ERROR|E-COMM-002|kernel|2026-10-02T15:33:45,876266+08:00 BUG: sleeping function called from invalid context at kernel/locking/spinlock_rt.c:46
+LOGV1|94|2026-10-02T15:41:22.718|470145|INFO|E-SYS-005|blackbox|blackbox snapshot written|code=E-COMM-002|path=/tmp/rmlog-v3-test/bq3-work/blackbox/blackbox-1790926882-470139341399-3408-40.jsonl
+LOGV1|95|2026-10-02T15:41:22.721|470147|ERROR|E-COMM-002|kernel|2026-10-02T15:33:45,876359+08:00  rt_spin_lock+0x30/0xc4
+LOGV1|96|2026-10-02T15:41:22.737|470164|INFO|E-SYS-005|blackbox|blackbox snapshot written|code=E-COMM-002|path=/tmp/rmlog-v3-test/bq3-work/blackbox/blackbox-1790926882-470154460820-3408-41.jsonl
+LOGV1|97|2026-10-02T15:41:22.738|470165|ERROR|E-COMM-002|kernel|2026-10-02T15:33:45,876364+08:00  osal_spin_lock_irqsave+0x30/0x1c0
+LOGV1|98|2026-10-02T15:41:22.750|470177|INFO|E-SYS-005|blackbox|blackbox snapshot written|code=E-COMM-002|path=/tmp/rmlog-v3-test/bq3-work/blackbox/blackbox-1790926882-470170545709-3408-42.jsonl
+BQ3 DONE
+
+
+[stderr]
+

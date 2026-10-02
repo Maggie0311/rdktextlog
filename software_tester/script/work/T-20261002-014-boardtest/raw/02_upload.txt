@@ -1,0 +1,93 @@
+local source dir: D:\rdk_x5_software\software_tester\script\work\T-20261002-014-boardtest\src\developer\script
+tar size bytes: 450560
+[prep] rc=0 out='' err=''
+[extract] rc=0
+[stdout]
+UPLOAD_OK
+./CODE-STYLE.md
+./ERR-CATALOG.md
+./export_evidence.py
+./.gitignore
+./IMPL-T-20260926-001-logging-platform-p0.md
+./IMPL-T-20260930-005-logging-v2.md
+./IMPL-T-20261001-logging-v3.md
+./INDEX.md
+./PLAN-T-20260930-005-logging-v2.md
+./README.md
+./rmlog/_ac4_probe.c
+./rmlog/async_writer.py
+./rmlog/auto.py
+./rmlog/blackbox.py
+./rmlog/catalog.py
+./rmlog/checks.py
+./rmlog/code_map.py
+./rmlog/crash.py
+./rmlog/daemon.py
+./rmlog/encode_cases.py
+./rmlog/example.c
+./rmlog/fault_demo.py
+./rmlog/format.py
+./rmlog/gen_code.py
+./rmlog/__init__.py
+./rmlog/monitors.py
+./rmlog_read.py
+./rmlog/resources.py
+./rmlog/rmlog.c
+./rmlog/rmlog_errors.h
+./rmlog/rmlog.h
+./rmlog/selftest.py
+./rmlog/session.py
+./rmlog/USAGE.md
+./rmlog/worker.py
+./rmlog/writer.py
+./shared/rmlog_schema.h
+./systemd/rmlog-demo.service
+./tests/probe_fdleak_rf6_before_after.log
+./tests/probe_fdleak_rf6.c
+./tests/selftest-20260926-1958.log
+./tests/selftest-20260926-2002.log
+./tests/selftest-20260926-2020-final.log
+./tests/selftest-20260926-2035.log
+./tests/selftest-20260926-2042.log
+./tests/selftest-20260926-2055.log
+./tests/selftest-20260927-1010-r1.log
+./tests/selftest-20260927-1028-r1.log
+./tests/selftest-20260927-1235-rf.log
+./tests/selftest-20260927-1352-rf6.log
+./tests/selftest-20260927-2208-r4.log
+./tests/test_v2_smoke.py
+./tests/test_v3_smoke.py
+./USAGE.md
+FILES=54
+
+[stderr]
+
+[remote md5sum] rc=0
+[stdout]
+0ce52398c0117687686d43a36ea4e343  rmlog/selftest.py
+e4d1c2fd0e93317c02e2a6cc2d896265  rmlog/writer.py
+b0e338bdde7fc71466fb0b76f92a9d84  rmlog/rmlog.c
+9a326b69db414ed596fe56d13b65cab1  rmlog/monitors.py
+e0520988c7cca2280039e104e8791159  rmlog/resources.py
+cda8b4315c3bff009d22578523b8a567  rmlog/daemon.py
+598daeaf61cc545d423e7d23e2307b9a  rmlog/auto.py
+b28c5510b83fe2bcf3fbcf27fa1e4e25  tests/test_v2_smoke.py
+6371435b86252fe27c185d67275aaea8  tests/test_v3_smoke.py
+
+[stderr]
+
+MATCH  rmlog/selftest.py  local=0ce52398c0117687686d43a36ea4e343 remote=0ce52398c0117687686d43a36ea4e343
+MATCH  rmlog/writer.py  local=e4d1c2fd0e93317c02e2a6cc2d896265 remote=e4d1c2fd0e93317c02e2a6cc2d896265
+MATCH  rmlog/rmlog.c  local=b0e338bdde7fc71466fb0b76f92a9d84 remote=b0e338bdde7fc71466fb0b76f92a9d84
+MATCH  rmlog/monitors.py  local=9a326b69db414ed596fe56d13b65cab1 remote=9a326b69db414ed596fe56d13b65cab1
+MATCH  rmlog/resources.py  local=e0520988c7cca2280039e104e8791159 remote=e0520988c7cca2280039e104e8791159
+MATCH  rmlog/daemon.py  local=cda8b4315c3bff009d22578523b8a567 remote=cda8b4315c3bff009d22578523b8a567
+MATCH  rmlog/auto.py  local=598daeaf61cc545d423e7d23e2307b9a remote=598daeaf61cc545d423e7d23e2307b9a
+MATCH  tests/test_v2_smoke.py  local=b28c5510b83fe2bcf3fbcf27fa1e4e25 remote=b28c5510b83fe2bcf3fbcf27fa1e4e25
+MATCH  tests/test_v3_smoke.py  local=6371435b86252fe27c185d67275aaea8 remote=6371435b86252fe27c185d67275aaea8
+[helpers] rc=0
+-rw-r--r-- 1 root root 2758 Oct  2 15:41 bq3_monitors.py
+-rw-r--r-- 1 root root  948 Oct  2 15:41 bq5_daemon.sh
+
+[stderr]
+

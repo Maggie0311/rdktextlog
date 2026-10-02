@@ -1,0 +1,9 @@
+# T-20261002-014 工作区忽略项（本角色声明，见 worklog）
+# 被测 commit 副本（可由 `git archive d77d36c developer/script` 重建）:
+src/
+# Python 字节码缓存:
+__pycache__/
+*.pyc
+# 传输/构建中间物:
+_upload_src.tar
+_upload.tar

@@ -1,0 +1,14 @@
+CMD: ulimit -c; echo '--- core_pattern ---'; cat /proc/sys/kernel/core_pattern; echo '--- core_uses_pid ---'; cat /proc/sys/kernel/core_uses_pid
+
+[exit] 0
+
+[stdout]
+0
+--- core_pattern ---
+core
+--- core_uses_pid ---
+1
+
+
+[stderr]
+
