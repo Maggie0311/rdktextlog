@@ -16,7 +16,8 @@ v2 的 `Writer`、`AsyncWriter`、`Session`、行格式和 24 个字符串错误
 | P2 | `code_map.py` 字符串+24-bit bit 双轨；`gen_code.py` 自动生成 Linux/STM32 公共 `shared/rmlog_schema.h`；启动 marker 增补 git/session/power 字段；读端 `stats` |
 | P3 基础 | 模块均为标准库、可注入数据源、黑匣子窗口容量可配置，具备长跑测试的接口边界 |
 
-外部复核后的增量修复：黑匣子支持 `max_snapshots` 保留上限；daemon 启动看门狗、
+外部复核后的增量修复：黑匣子支持 `max_snapshots` 保留上限（设为 `0` 表示不淘汰、
+无限保留，使用者需自行规划磁盘）；daemon 启动看门狗、
 主循环 heartbeat 与可选 `sd_notify`；dmesg stop 会终止并等待子进程；崩溃遗言
 写完恢复 `SIG_DFL` 后重抛；公共 schema banner 与文件名一致；通信统计增加固定
 滑动窗口错误率，连续中断仍独立使用 `E-COMM-004`。

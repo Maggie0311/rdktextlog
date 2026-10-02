@@ -89,6 +89,22 @@ class DmesgMonitor:
         self.runtime, self.source = runtime, source
         self._stop = threading.Event()
         self._proc = None
+        self._proc_lock = threading.Lock()
+
+    @staticmethod
+    def _terminate_process(proc):
+        """终止并等待 dmesg 子进程，重复调用安全。"""
+        try:
+            proc.terminate()
+            proc.wait(timeout=1.0)
+        except subprocess.TimeoutExpired:
+            try:
+                proc.kill()
+                proc.wait()
+            except OSError:
+                pass
+        except (OSError, ValueError):
+            pass
 
     def run(self):
         """阻塞监听直到 source 耗尽或 stop；真实板端使用 dmesg --follow。"""
@@ -98,7 +114,12 @@ class DmesgMonitor:
             proc = subprocess.Popen(["dmesg", "--follow", "--time-format", "iso"],
                                     stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                                     text=True, errors="replace")
-            self._proc = proc
+            with self._proc_lock:
+                self._proc = proc
+                stop_during_start = self._stop.is_set()
+            if stop_during_start:
+                self._terminate_process(proc)
+                return
             source = proc.stdout
         try:
             for line in source:
@@ -110,16 +131,14 @@ class DmesgMonitor:
                     self.runtime.emit(code, "kernel", line[:240])
         finally:
             if proc:
-                proc.terminate()
-                try:
-                    proc.wait(timeout=1.0)
-                except subprocess.TimeoutExpired:
-                    proc.kill()
-                    proc.wait()
-                self._proc = None
+                self._terminate_process(proc)
+                with self._proc_lock:
+                    if self._proc is proc:
+                        self._proc = None
 
     def stop(self):
         self._stop.set()
-        proc = self._proc
+        with self._proc_lock:
+            proc = self._proc
         if proc is not None:
-            proc.terminate()
+            self._terminate_process(proc)

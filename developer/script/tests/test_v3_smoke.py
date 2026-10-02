@@ -4,6 +4,7 @@ import os
 import subprocess
 import sys
 import tempfile
+import time
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
@@ -62,6 +63,11 @@ def main():
     limited.snapshot("2")
     limited.snapshot("3")
     assert len([n for n in os.listdir(limited.directory) if n.endswith(".jsonl")]) == 2
+    unlimited = BlackBox(os.path.join(work, "unlimited"), max_snapshots=0)
+    unlimited.snapshot("1")
+    unlimited.snapshot("2")
+    unlimited.snapshot("3")
+    assert len([n for n in os.listdir(unlimited.directory) if n.endswith(".jsonl")]) == 3
     emergency = EmergencyWriter(os.path.join(work, "crash"))
     emergency.write(6)
     emergency.close()
@@ -73,9 +79,22 @@ def main():
     distributed.failure("f")
     distributed.success()
     assert distributed.consecutive_failures == 0
+    # 用真实阻塞 stdout 的子进程覆盖 DmesgMonitor.run/stop 的启动竞态与泄漏。
+    import threading
+    import rmlog.monitors as monitors
+    real_popen = monitors.subprocess.Popen
+    monitors.subprocess.Popen = lambda *args, **kwargs: real_popen(
+        [sys.executable, "-c", "import time; time.sleep(30)"], **kwargs)
+    dmesg = DmesgMonitor(runtime)
+    thread = threading.Thread(target=dmesg.run)
+    thread.start()
+    time.sleep(0.05)
+    dmesg.stop()
+    thread.join(2.0)
+    monitors.subprocess.Popen = real_popen
+    assert not thread.is_alive()
     watchdog = HeartbeatWatchdog(runtime, name="never", timeout=0.001, interval=0.001)
     watchdog.start()
-    import time
     time.sleep(0.01)
     watchdog.stop()
     assert runtime.health_attrs()["heartbeat_never"] >= 1

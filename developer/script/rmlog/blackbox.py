@@ -17,6 +17,7 @@ class BlackBox:
     """线程安全的最近样本缓存与错误快照写入器。"""
 
     def __init__(self, directory, capacity=2000, max_snapshots=16):
+        """创建黑匣子；``max_snapshots=0`` 表示不淘汰（无限保留）。"""
         if capacity <= 0:
             raise ValueError("capacity must be positive")
         if max_snapshots < 0:
