@@ -16,6 +16,8 @@
 | 9 | 验证工件（`r6/` T-003 复审验证区——164d4c7 独立副本、三份零告警编译留档、selftest 13/13 复跑留档、README） | `script/_verify_T-20260926-001/r6/` | 验证证据区 | — | 2026-09-28 | 同上 | `164d4c7` | 本角色复审基线 |
 | 10 | 复审报告（T-004 usage-rewrite 文档专项，结论 PASS：冻结 5 项全核销、零发现项；断点续完——实跑 2026-09-28 完成、报告/邮件 2026-09-29 收尾） | `script/REVIEW-T-20260928-004-08f6ce8.md` | 审查报告 | v1 | 2026-09-29 | T-20260928-004-usage-rewrite | `08f6ce8` | developer（后续备料流程）、management（验收裁量）、人类用户 |
 | 11 | 验证工件（`r7/` T-004 复审验证区——08f6ce8 组件副本（8 件 blob MATCH）、V1~V5 实跑输出与脚本、轮转对照、读端 stdout/stderr 分离留档、VERIFY-R7 留档、selftest 13/13 复跑留档 selftest_r7.log；工作区目录不入库） | `script/_verify_T-20260926-001/r7/` | 验证证据区 | — | 2026-09-28（实跑）/ 2026-09-29（入库） | 同上 | `08f6ce8` | 本角色复审基线 |
+| 12 | 审查报告（T-011 logging-v3 静态审查，结论 CONDITIONAL：0 阻断/0 严重、4 一般 F-01~F-04 + 2 提示 F-05/F-06；双轨映射/单源生成/黑匣子并发/兼容性成立） | `script/REVIEW-T-20261001-logging-v3-8ce5162.md` | 审查报告 | v1 | 2026-10-02 | T-20261002-011-logging-v3-review | `8ce5162` | developer（整改）、management（验收裁量）、人类用户 |
+| 13 | 验证工件（`verify-T-20261002-011-8ce5162/` T-011 审查验证区——git archive 8ce5162 独立副本（不入库）、selftest 13/13 留档、test_v2/v3_smoke 留档、gcc 编译零告警留档、schema_probe.c、shim；工作区副本/tmp/.o/.exe 不入库） | `script/verify-T-20261002-011-8ce5162/` | 验证证据区 | — | 2026-10-02 | 同上 | `8ce5162` | 本角色复审基线 |
 
 **待产出（上岗后 / 首次审查时）**：
 
