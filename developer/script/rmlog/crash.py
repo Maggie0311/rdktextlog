@@ -2,7 +2,6 @@
 
 import os
 import signal
-import time
 
 
 class EmergencyWriter:
@@ -15,8 +14,7 @@ class EmergencyWriter:
 
     def write(self, signum):
         """只执行一次低级写；失败时吞掉异常，不反向影响崩溃处理。"""
-        data = ("CRASH|signal=%d|pid=%d|mono_ns=%d\n" %
-                (int(signum), os.getpid(), time.monotonic_ns())).encode("ascii")
+        data = ("CRASH|signal=%d|pid=%d\n" % (int(signum), os.getpid())).encode("ascii")
         try:
             os.write(self.fd, data)
         except (OSError, ValueError):
@@ -34,11 +32,19 @@ def install_signal_hooks(runtime, signals=None, directory=None):
     del runtime  # 保留旧签名，避免在 handler 中调用复杂日志路径
     emergency = EmergencyWriter(directory or ".")
     signals = signals or (signal.SIGABRT, signal.SIGBUS, signal.SIGFPE, signal.SIGSEGV)
+    # 所有格式化和分配都发生在安装阶段；handler 只做 fd 写入和进程终止。
+    messages = {signum: ("CRASH|signal=%d|pid=%d\n" % (signum, os.getpid())).encode("ascii")
+                for signum in signals}
+    fallback = b"CRASH|signal=unknown\n"
 
     def handler(signum, _frame):
-        emergency.write(signum)
-        signal.signal(signum, signal.SIG_DFL)
-        os.kill(os.getpid(), signum)
+        try:
+            os.write(emergency.fd, messages.get(signum, fallback))
+        finally:
+            # Python 层无法保证致命信号处理器具备 async-signal-safe 的完整 POSIX
+            # 语义；写完立即退出，避免再次进入 Python/AsyncWriter。内核 core 文件
+            # 是否产生由板端 ulimit、kernel.core_pattern 和运行时配置决定。
+            os._exit(128 + int(signum))
 
     for signum in signals:
         try:

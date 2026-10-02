@@ -50,6 +50,11 @@ def main():
     assert any(name.endswith(".jsonl") for name in os.listdir(os.path.join(work, "blackbox")))
     bb = BlackBox(os.path.join(work, "bb"), capacity=2)
     bb.record("opaque", obj=object())
+    deep = value = {}
+    for _ in range(8):
+        value["next"] = {}
+        value = value["next"]
+    bb.record("deep", value=deep)
     first, second = bb.snapshot("x"), bb.snapshot("x")
     assert first != second and os.path.exists(first) and os.path.exists(second)
     emergency = EmergencyWriter(os.path.join(work, "crash"))

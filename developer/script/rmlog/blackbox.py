@@ -25,9 +25,20 @@ class BlackBox:
         self._snapshot_seq = 0
 
     @staticmethod
+    def _safe_repr(value):
+        """返回确定为字符串的降级表示，避免深层对象再次进入 JSON。"""
+        try:
+            result = repr(value)
+            return result if isinstance(result, str) else "<unserializable>"
+        except Exception:
+            return "<unserializable>"
+
+    @staticmethod
     def _safe_value(value, depth=0):
         """把业务对象转换成不会让取证路径抛异常的 JSON 值。"""
-        if depth > 4 or value is None or isinstance(value, (bool, int, float, str)):
+        if depth > 4:
+            return BlackBox._safe_repr(value)
+        if value is None or isinstance(value, (bool, int, float, str)):
             return value
         if isinstance(value, (bytes, bytearray, memoryview)):
             return bytes(value).hex()
@@ -48,10 +59,7 @@ class BlackBox:
                 return BlackBox._safe_value(tolist(), depth + 1)
             except Exception:
                 pass
-        try:
-            return repr(value)
-        except Exception:
-            return "<unserializable>"
+        return BlackBox._safe_repr(value)
 
     def record(self, kind, **values):
         """追加一条高频样本；不做字段白名单，便于不同机器人复用。"""
