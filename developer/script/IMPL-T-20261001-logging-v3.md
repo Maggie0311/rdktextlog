@@ -16,6 +16,11 @@ v2 的 `Writer`、`AsyncWriter`、`Session`、行格式和 24 个字符串错误
 | P2 | `code_map.py` 字符串+24-bit bit 双轨；`gen_code.py` 自动生成 Linux/STM32 公共 `shared/rmlog_schema.h`；启动 marker 增补 git/session/power 字段；读端 `stats` |
 | P3 基础 | 模块均为标准库、可注入数据源、黑匣子窗口容量可配置，具备长跑测试的接口边界 |
 
+外部复核后的增量修复：黑匣子支持 `max_snapshots` 保留上限；daemon 启动看门狗、
+主循环 heartbeat 与可选 `sd_notify`；dmesg stop 会终止并等待子进程；崩溃遗言
+写完恢复 `SIG_DFL` 后重抛；公共 schema banner 与文件名一致；通信统计增加固定
+滑动窗口错误率，连续中断仍独立使用 `E-COMM-004`。
+
 ### bit 编码冻结
 
 ```
@@ -49,4 +54,5 @@ v3 smoke 将验证双轨码、黑匣子快照、通信/资源/dmesg 捕获、统
 3. 黑匣子数据字段是开放的，当前默认建议字段由业务调用 `sample()` 提供；本提交不臆造底盘/IMU 数据源。
 4. `CommStats` 统计器需要通信层显式调用 success/failure；它不拦截 SPI/CAN 驱动。
 5. P3 的长期压力、SPI 从机日志回传和 CI 矩阵不在本次主机实现中。
-
+6. systemd WatchdogSec、sd_notify、dmesg 权限和 core dump 行为尚未在 RDK X5 板端验证；
+   它们依赖目标板的 systemd、`ulimit` 与 `kernel.core_pattern` 配置。

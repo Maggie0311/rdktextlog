@@ -1,5 +1,5 @@
 /*
- * rmlog_errors.h — 错误码表（C 端）。由 python3 -m rmlog.gen_code 自动生成。
+ * rmlog_schema.h — 错误码表（C 端）。由 python3 -m rmlog.gen_code 自动生成。
  *
  * 错误码单一来源: rmlog/catalog.py（Python 包内嵌表, 含级别/含义/建议动作）。
  * !! 本文件是生成物, 禁止手改 !!  改错误码请改 catalog.py 后重新生成:

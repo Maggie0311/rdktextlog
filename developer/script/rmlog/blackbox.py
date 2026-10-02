@@ -16,13 +16,31 @@ from collections import deque
 class BlackBox:
     """线程安全的最近样本缓存与错误快照写入器。"""
 
-    def __init__(self, directory, capacity=2000):
+    def __init__(self, directory, capacity=2000, max_snapshots=16):
         if capacity <= 0:
             raise ValueError("capacity must be positive")
+        if max_snapshots < 0:
+            raise ValueError("max_snapshots must be non-negative")
         self.directory = os.path.abspath(directory)
         self.samples = deque(maxlen=capacity)
         self._lock = threading.Lock()
         self._snapshot_seq = 0
+        self.max_snapshots = max_snapshots
+
+    def _prune_snapshots(self):
+        """按文件名淘汰最旧快照；清理失败只留下可观察的磁盘事实。"""
+        if self.max_snapshots == 0:
+            return
+        try:
+            names = sorted(name for name in os.listdir(self.directory)
+                           if name.startswith("blackbox-") and name.endswith(".jsonl"))
+            for name in names[:-self.max_snapshots]:
+                try:
+                    os.unlink(os.path.join(self.directory, name))
+                except OSError:
+                    pass
+        except OSError:
+            pass
 
     @staticmethod
     def _safe_repr(value):
@@ -93,6 +111,7 @@ class BlackBox:
                 fh.flush()
                 os.fsync(fh.fileno())
             os.replace(temp, final)
+            self._prune_snapshots()
             return final
         except Exception:
             try:

@@ -57,10 +57,22 @@ def main():
     bb.record("deep", value=deep)
     first, second = bb.snapshot("x"), bb.snapshot("x")
     assert first != second and os.path.exists(first) and os.path.exists(second)
+    limited = BlackBox(os.path.join(work, "limited"), max_snapshots=2)
+    limited.snapshot("1")
+    limited.snapshot("2")
+    limited.snapshot("3")
+    assert len([n for n in os.listdir(limited.directory) if n.endswith(".jsonl")]) == 2
     emergency = EmergencyWriter(os.path.join(work, "crash"))
     emergency.write(6)
     emergency.close()
     assert "CRASH|signal=6" in open(emergency.path, encoding="ascii").read()
+    distributed = CommStats(runtime, "can", window=5, fail_threshold=99,
+                             rate_window=4, error_rate_threshold=0.5)
+    distributed.failure("f")
+    distributed.success()
+    distributed.failure("f")
+    distributed.success()
+    assert distributed.consecutive_failures == 0
     watchdog = HeartbeatWatchdog(runtime, name="never", timeout=0.001, interval=0.001)
     watchdog.start()
     import time

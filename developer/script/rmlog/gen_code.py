@@ -144,7 +144,8 @@ def write_schema(out_dir=None):
     os.makedirs(out_dir, exist_ok=True)
     out_path = os.path.join(out_dir, SCHEMA_HEADER_NAME)
     with open(out_path, "w", encoding="utf-8", newline="\n") as fh:
-        fh.write(render_header().replace("RMLOG_ERRORS_H", "RMLOG_SCHEMA_H"))
+        fh.write(render_header().replace("rmlog_errors.h", "rmlog_schema.h")
+                 .replace("RMLOG_ERRORS_H", "RMLOG_SCHEMA_H"))
     return out_path
 
 

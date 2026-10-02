@@ -41,10 +41,11 @@ def install_signal_hooks(runtime, signals=None, directory=None):
         try:
             os.write(emergency.fd, messages.get(signum, fallback))
         finally:
-            # Python 层无法保证致命信号处理器具备 async-signal-safe 的完整 POSIX
-            # 语义；写完立即退出，避免再次进入 Python/AsyncWriter。内核 core 文件
-            # 是否产生由板端 ulimit、kernel.core_pattern 和运行时配置决定。
-            os._exit(128 + int(signum))
+            # 恢复默认动作再重抛，尽可能保留内核 core dump 行为。Python 层无法
+            # 保证 handler 的完整 POSIX async-signal-safe 语义；是否生成 core 仍
+            # 取决于板端 ulimit、kernel.core_pattern 和运行时配置。
+            signal.signal(signum, signal.SIG_DFL)
+            os.kill(os.getpid(), signum)
 
     for signum in signals:
         try:
